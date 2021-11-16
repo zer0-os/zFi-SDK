@@ -1,27 +1,42 @@
 import * as ethers from "ethers";
-import { Config, Instance } from "./types";
+import { Config, Deposit, Instance } from "./types";
 import { ZStakePoolBase } from "./contracts/types";
-import { getZStakePoolBaseContract } from "./contracts";
+import { getZStakePoolBase } from "./contracts";
+import * as actions from "./actions";
 
 export const createInstance = (config: Config): Instance => {
-
   const instance: Instance = {
-    // Change this to be utility functions that then get contract instances as appropriate
-    // but for now we just create an instance to make sure everything works
-    // getZStakePoolBaseContract: async () => {}
-    getZStakePoolBaseContract: async (address: string, web3Provider: ethers.providers.Web3Provider): Promise<ZStakePoolBase> => {
-      const instance: ZStakePoolBase = await getZStakePoolBaseContract(address, web3Provider);
-      
-      // WIP Sample usage of instantiated contract
-      // TODO add higher level utility functions for SDK instance
-      // and remove direct calls to contract from here
-      const amount = ethers.BigNumber.from("100");
-      const lockUntil = ethers.BigNumber.from("365");
-      instance.stake(amount, lockUntil, false);
-
-      return instance;
-    }
-
-  }
+    // Stake your liquidity tokens for providing the WILD/ETH pair
+    stake: async (
+      amount: string,
+      lockUntil: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const poolBase: ZStakePoolBase = await getZStakePoolBase(
+        config.liquidityPoolAddress,
+        config.web3Provider
+      );
+      const tx = await actions.stake(amount, lockUntil, signer, poolBase);
+      return tx;
+    },
+    unstake: async (
+      depositId: string,
+      amount: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const poolBase: ZStakePoolBase = await getZStakePoolBase(
+        config.liquidityPoolAddress,
+        config.web3Provider
+      );
+      const tx = await actions.unstake(depositId, amount, signer, poolBase);
+      return tx;
+    },
+    // processRewards
+    // updateStakeLock
+    // pendingYieldRewards
+    // getDeposit ? user[_user].deposits[_depositId]
+    // getDepositLength? doesn't help us avoid gas if we just require a second tx
+    // balanceOf ?
+  };
   return instance;
-}
+};

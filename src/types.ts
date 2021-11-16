@@ -8,5 +8,12 @@ export interface Config {
 }
 
 export interface Instance {
-  getZStakePoolBaseContract: (address: string, web3Provider: ethers.providers.Web3Provider) => Promise<ZStakePoolBase>;
+}
+
+export interface Deposit {
+  tokenAmount: ethers.BigNumber,
+  weight: ethers.BigNumber,
+  lockedFrom: ethers.BigNumber,
+  lockedUntil: ethers.BigNumber,
+  isYield: boolean
 }
