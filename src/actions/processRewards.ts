@@ -10,8 +10,9 @@ export const processRewards = async (
   const address = await signer.getAddress();
   const pendingRewards = await pendingYieldRewards(address, corePool);
 
-   // throw error or return 0?
-  if (pendingRewards === ethers.BigNumber.from("0")) throw Error("No rewards to process yet");
+  // throw error or return 0?
+  if (pendingRewards === ethers.BigNumber.from("0"))
+    throw Error("No rewards to process yet");
 
   const tx = await corePool.connect(signer).processRewards();
   return tx;
