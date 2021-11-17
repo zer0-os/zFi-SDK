@@ -7,6 +7,6 @@ export const stake = async (
   signer: ethers.Signer,
   poolBase: ZStakePoolBase
 ): Promise<ethers.ContractTransaction> => {
-  const tx = await poolBase.connect(signer).stake(amount, lockUntil, false);
+  const tx = await poolBase.connect(signer).stake(amount, lockUntil);
   return tx;
 };

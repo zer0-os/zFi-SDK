@@ -11,6 +11,9 @@ export const unstake = async (
   const address = await signer.getAddress();
   const depositsLength = await poolBase.getDepositsLength(address);
 
+  if (ethers.BigNumber.from(amount) <= ethers.BigNumber.from(0))
+    throw Error("User cannot unstake nothing");
+
   if (depositsLength === ethers.BigNumber.from("0"))
     throw Error("User cannot unstake with no active stake");
 
@@ -20,6 +23,7 @@ export const unstake = async (
 
   if (ethers.BigNumber.from(Date.now()) < deposit.lockedUntil)
     throw Error("User cannot unstake a deposit that is still locked.");
-  const tx = await poolBase.connect(signer).unstake(depositId, amount, false);
+
+  const tx = await poolBase.connect(signer).unstake(depositId, amount);
   return tx;
 };
