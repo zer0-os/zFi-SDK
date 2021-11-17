@@ -18,10 +18,10 @@
     "style": "prettier --write ./src/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
-    
   },
   "devDependencies": {
     "@typechain/ethers-v5": "7.0.1",
+    "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "4.31.0",
     "@typescript-eslint/parser": "4.31.0",
     "eslint": "7.32.0",

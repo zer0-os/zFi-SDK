@@ -8,12 +8,22 @@ export interface Config {
 }
 
 export interface Instance {
+  // TODO
 }
 
 export interface Deposit {
-  tokenAmount: ethers.BigNumber,
-  weight: ethers.BigNumber,
-  lockedFrom: ethers.BigNumber,
-  lockedUntil: ethers.BigNumber,
-  isYield: boolean
+  tokenAmount: ethers.BigNumber;
+  weight: ethers.BigNumber;
+  lockedFrom: ethers.BigNumber;
+  lockedUntil: ethers.BigNumber;
+  isYield: boolean;
+}
+
+export interface User {
+  tokenAmount: ethers.BigNumber;
+  totalWeight: ethers.BigNumber;
+  subYieldRewards: ethers.BigNumber;
+  subVaultRewards: ethers.BigNumber;
+  deposits: Deposit[];
+
 }
