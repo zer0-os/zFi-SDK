@@ -404,8 +404,6 @@ export class ZStakePoolBase extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  testFunc(overrides?: CallOverrides): Promise<string>;
-
   unstake(
     _depositId: BigNumberish,
     _amount: BigNumberish,
