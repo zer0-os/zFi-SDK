@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { ZStakePoolBase } from "./contracts/types";
 
 export interface Config {
@@ -12,18 +12,19 @@ export interface Instance {
 }
 
 export interface Deposit {
-  tokenAmount: ethers.BigNumber;
-  weight: ethers.BigNumber;
-  lockedFrom: ethers.BigNumber;
-  lockedUntil: ethers.BigNumber;
+  tokenAmount: BigNumber;
+  weight: BigNumber;
+  lockedFrom: BigNumber;
+  lockedUntil: BigNumber;
   isYield: boolean;
 }
-
-export interface User {
-  tokenAmount: ethers.BigNumber;
-  totalWeight: ethers.BigNumber;
-  subYieldRewards: ethers.BigNumber;
-  subVaultRewards: ethers.BigNumber;
+export interface UserObject {
+  tokenAmount: BigNumber;
+  totalWeight: BigNumber;
+  subYieldRewards: BigNumber;
   deposits: Deposit[];
-
 }
+
+type Types = [BigNumber, BigNumber, BigNumber];
+
+export type User = Types & UserObject;
