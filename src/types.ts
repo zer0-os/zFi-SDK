@@ -18,13 +18,11 @@ export interface Deposit {
   lockedUntil: BigNumber;
   isYield: boolean;
 }
-export interface UserObject {
+
+// Intentionally ignore the Deposit[] prop associated with a user
+// we can get that information directly with `getAllDeposits`
+export interface User {
   tokenAmount: BigNumber;
   totalWeight: BigNumber;
   subYieldRewards: BigNumber;
-  deposits: Deposit[];
 }
-
-type Types = [BigNumber, BigNumber, BigNumber];
-
-export type User = Types & UserObject;

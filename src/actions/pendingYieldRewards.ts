@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { ZStakeCorePool, ZStakePoolBase } from "../contracts/types";
+import { ZStakeCorePool } from "../contracts/types";
 
 export const pendingYieldRewards = async (
   address: string,
