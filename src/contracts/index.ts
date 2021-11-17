@@ -1,7 +1,5 @@
 import * as ethers from "ethers";
 import {
-  ZStakeAware,
-  ZStakeAware__factory,
   ZStakeCorePool,
   ZStakeCorePool__factory,
   ZStakePoolBase,
@@ -23,14 +21,6 @@ export const getZStakeCorePool = async (
   web3Provider: ethers.providers.Web3Provider
 ): Promise<ZStakeCorePool> => {
   const contract = ZStakeCorePool__factory.connect(address, web3Provider);
-  return contract;
-};
-
-export const getZStakeAware = async (
-  address: string,
-  web3Provider: ethers.providers.Web3Provider
-): Promise<ZStakeAware> => {
-  const contract = ZStakeAware__factory.connect(address, web3Provider);
   return contract;
 };
 
