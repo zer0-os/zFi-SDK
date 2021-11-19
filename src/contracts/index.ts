@@ -8,26 +8,28 @@ import {
   ZStakePoolFactory__factory,
 } from "./types";
 
+export * from "./types"
+
 export const getZStakePoolBase = async (
   address: string,
-  web3Provider: ethers.providers.Web3Provider
+  provider: ethers.providers.Provider
 ): Promise<ZStakePoolBase> => {
-  const contract = ZStakePoolBase__factory.connect(address, web3Provider);
+  const contract = ZStakePoolBase__factory.connect(address, provider);
   return contract;
 };
 
 export const getZStakeCorePool = async (
   address: string,
-  web3Provider: ethers.providers.Web3Provider
+  provider: ethers.providers.Provider
 ): Promise<ZStakeCorePool> => {
-  const contract = ZStakeCorePool__factory.connect(address, web3Provider);
+  const contract = ZStakeCorePool__factory.connect(address, provider);
   return contract;
 };
 
 export const getZStakePoolFactory = async (
   address: string,
-  web3Provider: ethers.providers.Web3Provider
+  provider: ethers.providers.Provider
 ): Promise<ZStakePoolFactory> => {
-  const contract = ZStakePoolFactory__factory.connect(address, web3Provider);
+  const contract = ZStakePoolFactory__factory.connect(address, provider);
   return contract;
 };

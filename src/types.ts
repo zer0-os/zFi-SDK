@@ -4,11 +4,38 @@ import { ZStakePoolBase } from "./contracts/types";
 export interface Config {
   liquidityPoolAddress: string;
   wildPoolAddress: string;
-  web3Provider: ethers.providers.Web3Provider;
+  provider: ethers.providers.Provider;
 }
 
 export interface Instance {
-  // TODO
+  stake: (
+    amount: string,
+    lockUntil: string,
+    signer: ethers.Signer
+  ) => Promise<ethers.ContractTransaction>;
+  unstake: (
+    depositId: string,
+    amount: string,
+    signer: ethers.Signer
+  ) => Promise<ethers.ContractTransaction>;
+  processRewards: (
+    signer: ethers.Signer
+  ) => Promise<ethers.ContractTransaction>;
+  updateStakeLock: (
+    depositId: string,
+    lockedUntil: string,
+    signer: ethers.Signer
+  ) => Promise<ethers.ContractTransaction>;
+  pendingYieldRewards: (address: string) => Promise<ethers.BigNumber>;
+  getDeposit: (depositId: string, address: string) => Promise<Deposit>;
+  getDepositsLength: (address: string) => Promise<ethers.BigNumber>;
+  getAllDeposits: (address: string) => Promise<Deposit[]>;
+  getUser: (address: string) => Promise<User>;
+  getPoolToken: () => Promise<string>;
+  getLastYieldDistribution: () => Promise<ethers.BigNumber>;
+  getWeight: () => Promise<number>;
+  calculateRewards: (stakingAmount: number, lockPeriodDays: number) => number;
+  calculateApr: (stakingAmount: number, lockPeriodDays: number) => number;
 }
 
 export interface Deposit {

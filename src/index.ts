@@ -1,20 +1,7 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
-import { getCorePool } from "./helpers";
+import { getCorePool, calculateRewards, calculateApr } from "./helpers";
 import { Config, Deposit, Instance, User } from "./types";
-
-// Number of each unit in a year
-enum TIME_UNITS {
-  Hours = 8760,
-  Days = 365,
-  Weeks = 52,
-  Months = 12,
-  Quarters = 4,
-  Years = 1
-}
-
-const REWARDS_CONSTANT = 10;
-const PERCENT_CONSTANT = 100;
 
 export const createInstance = (config: Config): Instance => {
   const instance: Instance = {
@@ -96,14 +83,34 @@ export const createInstance = (config: Config): Instance => {
     },
     getLastYieldDistribution: async (): Promise<ethers.BigNumber> => {
       const corePool = await getCorePool(config);
-      const lastYieldDistribution = corePool.lastYieldDistribution();
+      const lastYieldDistribution = await corePool.lastYieldDistribution();
       return lastYieldDistribution;
     },
+    getWeight: async (): Promise<number> => {
+      const corePool = await getCorePool(config);
+      const weight = await corePool.weight();
+      return weight;
+    },
     // Utility Functions
-    calculateRewards: (stakingAmount: number, UNIT: TIME_UNITS) => {
-      // e.g. (150 staked * 10 percent) / 100 = 15, and 15 / 12 = 1.25 per month
-      return ((stakingAmount * REWARDS_CONSTANT) / PERCENT_CONSTANT) / UNIT;
-    }
+    calculateRewards: (
+      stakingAmount: number,
+      lockPeriodDays: number
+    ): number => {
+      // Assumes fixed 10%
+      if (lockPeriodDays > 0 && lockPeriodDays <= 365) {
+        const rewards = calculateRewards(stakingAmount, lockPeriodDays);
+        return rewards;
+      }
+      return 0;
+    },
+    calculateApr: (stakingAmount: number, lockPeriodDays: number): number => {
+      if (lockPeriodDays > 0 && lockPeriodDays <= 365) {
+        const apr = calculateApr(stakingAmount, lockPeriodDays);
+        return apr;
+      }
+      return 0;
+    },
   };
+
   return instance;
 };
