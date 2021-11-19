@@ -142,30 +142,7 @@
           "type": "uint256"
         }
       ],
-      "name": "changeWildPerBlock",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "poolToken",
-          "type": "address"
-        },
-        {
-          "internalType": "uint64",
-          "name": "initBlock",
-          "type": "uint64"
-        },
-        {
-          "internalType": "uint32",
-          "name": "weight",
-          "type": "uint32"
-        }
-      ],
-      "name": "createPool",
+      "name": "changeRewardTokensPerBlock",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -232,7 +209,7 @@
     },
     {
       "inputs": [],
-      "name": "getWildPerBlock",
+      "name": "getRewardTokensPerBlock",
       "outputs": [
         {
           "internalType": "uint256",
@@ -247,7 +224,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_wild",
+          "name": "_rewardToken",
           "type": "address"
         },
         {
@@ -257,7 +234,7 @@
         },
         {
           "internalType": "uint192",
-          "name": "_wildPerBlock",
+          "name": "_rewardTokensPerBlock",
           "type": "uint192"
         }
       ],
@@ -339,6 +316,19 @@
     },
     {
       "inputs": [],
+      "name": "rewardToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "rewardVault",
       "outputs": [
         {
@@ -392,19 +382,6 @@
       "name": "transferRewardYield",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "wild",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     }
   ],

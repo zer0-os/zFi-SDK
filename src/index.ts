@@ -1,34 +1,38 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
-import { getCorePool, calculateRewards, calculateApr } from "./helpers";
-import { Config, Deposit, Instance, User } from "./types";
+import {
+  getCorePool,
+  calculateRewards,
+  calculateApr,
+  getPoolFactory,
+} from "./helpers";
+import { Config, Deposit, Instance, PoolData, User } from "./types";
 
 export const createInstance = (config: Config): Instance => {
   const instance: Instance = {
     // Stake your liquidity tokens for providing the WILD/ETH pair
+    // Core Pool
     stake: async (
       amount: string,
       lockUntil: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const corePool = await getCorePool(config);
-      const tx = await actions.stake(amount, lockUntil, signer, corePool);
+      const tx = await actions.stake(amount, lockUntil, signer, config);
       return tx;
     },
+
     unstake: async (
       depositId: string,
       amount: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const corePool = await getCorePool(config);
-      const tx = await actions.unstake(depositId, amount, signer, corePool);
+      const tx = await actions.unstake(depositId, amount, signer, config);
       return tx;
     },
     processRewards: async (
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const corePool = await getCorePool(config);
-      const tx = await actions.processRewards(signer, corePool);
+      const tx = await actions.processRewards(signer, config);
       return tx;
     },
     updateStakeLock: async (
@@ -40,6 +44,36 @@ export const createInstance = (config: Config): Instance => {
       const tx = await corePool
         .connect(signer)
         .updateStakeLock(depositId, lockedUntil);
+      return tx;
+    },
+    // Pool Factory
+    // Rewards from staked token ??
+    stakeAsPool: async (
+      stakerAddress: string,
+      amount: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const corePool = await getCorePool(config);
+      const tx = await actions.stakeAsPool(
+        stakerAddress,
+        amount,
+        signer,
+        corePool
+      );
+      return tx;
+    },
+    registerPool: async (
+      poolAddress: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const factory = await getPoolFactory(config);
+      const poolAddressCheck = await factory.pools(poolAddress);
+      if (poolAddressCheck !== "0") throw Error("This pool is already registered");
+      const tx = factory.connect(signer).registerPool(poolAddress);
+      return tx;
+    },
+    transferRewardYield: async (poolAddress: string, toAddress: string, amount: string): Promise<ethers.ContractTransaction> => {
+      const tx = await actions.transferRewardYield(poolAddress, toAddress, amount, config);
       return tx;
     },
     // View Functions
@@ -80,6 +114,18 @@ export const createInstance = (config: Config): Instance => {
       const corePool = await getCorePool(config);
       const poolToken = await corePool.poolToken();
       return poolToken;
+    },
+    getPoolAddress: async (poolToken: string): Promise<string> => {
+      const factory = await getPoolFactory(config);
+      const poolAddress = await factory.getPoolAddress(poolToken);
+      return poolAddress;
+    },
+    getPoolData: async (poolAddress: string): Promise<PoolData> => {
+      if (poolAddress === "0" || poolAddress === "0x0")
+        throw Error("Cannot get pool data for empty pool address");
+      const factory = await getPoolFactory(config);
+      const poolData: PoolData = await factory.getPoolData(poolAddress);
+      return poolData;
     },
     getLastYieldDistribution: async (): Promise<ethers.BigNumber> => {
       const corePool = await getCorePool(config);

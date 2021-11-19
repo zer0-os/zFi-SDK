@@ -4,35 +4,23 @@
   "sourceName": "contracts/zStakePoolBase.sol",
   "abi": [
     {
+      "anonymous": false,
       "inputs": [
         {
+          "indexed": true,
           "internalType": "address",
-          "name": "_wild",
+          "name": "previousOwner",
           "type": "address"
         },
         {
-          "internalType": "contract zStakePoolFactory",
-          "name": "_factory",
-          "type": "address"
-        },
-        {
+          "indexed": true,
           "internalType": "address",
-          "name": "_poolToken",
+          "name": "newOwner",
           "type": "address"
-        },
-        {
-          "internalType": "uint64",
-          "name": "_initBlock",
-          "type": "uint64"
-        },
-        {
-          "internalType": "uint32",
-          "name": "_weight",
-          "type": "uint32"
         }
       ],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
+      "name": "OwnershipTransferred",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -194,6 +182,39 @@
       "inputs": [
         {
           "internalType": "address",
+          "name": "_rewardToken",
+          "type": "address"
+        },
+        {
+          "internalType": "contract zStakePoolFactory",
+          "name": "_factory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_poolToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "_initBlock",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint32",
+          "name": "_weight",
+          "type": "uint32"
+        }
+      ],
+      "name": "__zStakePoolBase__init",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "_user",
           "type": "address"
         }
@@ -220,6 +241,19 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_rewardLockPeriod",
+          "type": "uint256"
+        }
+      ],
+      "name": "changeRewardLockPeriod",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -345,6 +379,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -384,6 +431,26 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardLockPeriod",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -405,6 +472,19 @@
         }
       ],
       "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -441,6 +521,19 @@
     {
       "inputs": [],
       "name": "sync",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -558,19 +651,6 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "wild",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {
