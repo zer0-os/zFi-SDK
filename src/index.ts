@@ -10,8 +10,6 @@ import { Config, Deposit, Instance, PoolData, User } from "./types";
 
 export const createInstance = (config: Config): Instance => {
   const instance: Instance = {
-    // Stake your liquidity tokens for providing the WILD/ETH pair
-    // Core Pool
     stake: async (
       amount: string,
       lockUntil: string,
@@ -46,19 +44,16 @@ export const createInstance = (config: Config): Instance => {
         .updateStakeLock(depositId, lockedUntil);
       return tx;
     },
-    // Pool Factory
-    // Rewards from staked token ??
     stakeAsPool: async (
       stakerAddress: string,
       amount: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const corePool = await getCorePool(config);
       const tx = await actions.stakeAsPool(
         stakerAddress,
         amount,
         signer,
-        corePool
+        config
       );
       return tx;
     },
@@ -66,17 +61,36 @@ export const createInstance = (config: Config): Instance => {
       poolAddress: string,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const factory = await getPoolFactory(config);
-      const poolAddressCheck = await factory.pools(poolAddress);
-      if (poolAddressCheck !== "0") throw Error("This pool is already registered");
-      const tx = factory.connect(signer).registerPool(poolAddress);
+      const tx = await actions.registerPool(poolAddress, signer, config);
       return tx;
     },
-    transferRewardYield: async (poolAddress: string, toAddress: string, amount: string): Promise<ethers.ContractTransaction> => {
-      const tx = await actions.transferRewardYield(poolAddress, toAddress, amount, config);
+    transferRewardYield: async (
+      poolAddress: string,
+      toAddress: string,
+      amount: string
+    ): Promise<ethers.ContractTransaction> => {
+      const tx = await actions.transferRewardYield(
+        poolAddress,
+        toAddress,
+        amount,
+        config
+      );
       return tx;
     },
-    // View Functions
+    changePoolWeight: async (
+      poolAddress: string,
+      weight: string,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const tx = await actions.changePoolWeight(
+        poolAddress,
+        weight,
+        signer,
+        config
+      );
+      return tx;
+    },
+
     pendingYieldRewards: async (address: string): Promise<ethers.BigNumber> => {
       const corePool = await getCorePool(config);
       // If address has no associated stake it returns 0
@@ -104,7 +118,6 @@ export const createInstance = (config: Config): Instance => {
       const deposits = await actions.getAllDeposits(address, corePool);
       return deposits;
     },
-    // Variables
     getUser: async (address: string): Promise<User> => {
       const corePool = await getCorePool(config);
       const user: User = await corePool.users(address);
@@ -137,24 +150,22 @@ export const createInstance = (config: Config): Instance => {
       const weight = await corePool.weight();
       return weight;
     },
+    getRewardTokensPerBloc: async (): Promise<ethers.BigNumber> => {
+      const factory = await getPoolFactory(config);
+      const tokensPerBlock = await factory.getRewardTokensPerBlock();
+      return tokensPerBlock;
+    },
     // Utility Functions
     calculateRewards: (
       stakingAmount: number,
-      lockPeriodDays: number
+      lockPeriodDays: number,
+      asApr: boolean
     ): number => {
-      // Assumes fixed 10%
-      if (lockPeriodDays > 0 && lockPeriodDays <= 365) {
-        const rewards = calculateRewards(stakingAmount, lockPeriodDays);
-        return rewards;
-      }
-      return 0;
-    },
-    calculateApr: (stakingAmount: number, lockPeriodDays: number): number => {
-      if (lockPeriodDays > 0 && lockPeriodDays <= 365) {
-        const apr = calculateApr(stakingAmount, lockPeriodDays);
-        return apr;
-      }
-      return 0;
+      if (lockPeriodDays < 0 || lockPeriodDays > 365)
+        throw Error("Locking period must be between 0 and 365 days");
+
+      const rewards = calculateRewards(stakingAmount, lockPeriodDays, asApr);
+      return rewards;
     },
   };
 

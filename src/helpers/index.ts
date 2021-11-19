@@ -25,20 +25,14 @@ export const getPoolFactory = async (
 
 export const calculateRewards = (
   stakingAmount: number,
-  lockPeriodDays: number
+  lockPeriodDays: number,
+  asApr: boolean
 ): number => {
-  const rewards =
+  let rewards =
     stakingAmount *
     (REWARDS_CONSTANT / PERCENT_CONSTANT) *
     (1 + lockPeriodDays / 365);
-  return rewards;
-};
 
-export const calculateApr = (
-  stakingAmount: number,
-  lockPeriodDays: number
-): number => {
-  const rewards = calculateRewards(stakingAmount, lockPeriodDays);
-  const apr = (rewards / stakingAmount) * PERCENT_CONSTANT;
-  return apr;
+  rewards = asApr ? (rewards / stakingAmount) * PERCENT_CONSTANT : rewards;
+  return rewards;
 };

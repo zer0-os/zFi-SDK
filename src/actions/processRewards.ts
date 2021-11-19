@@ -11,6 +11,7 @@ export const processRewards = async (
   // Check pending rewards first to avoid unnecessary gas spending
   const corePool = await getCorePool(config);
   const address = await signer.getAddress();
+
   const pendingRewards = await pendingYieldRewards(address, corePool);
 
   if (pendingRewards === ethers.BigNumber.from("0"))
