@@ -3,7 +3,6 @@ import * as actions from "./actions";
 import {
   getCorePool,
   calculateRewards,
-  calculateApr,
   getPoolFactory,
 } from "./helpers";
 import { Config, Deposit, Instance, PoolData, User } from "./types";
