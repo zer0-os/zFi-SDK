@@ -149,7 +149,7 @@ export const createInstance = (config: Config): Instance => {
       const weight = await corePool.weight();
       return weight;
     },
-    getRewardTokensPerBloc: async (): Promise<ethers.BigNumber> => {
+    getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {
       const factory = await getPoolFactory(config);
       const tokensPerBlock = await factory.getRewardTokensPerBlock();
       return tokensPerBlock;
