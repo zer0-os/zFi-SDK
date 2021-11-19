@@ -21,17 +21,17 @@ export interface Instance {
   registerPool: (
     poolAddress: string,
     signer: ethers.Signer
-  ) => Promise<ethers.ContractTransaction>
+  ) => Promise<ethers.ContractTransaction>;
   transferRewardYield: (
     poolAddress: string,
     toAddress: string,
     amount: string
-  ) => Promise<ethers.ContractTransaction>
+  ) => Promise<ethers.ContractTransaction>;
   changePoolWeight: (
     poolAddress: string,
     weight: string,
     signer: ethers.Signer
-  ) => Promise<ethers.ContractTransaction>
+  ) => Promise<ethers.ContractTransaction>;
   unstake: (
     depositId: string,
     amount: string,
@@ -51,11 +51,11 @@ export interface Instance {
   getAllDeposits: (address: string) => Promise<Deposit[]>;
   getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
-  getPoolAddress: (poolToken: string) => Promise<string>
-  getPoolData: (poolAddress: string) => Promise<PoolData>
+  getPoolAddress: (poolToken: string) => Promise<string>;
+  getPoolData: (poolAddress: string) => Promise<PoolData>;
   getLastYieldDistribution: () => Promise<ethers.BigNumber>;
   getWeight: () => Promise<number>;
-  getRewardTokensPerBlock: () => Promise<ethers.BigNumber>
+  getRewardTokensPerBlock: () => Promise<ethers.BigNumber>;
   calculateRewards: (
     stakingAmount: number,
     lockPeriodDays: number,

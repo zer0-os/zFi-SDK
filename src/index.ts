@@ -1,10 +1,6 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
-import {
-  getCorePool,
-  calculateRewards,
-  getPoolFactory,
-} from "./helpers";
+import { getCorePool, calculateRewards, getPoolFactory } from "./helpers";
 import { Config, Deposit, Instance, PoolData, User } from "./types";
 
 export const createInstance = (config: Config): Instance => {

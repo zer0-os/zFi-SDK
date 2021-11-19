@@ -8,7 +8,7 @@ import {
   ZStakePoolFactory__factory,
 } from "./types";
 
-export * from "./types"
+export * from "./types";
 
 export const getZStakePoolBase = async (
   address: string,
