@@ -2,8 +2,6 @@ export * from "./changePoolWeight";
 export * from "./getAllDeposits";
 export * from "./pendingYieldRewards";
 export * from "./processRewards";
-export * from "./registerPool";
 export * from "./stake";
-export * from "./stakeAsPool";
 export * from "./transferRewardYield";
 export * from "./unstake";

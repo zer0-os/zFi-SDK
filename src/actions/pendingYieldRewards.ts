@@ -1,10 +1,12 @@
 import { ethers } from "ethers";
-import { ZStakeCorePool } from "../contracts/types";
+import { getLiquidityPool } from "../helpers";
+import { Config } from "../types";
 
 export const pendingYieldRewards = async (
   address: string,
-  corePool: ZStakeCorePool
+  config: Config
 ): Promise<ethers.BigNumber> => {
-  const pendingYieldRewards = await corePool.pendingYieldRewards(address);
+  const liquidityPool = await getLiquidityPool(config);
+  const pendingYieldRewards = await liquidityPool.pendingYieldRewards(address);
   return pendingYieldRewards;
 };

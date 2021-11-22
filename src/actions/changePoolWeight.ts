@@ -11,12 +11,11 @@ export const changePoolWeight = async (
   const factory = await getPoolFactory(config);
   const signerAddress = await signer.getAddress();
 
-  const exists = await factory.poolExists(signerAddress);
   const owner = await factory.owner();
 
-  if (!exists && owner !== signerAddress)
+  if (owner !== signerAddress)
     throw Error(
-      "Function must be called by either the pool factory owner or the pool itself"
+      "Only the pool factory owner can modify the pool weight"
     );
 
   const tx = await factory

@@ -1,19 +1,18 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
-import { getCorePool, calculateRewards, getPoolFactory } from "./helpers";
+import { getTokenPool, getLiquidityPool, calculateRewards, getPoolFactory } from "./helpers";
 import { Config, Deposit, Instance, PoolData, User } from "./types";
 
 export const createInstance = (config: Config): Instance => {
   const instance: Instance = {
     stake: async (
       amount: string,
-      lockUntil: string,
+      lockUntil: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const tx = await actions.stake(amount, lockUntil, signer, config);
       return tx;
     },
-
     unstake: async (
       depositId: string,
       amount: string,
@@ -30,42 +29,20 @@ export const createInstance = (config: Config): Instance => {
     },
     updateStakeLock: async (
       depositId: string,
-      lockedUntil: string,
+      lockUntil: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const corePool = await getCorePool(config);
-      const tx = await corePool
+      const liquidityPool = await getLiquidityPool(config);
+      const tx = await liquidityPool
         .connect(signer)
-        .updateStakeLock(depositId, lockedUntil);
-      return tx;
-    },
-    stakeAsPool: async (
-      stakerAddress: string,
-      amount: string,
-      signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction> => {
-      const tx = await actions.stakeAsPool(
-        stakerAddress,
-        amount,
-        signer,
-        config
-      );
-      return tx;
-    },
-    registerPool: async (
-      poolAddress: string,
-      signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction> => {
-      const tx = await actions.registerPool(poolAddress, signer, config);
+        .updateStakeLock(depositId, lockUntil);
       return tx;
     },
     transferRewardYield: async (
-      poolAddress: string,
       toAddress: string,
-      amount: string
+      amount: ethers.BigNumber
     ): Promise<ethers.ContractTransaction> => {
       const tx = await actions.transferRewardYield(
-        poolAddress,
         toAddress,
         amount,
         config
@@ -87,11 +64,10 @@ export const createInstance = (config: Config): Instance => {
     },
 
     pendingYieldRewards: async (address: string): Promise<ethers.BigNumber> => {
-      const corePool = await getCorePool(config);
       // If address has no associated stake it returns 0
       const pendingRewards = await actions.pendingYieldRewards(
         address,
-        corePool
+        config
       );
       return pendingRewards;
     },
@@ -99,28 +75,27 @@ export const createInstance = (config: Config): Instance => {
       depositId: string,
       address: string
     ): Promise<Deposit> => {
-      const corePool = await getCorePool(config);
-      const deposit: Deposit = await corePool.getDeposit(address, depositId);
+      const liquidityPool = await getLiquidityPool(config);
+      const deposit: Deposit = await liquidityPool.getDeposit(address, depositId);
       return deposit;
     },
     getDepositsLength: async (address: string): Promise<ethers.BigNumber> => {
-      const corePool = await getCorePool(config);
-      const depositsLength = await corePool.getDepositsLength(address);
+      const liquidityPool = await getLiquidityPool(config);
+      const depositsLength = await liquidityPool.getDepositsLength(address);
       return depositsLength;
     },
     getAllDeposits: async (address: string): Promise<Deposit[]> => {
-      const corePool = await getCorePool(config);
-      const deposits = await actions.getAllDeposits(address, corePool);
+      const deposits = await actions.getAllDeposits(address, config);
       return deposits;
     },
     getUser: async (address: string): Promise<User> => {
-      const corePool = await getCorePool(config);
-      const user: User = await corePool.users(address);
+      const liquidityPool = await getLiquidityPool(config);
+      const user: User = await liquidityPool.users(address);
       return user;
     },
     getPoolToken: async (): Promise<string> => {
-      const corePool = await getCorePool(config);
-      const poolToken = await corePool.poolToken();
+      const tokenPool = await getTokenPool(config);
+      const poolToken = await tokenPool.poolToken();
       return poolToken;
     },
     getPoolAddress: async (poolToken: string): Promise<string> => {
@@ -136,13 +111,18 @@ export const createInstance = (config: Config): Instance => {
       return poolData;
     },
     getLastYieldDistribution: async (): Promise<ethers.BigNumber> => {
-      const corePool = await getCorePool(config);
-      const lastYieldDistribution = await corePool.lastYieldDistribution();
+      const liquidityPool = await getLiquidityPool(config);
+      const lastYieldDistribution = await liquidityPool.lastYieldDistribution();
       return lastYieldDistribution;
     },
-    getWeight: async (): Promise<number> => {
-      const corePool = await getCorePool(config);
-      const weight = await corePool.weight();
+    getLiquidityPoolWeight: async (): Promise<number> => {
+      const liquidityPool = await getLiquidityPool(config);
+      const weight = await liquidityPool.weight();
+      return weight;
+    },
+    getTokenPoolWeight: async (): Promise<number> => {
+      const tokenPool = await getTokenPool(config);
+      const weight = await tokenPool.weight();
       return weight;
     },
     getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {

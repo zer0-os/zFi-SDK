@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Config, Deposit } from "../types";
 import { ZStakeCorePool, ZStakePoolBase } from "../contracts/types";
-import { getCorePool } from "../helpers";
+import { getLiquidityPool } from "../helpers";
 
 export const unstake = async (
   depositId: string,
@@ -9,22 +9,24 @@ export const unstake = async (
   signer: ethers.Signer,
   config: Config
 ): Promise<ethers.ContractTransaction> => {
-  const corePool = await getCorePool(config);
+  const corePool = await getLiquidityPool(config);
   const address = await signer.getAddress();
   const depositsLength = await corePool.getDepositsLength(address);
 
   if (ethers.BigNumber.from(amount) <= ethers.BigNumber.from(0))
-    throw Error("User cannot unstake nothing");
+    throw Error("You can only unstake a non-zero amount of tokens");
 
   if (depositsLength === ethers.BigNumber.from("0"))
-    throw Error("User cannot unstake with no active stake");
+    throw Error("There are no deposits for you to unstake");
 
   const deposit: Deposit = await corePool.getDeposit(address, depositId);
   if (ethers.BigNumber.from(amount) > deposit.tokenAmount)
-    throw Error("User cannot unstake more than they have in the staking pool");
+    throw Error("You cannot unstake more than the original stake amount");
 
   if (ethers.BigNumber.from(Date.now()) < deposit.lockedUntil)
-    throw Error("User cannot unstake a deposit that is still locked.");
+    throw Error(
+      "You are not able to unstake when your deposit is still locked"
+    );
 
   const tx = await corePool.connect(signer).unstake(depositId, amount);
   return tx;
