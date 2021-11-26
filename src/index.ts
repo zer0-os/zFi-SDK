@@ -35,7 +35,12 @@ export const createInstance = (config: Config): Instance => {
       lockUntil: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const tx = await actions.updateStakeLock(depositId, lockUntil, signer, config);
+      const tx = await actions.updateStakeLock(
+        depositId,
+        lockUntil,
+        signer,
+        config
+      );
       return tx;
     },
     pendingYieldRewards: async (address: string): Promise<ethers.BigNumber> => {
