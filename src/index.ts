@@ -1,8 +1,10 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
-import { getTokenPool, getLiquidityPool, calculateRewards, getPoolFactory } from "./helpers";
+import { getCorePool, getPoolFactory } from "./helpers";
 import { Config, Deposit, Instance, PoolData, User } from "./types";
 
+// The zFI SDK requires that you create an instance once for every staking pool.
+// As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
 export const createInstance = (config: Config): Instance => {
   const instance: Instance = {
     stake: async (
@@ -10,6 +12,7 @@ export const createInstance = (config: Config): Instance => {
       lockUntil: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
+      // ZStakeCorePool of either ETH/WILD liquidity tokens or WILD
       const tx = await actions.stake(amount, lockUntil, signer, config);
       return tx;
     },
@@ -32,70 +35,26 @@ export const createInstance = (config: Config): Instance => {
       lockUntil: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const liquidityPool = await getLiquidityPool(config);
-      const tx = await liquidityPool
-        .connect(signer)
-        .updateStakeLock(depositId, lockUntil);
+      const tx = await actions.updateStakeLock(depositId, lockUntil, signer, config);
       return tx;
     },
-    transferRewardYield: async (
-      toAddress: string,
-      amount: ethers.BigNumber
-    ): Promise<ethers.ContractTransaction> => {
-      const tx = await actions.transferRewardYield(
-        toAddress,
-        amount,
-        config
-      );
-      return tx;
-    },
-    changePoolWeight: async (
-      poolAddress: string,
-      weight: string,
-      signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction> => {
-      const tx = await actions.changePoolWeight(
-        poolAddress,
-        weight,
-        signer,
-        config
-      );
-      return tx;
-    },
-
     pendingYieldRewards: async (address: string): Promise<ethers.BigNumber> => {
-      // If address has no associated stake it returns 0
-      const pendingRewards = await actions.pendingYieldRewards(
-        address,
-        config
-      );
+      // If address has no associated stake it will return 0
+      const pendingRewards = await actions.pendingYieldRewards(address, config);
       return pendingRewards;
-    },
-    getDeposit: async (
-      depositId: string,
-      address: string
-    ): Promise<Deposit> => {
-      const liquidityPool = await getLiquidityPool(config);
-      const deposit: Deposit = await liquidityPool.getDeposit(address, depositId);
-      return deposit;
-    },
-    getDepositsLength: async (address: string): Promise<ethers.BigNumber> => {
-      const liquidityPool = await getLiquidityPool(config);
-      const depositsLength = await liquidityPool.getDepositsLength(address);
-      return depositsLength;
     },
     getAllDeposits: async (address: string): Promise<Deposit[]> => {
       const deposits = await actions.getAllDeposits(address, config);
       return deposits;
     },
     getUser: async (address: string): Promise<User> => {
-      const liquidityPool = await getLiquidityPool(config);
-      const user: User = await liquidityPool.users(address);
+      const corePool = await getCorePool(config);
+      const user: User = await corePool.users(address);
       return user;
     },
     getPoolToken: async (): Promise<string> => {
-      const tokenPool = await getTokenPool(config);
-      const poolToken = await tokenPool.poolToken();
+      const corePool = await getCorePool(config);
+      const poolToken = await corePool.poolToken();
       return poolToken;
     },
     getPoolAddress: async (poolToken: string): Promise<string> => {
@@ -111,18 +70,18 @@ export const createInstance = (config: Config): Instance => {
       return poolData;
     },
     getLastYieldDistribution: async (): Promise<ethers.BigNumber> => {
-      const liquidityPool = await getLiquidityPool(config);
-      const lastYieldDistribution = await liquidityPool.lastYieldDistribution();
+      const corePool = await getCorePool(config);
+      const lastYieldDistribution = await corePool.lastYieldDistribution();
       return lastYieldDistribution;
     },
     getLiquidityPoolWeight: async (): Promise<number> => {
-      const liquidityPool = await getLiquidityPool(config);
-      const weight = await liquidityPool.weight();
+      const corePool = await getCorePool(config);
+      const weight = await corePool.weight();
       return weight;
     },
     getTokenPoolWeight: async (): Promise<number> => {
-      const tokenPool = await getTokenPool(config);
-      const weight = await tokenPool.weight();
+      const corePool = await getCorePool(config);
+      const weight = await corePool.weight();
       return weight;
     },
     getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {
@@ -130,17 +89,10 @@ export const createInstance = (config: Config): Instance => {
       const tokensPerBlock = await factory.getRewardTokensPerBlock();
       return tokensPerBlock;
     },
-    // Utility Functions
-    calculateRewards: (
-      stakingAmount: number,
-      lockPeriodDays: number,
-      asApr: boolean
-    ): number => {
-      if (lockPeriodDays < 0 || lockPeriodDays > 365)
-        throw Error("Locking period must be between 0 and 365 days");
-
-      const rewards = calculateRewards(stakingAmount, lockPeriodDays, asApr);
-      return rewards;
+    // Calculate user value locked
+    calculateUvl: async (userAddress: string): Promise<ethers.BigNumber> => {
+      const uvl = await actions.calculateUvl(userAddress, config);
+      return uvl;
     },
   };
 

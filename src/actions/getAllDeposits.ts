@@ -1,19 +1,19 @@
 import { ethers } from "ethers";
-import { getLiquidityPool } from "../helpers";
+import { getCorePool } from "../helpers";
 import { Config, Deposit } from "../types";
 
 export const getAllDeposits = async (
   address: string,
   config: Config
 ): Promise<Deposit[]> => {
-  const liquidityPool = await getLiquidityPool(config);
+  const corePool = await getCorePool(config);
 
-  const depositLength = await liquidityPool.getDepositsLength(address);
+  const depositLength = await corePool.getDepositsLength(address);
 
   const deposits: Deposit[] = [];
 
   for (let i = 0; i < depositLength.toNumber(); i++) {
-    const deposit = await liquidityPool.getDeposit(
+    const deposit = await corePool.getDeposit(
       address,
       ethers.BigNumber.from(i)
     );

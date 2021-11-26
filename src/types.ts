@@ -1,9 +1,7 @@
 import { BigNumber, ethers } from "ethers";
-import { ZStakePoolBase } from "./contracts/types";
 
 export interface Config {
-  liquidityPoolAddress: string;
-  tokenPoolAddress: string;
+  poolAddress: string;
   factoryAddress: string;
   provider: ethers.providers.Provider;
 }
@@ -12,15 +10,6 @@ export interface Instance {
   stake: (
     amount: string,
     lockUntil: ethers.BigNumber,
-    signer: ethers.Signer
-  ) => Promise<ethers.ContractTransaction>;
-  transferRewardYield: (
-    toAddress: string,
-    amount: ethers.BigNumber
-  ) => Promise<ethers.ContractTransaction>;
-  changePoolWeight: (
-    poolAddress: string,
-    weight: string,
     signer: ethers.Signer
   ) => Promise<ethers.ContractTransaction>;
   unstake: (
@@ -37,8 +26,6 @@ export interface Instance {
     signer: ethers.Signer
   ) => Promise<ethers.ContractTransaction>;
   pendingYieldRewards: (address: string) => Promise<ethers.BigNumber>;
-  getDeposit: (depositId: string, address: string) => Promise<Deposit>;
-  getDepositsLength: (address: string) => Promise<ethers.BigNumber>;
   getAllDeposits: (address: string) => Promise<Deposit[]>;
   getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
@@ -48,11 +35,7 @@ export interface Instance {
   getLiquidityPoolWeight: () => Promise<number>;
   getTokenPoolWeight: () => Promise<number>;
   getRewardTokensPerBlock: () => Promise<ethers.BigNumber>;
-  calculateRewards: (
-    stakingAmount: number,
-    lockPeriodDays: number,
-    asPercent: boolean
-  ) => number;
+  calculateUvl: (address: string) => Promise<ethers.BigNumber>;
 }
 
 export interface Deposit {

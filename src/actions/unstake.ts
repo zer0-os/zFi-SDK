@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import { Config, Deposit } from "../types";
-import { ZStakeCorePool, ZStakePoolBase } from "../contracts/types";
-import { getLiquidityPool } from "../helpers";
+import { getCorePool } from "../helpers";
 
 export const unstake = async (
   depositId: string,
@@ -9,7 +8,8 @@ export const unstake = async (
   signer: ethers.Signer,
   config: Config
 ): Promise<ethers.ContractTransaction> => {
-  const corePool = await getLiquidityPool(config);
+  const corePool = await getCorePool(config);
+
   const address = await signer.getAddress();
   const depositsLength = await corePool.getDepositsLength(address);
 

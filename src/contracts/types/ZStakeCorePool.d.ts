@@ -29,10 +29,12 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     "getDeposit(address,uint256)": FunctionFragment;
     "getDepositsLength(address)": FunctionFragment;
     "initialize(address,address,address,uint64,uint32)": FunctionFragment;
+    "initializeImplementation()": FunctionFragment;
     "isFlashPool()": FunctionFragment;
     "lastYieldDistribution()": FunctionFragment;
     "now256()": FunctionFragment;
     "owner()": FunctionFragment;
+    "paused()": FunctionFragment;
     "pendingYieldRewards(address)": FunctionFragment;
     "poolToken()": FunctionFragment;
     "poolTokenReserve()": FunctionFragment;
@@ -82,6 +84,10 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     values: [string, string, string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "initializeImplementation",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "isFlashPool",
     values?: undefined
   ): string;
@@ -91,6 +97,7 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "now256", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pendingYieldRewards",
     values: [string]
@@ -181,6 +188,10 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "initializeImplementation",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "isFlashPool",
     data: BytesLike
   ): Result;
@@ -190,6 +201,7 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "now256", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pendingYieldRewards",
     data: BytesLike
@@ -252,19 +264,23 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
 
   events: {
     "OwnershipTransferred(address,address)": EventFragment;
+    "Paused(address)": EventFragment;
     "PoolWeightUpdated(address,uint32,uint32)": EventFragment;
     "StakeLockUpdated(address,uint256,uint64,uint64)": EventFragment;
     "Staked(address,address,uint256)": EventFragment;
     "Synchronized(address,uint256,uint64)": EventFragment;
+    "Unpaused(address)": EventFragment;
     "Unstaked(address,address,uint256)": EventFragment;
     "YieldClaimed(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolWeightUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StakeLockUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Staked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Synchronized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unstaked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "YieldClaimed"): EventFragment;
 }
@@ -363,6 +379,10 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     isFlashPool(overrides?: CallOverrides): Promise<[boolean]>;
 
     lastYieldDistribution(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -370,6 +390,8 @@ export class ZStakeCorePool extends BaseContract {
     now256(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
+
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     pendingYieldRewards(
       _staker: string,
@@ -508,6 +530,10 @@ export class ZStakeCorePool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  initializeImplementation(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   isFlashPool(overrides?: CallOverrides): Promise<boolean>;
 
   lastYieldDistribution(overrides?: CallOverrides): Promise<BigNumber>;
@@ -515,6 +541,8 @@ export class ZStakeCorePool extends BaseContract {
   now256(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
 
   pendingYieldRewards(
     _staker: string,
@@ -653,6 +681,8 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    initializeImplementation(overrides?: CallOverrides): Promise<void>;
+
     isFlashPool(overrides?: CallOverrides): Promise<boolean>;
 
     lastYieldDistribution(overrides?: CallOverrides): Promise<BigNumber>;
@@ -660,6 +690,8 @@ export class ZStakeCorePool extends BaseContract {
     now256(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
+
+    paused(overrides?: CallOverrides): Promise<boolean>;
 
     pendingYieldRewards(
       _staker: string,
@@ -750,6 +782,8 @@ export class ZStakeCorePool extends BaseContract {
       { previousOwner: string; newOwner: string }
     >;
 
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
+
     PoolWeightUpdated(
       _by?: string | null,
       _fromVal?: null,
@@ -795,6 +829,8 @@ export class ZStakeCorePool extends BaseContract {
         lastYieldDistribution: BigNumber;
       }
     >;
+
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
 
     Unstaked(
       _by?: string | null,
@@ -856,6 +892,10 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     isFlashPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     lastYieldDistribution(overrides?: CallOverrides): Promise<BigNumber>;
@@ -863,6 +903,8 @@ export class ZStakeCorePool extends BaseContract {
     now256(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     pendingYieldRewards(
       _staker: string,
@@ -988,6 +1030,10 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     isFlashPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     lastYieldDistribution(
@@ -997,6 +1043,8 @@ export class ZStakeCorePool extends BaseContract {
     now256(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pendingYieldRewards(
       _staker: string,
