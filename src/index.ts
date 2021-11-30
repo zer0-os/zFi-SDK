@@ -5,13 +5,14 @@ import {
   Config,
   Deposit,
   FactoryInstance,
+  Instance,
   PoolData,
   PoolInstance,
   SubConfig,
   User,
 } from "./types";
 
-export const createInstance = (config: Config) => {
+export const createInstance = async (config: Config): Promise<Instance> => {
   // Consumer will do `sdkInstance.wildPool.stake()`
   const factoryConfig: SubConfig = {
     address: config.factoryAddress,
@@ -126,7 +127,7 @@ const getInstance = (config: SubConfig): PoolInstance => {
   return instance;
 };
 
-const getFactoryInstance = async (config: SubConfig) => {
+const getFactoryInstance = (config: SubConfig) => {
   const instance: FactoryInstance = {
     getPoolAddress: async (poolToken: string): Promise<string> => {
       const factory = await getPoolFactory(config);
