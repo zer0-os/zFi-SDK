@@ -12,7 +12,7 @@ import {
   User,
 } from "./types";
 
-export const createInstance = async (config: Config): Promise<Instance> => {
+export const createInstance = (config: Config): Instance => {
   // Consumer will do `sdkInstance.wildPool.stake()`
   const factoryConfig: SubConfig = {
     address: config.factoryAddress,
