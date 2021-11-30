@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
 import { getCorePool } from "../helpers";
-import { Config, Deposit } from "../types";
+import { SubConfig, Deposit } from "../types";
 
 export const getAllDeposits = async (
   address: string,
-  config: Config
+  config: SubConfig
 ): Promise<Deposit[]> => {
   const corePool = await getCorePool(config);
 

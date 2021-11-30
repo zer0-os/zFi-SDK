@@ -6,7 +6,7 @@ export const getCorePool = async (
   config: SubConfig
 ) => {
   const corePool: ZStakeCorePool = await getZStakeCorePool(
-    config.poolAddress,
+    config.address,
     config.provider
   );
   return corePool;
@@ -16,7 +16,7 @@ export const getPoolFactory = async (
   config: SubConfig
 ): Promise<ZStakePoolFactory> => {
   const poolFactory: ZStakePoolFactory = await getZStakePoolFactory(
-    config.factoryAddress,
+    config.address,
     config.provider
   );
   return poolFactory;

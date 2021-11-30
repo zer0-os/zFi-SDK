@@ -1,30 +1,41 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
 import { getCorePool, getPoolFactory } from "./helpers";
-import { Config, Deposit, Instance, PoolData, PoolInstance, SubConfig, User } from "./types";
+import {
+  Config,
+  Deposit,
+  FactoryInstance,
+  PoolData,
+  PoolInstance,
+  SubConfig,
+  User,
+} from "./types";
 
 export const createInstance = (config: Config) => {
-  // Consumer will do `sdkInstance.wildPool.stake()` 
+  // Consumer will do `sdkInstance.wildPool.stake()`
+  const factoryConfig: SubConfig = {
+    address: config.factoryAddress,
+    provider: config.provider
+  }
   const wildConfig: SubConfig = {
-    poolAddress: config.wildPoolAddress,
-    factoryAddress: config.factoryAddress,
-    provider: config.provider
-  }
-
+    address: config.wildPoolAddress,
+    provider: config.provider,
+  };
   const liquidityConfig: SubConfig = {
-    poolAddress: config.liquidityPoolAddress,
-    factoryAddress: config.factoryAddress,
-    provider: config.provider
-  }
+    address: config.liquidityPoolAddress,
+    provider: config.provider,
+  };
 
+  const factory = getFactoryInstance(factoryConfig);
   const wildPool = getInstance(wildConfig);
   const liquidityPool = getInstance(liquidityConfig);
 
   return {
+    factory: factory,
     wildPool: wildPool,
-    liquidityPool: liquidityPool
-  }
-}
+    liquidityPool: liquidityPool,
+  };
+};
 
 // The zFI SDK requires that you create an instance once for every staking pool.
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
@@ -85,18 +96,6 @@ const getInstance = (config: SubConfig): PoolInstance => {
       const poolToken = await corePool.poolToken();
       return poolToken;
     },
-    getPoolAddress: async (poolToken: string): Promise<string> => {
-      const factory = await getPoolFactory(config);
-      const poolAddress = await factory.getPoolAddress(poolToken);
-      return poolAddress;
-    },
-    getPoolData: async (poolAddress: string): Promise<PoolData> => {
-      if (poolAddress === "0" || poolAddress === "0x0")
-        throw Error("Cannot get pool data for empty pool address");
-      const factory = await getPoolFactory(config);
-      const poolData: PoolData = await factory.getPoolData(poolAddress);
-      return poolData;
-    },
     getLastYieldDistribution: async (): Promise<ethers.BigNumber> => {
       const corePool = await getCorePool(config);
       const lastYieldDistribution = await corePool.lastYieldDistribution();
@@ -124,5 +123,23 @@ const getInstance = (config: SubConfig): PoolInstance => {
     },
   };
 
+  return instance;
+};
+
+const getFactoryInstance = async (config: SubConfig) => {
+  const instance: FactoryInstance = {
+    getPoolAddress: async (poolToken: string): Promise<string> => {
+      const factory = await getPoolFactory(config);
+      const poolAddress = await factory.getPoolAddress(poolToken);
+      return poolAddress;
+    },
+    getPoolData: async (poolAddress: string): Promise<PoolData> => {
+      if (poolAddress === "0" || poolAddress === "0x0")
+        throw Error("Cannot get pool data for empty pool address");
+      const factory = await getPoolFactory(config);
+      const poolData: PoolData = await factory.getPoolData(poolAddress);
+      return poolData;
+    },
+  };
   return instance;
 };

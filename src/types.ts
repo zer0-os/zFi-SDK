@@ -1,8 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 
 export interface SubConfig {
-  poolAddress: string;
-  factoryAddress: string;
+  address: string;
   provider: ethers.providers.Provider;
 }
 
@@ -16,6 +15,11 @@ export interface Config {
 export interface Instance {
   wildPool: PoolInstance,
   liquidityPool: PoolInstance
+}
+
+export interface FactoryInstance {
+  getPoolAddress: (poolToken: string) => Promise<string>;
+  getPoolData: (poolAddress: string) => Promise<PoolData>;
 }
 
 export interface PoolInstance {
@@ -41,8 +45,6 @@ export interface PoolInstance {
   getAllDeposits: (address: string) => Promise<Deposit[]>;
   getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
-  getPoolAddress: (poolToken: string) => Promise<string>;
-  getPoolData: (poolAddress: string) => Promise<PoolData>;
   getLastYieldDistribution: () => Promise<ethers.BigNumber>;
   getLiquidityPoolWeight: () => Promise<number>;
   getTokenPoolWeight: () => Promise<number>;
