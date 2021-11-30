@@ -1,12 +1,35 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
 import { getCorePool, getPoolFactory } from "./helpers";
-import { Config, Deposit, Instance, PoolData, User } from "./types";
+import { Config, Deposit, Instance, PoolData, PoolInstance, SubConfig, User } from "./types";
+
+export const createInstance = (config: Config) => {
+  // Consumer will do `sdkInstance.wildPool.stake()` 
+  const wildConfig: SubConfig = {
+    poolAddress: config.wildPoolAddress,
+    factoryAddress: config.factoryAddress,
+    provider: config.provider
+  }
+
+  const liquidityConfig: SubConfig = {
+    poolAddress: config.liquidityPoolAddress,
+    factoryAddress: config.factoryAddress,
+    provider: config.provider
+  }
+
+  const wildPool = getInstance(wildConfig);
+  const liquidityPool = getInstance(liquidityConfig);
+
+  return {
+    wildPool: wildPool,
+    liquidityPool: liquidityPool
+  }
+}
 
 // The zFI SDK requires that you create an instance once for every staking pool.
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
-export const createInstance = (config: Config): Instance => {
-  const instance: Instance = {
+const getInstance = (config: SubConfig): PoolInstance => {
+  const instance: PoolInstance = {
     stake: async (
       amount: string,
       lockUntil: ethers.BigNumber,

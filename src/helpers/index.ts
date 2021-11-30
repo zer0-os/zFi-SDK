@@ -1,9 +1,9 @@
 import { ZStakeCorePool, ZStakePoolFactory } from "../contracts/types";
 import { getZStakeCorePool, getZStakePoolFactory } from "../contracts";
-import { Config } from "../types";
+import { SubConfig } from "../types";
 
 export const getCorePool = async (
-  config: Config
+  config: SubConfig
 ) => {
   const corePool: ZStakeCorePool = await getZStakeCorePool(
     config.poolAddress,
@@ -13,7 +13,7 @@ export const getCorePool = async (
 }
 
 export const getPoolFactory = async (
-  config: Config
+  config: SubConfig
 ): Promise<ZStakePoolFactory> => {
   const poolFactory: ZStakePoolFactory = await getZStakePoolFactory(
     config.factoryAddress,

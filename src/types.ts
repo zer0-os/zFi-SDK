@@ -1,12 +1,24 @@
 import { BigNumber, ethers } from "ethers";
 
-export interface Config {
+export interface SubConfig {
   poolAddress: string;
   factoryAddress: string;
   provider: ethers.providers.Provider;
 }
 
+export interface Config {
+  wildPoolAddress: string;
+  liquidityPoolAddress: string,
+  factoryAddress: string,
+  provider: ethers.providers.Provider
+}
+
 export interface Instance {
+  wildPool: PoolInstance,
+  liquidityPool: PoolInstance
+}
+
+export interface PoolInstance {
   stake: (
     amount: string,
     lockUntil: ethers.BigNumber,
