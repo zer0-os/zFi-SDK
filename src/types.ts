@@ -7,14 +7,15 @@ export interface SubConfig {
 
 export interface Config {
   wildPoolAddress: string;
-  liquidityPoolAddress: string,
-  factoryAddress: string,
-  provider: ethers.providers.Provider
+  liquidityPoolAddress: string;
+  factoryAddress: string;
+  provider: ethers.providers.Provider;
 }
 
 export interface Instance {
-  wildPool: PoolInstance,
-  liquidityPool: PoolInstance
+  factory: FactoryInstance;
+  wildPool: PoolInstance;
+  liquidityPool: PoolInstance;
 }
 
 export interface FactoryInstance {
