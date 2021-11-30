@@ -28,8 +28,8 @@ export const createInstance = (config: Config): Instance => {
   };
 
   const factory = getFactoryInstance(factoryConfig);
-  const wildPool = getInstance(wildConfig);
-  const liquidityPool = getInstance(liquidityConfig);
+  const wildPool = getPoolInstance(wildConfig);
+  const liquidityPool = getPoolInstance(liquidityConfig);
 
   return {
     factory: factory,
@@ -40,7 +40,7 @@ export const createInstance = (config: Config): Instance => {
 
 // The zFI SDK requires that you create an instance once for every staking pool.
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
-const getInstance = (config: SubConfig): PoolInstance => {
+const getPoolInstance = (config: SubConfig): PoolInstance => {
   const instance: PoolInstance = {
     stake: async (
       amount: string,
