@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import { getPoolFactory } from "../helpers";
-import { Config } from "../types";
+import { SubConfig } from "../types";
 
 export const changePoolWeight = async (
   poolAddress: string,
   weight: string,
   signer: ethers.Signer,
-  config: Config
+  config: SubConfig
 ): Promise<ethers.ContractTransaction> => {
   const factory = await getPoolFactory(config);
   const signerAddress = await signer.getAddress();

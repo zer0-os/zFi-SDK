@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import { getCorePool } from "../helpers";
-import { Config } from "../types";
+import { SubConfig } from "../types";
 
 export const stake = async (
   amount: string,
   lockUntil: ethers.BigNumber,
   signer: ethers.Signer,
-  config: Config
+  config: SubConfig
 ): Promise<ethers.ContractTransaction> => {
   const corePool = await getCorePool(config);
   const stakeAmount = ethers.BigNumber.from(amount);

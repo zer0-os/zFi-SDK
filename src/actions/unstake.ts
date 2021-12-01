@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
-import { Config, Deposit } from "../types";
+import { SubConfig, Deposit } from "../types";
 import { getCorePool } from "../helpers";
 
 export const unstake = async (
   depositId: string,
   amount: string,
   signer: ethers.Signer,
-  config: Config
+  config: SubConfig
 ): Promise<ethers.ContractTransaction> => {
   const corePool = await getCorePool(config);
 
