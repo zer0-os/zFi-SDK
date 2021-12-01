@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import { getAllDeposits } from ".";
-import { Config } from "../types";
+import { SubConfig } from "../types";
 
-export const calculateUvl = async (userAddress: string, config: Config) => {
+export const calculateUvl = async (userAddress: string, config: SubConfig) => {
   const allUserDeposits = await getAllDeposits(userAddress, config);
 
   // Date.now() returns in milliseconds, convert to seconds for comparison

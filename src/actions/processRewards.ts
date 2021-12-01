@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
 import { pendingYieldRewards } from ".";
 import { getCorePool } from "../helpers";
-import { Config } from "../types";
+import { SubConfig } from "../types";
 
 export const processRewards = async (
   signer: ethers.Signer,
-  config: Config
+  config: SubConfig
 ): Promise<ethers.ContractTransaction> => {
   const corePool = await getCorePool(config);
 

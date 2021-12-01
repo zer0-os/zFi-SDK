@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
 import { getCorePool } from "../helpers";
-import { Config } from "../types";
+import { SubConfig } from "../types";
 
 export const pendingYieldRewards = async (
   address: string,
-  config: Config
+  config: SubConfig
 ): Promise<ethers.BigNumber> => {
   const corePool = await getCorePool(config);
   const pendingYieldRewards = await corePool.pendingYieldRewards(address);

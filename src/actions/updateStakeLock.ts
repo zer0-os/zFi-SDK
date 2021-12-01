@@ -1,12 +1,12 @@
 import * as ethers from "ethers";
 import { getCorePool } from "../helpers";
-import { Config } from "../types";
+import { SubConfig } from "../types";
 
 export const updateStakeLock = async (
   depositId: string,
   lockUntil: ethers.BigNumber,
   signer: ethers.Signer,
-  config: Config
+  config: SubConfig
 ) => {
   const corePool = await getCorePool(config);
   const tx = await corePool
