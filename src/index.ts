@@ -23,7 +23,7 @@ export const createInstance = (config: Config): Instance => {
     provider: config.provider,
   };
   const liquidityConfig: SubConfig = {
-    address: config.liquidityPoolAddress,
+    address: config.lpTokenPoolAddress,
     provider: config.provider,
   };
 

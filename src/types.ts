@@ -7,7 +7,7 @@ export interface SubConfig {
 
 export interface Config {
   wildPoolAddress: string;
-  liquidityPoolAddress: string;
+  lpTokenPoolAddress: string;
   factoryAddress: string;
   provider: ethers.providers.Provider;
 }
