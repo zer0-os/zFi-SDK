@@ -9,6 +9,7 @@ export const stake = async (
   config: Config
 ): Promise<ethers.ContractTransaction> => {
   const corePool = await getCorePool(config);
-  const tx = await corePool.connect(signer).stake(amount, lockUntil);
+  const stakeAmount = ethers.BigNumber.from(amount);
+  const tx = await corePool.connect(signer).stake(stakeAmount, lockUntil);
   return tx;
 };

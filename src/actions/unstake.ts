@@ -28,6 +28,8 @@ export const unstake = async (
       "You are not able to unstake when your deposit is still locked"
     );
 
-  const tx = await corePool.connect(signer).unstake(depositId, amount);
+  const tx = await corePool
+    .connect(signer)
+    .unstake(ethers.BigNumber.from(depositId), ethers.BigNumber.from(amount));
   return tx;
 };

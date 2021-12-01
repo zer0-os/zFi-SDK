@@ -28,7 +28,9 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     "getPoolData(address)": FunctionFragment;
     "getRewardTokensPerBlock()": FunctionFragment;
     "initialize(address,address,uint192)": FunctionFragment;
+    "initializeImplementation()": FunctionFragment;
     "owner()": FunctionFragment;
+    "paused()": FunctionFragment;
     "poolExists(address)": FunctionFragment;
     "pools(address)": FunctionFragment;
     "registerPool(address)": FunctionFragment;
@@ -65,7 +67,12 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     functionFragment: "initialize",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "initializeImplementation",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(functionFragment: "poolExists", values: [string]): string;
   encodeFunctionData(functionFragment: "pools", values: [string]): string;
   encodeFunctionData(
@@ -122,7 +129,12 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "initializeImplementation",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "poolExists", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pools", data: BytesLike): Result;
   decodeFunctionResult(
@@ -156,13 +168,17 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
 
   events: {
     "OwnershipTransferred(address,address)": EventFragment;
+    "Paused(address)": EventFragment;
     "PoolRegistered(address,address,address,uint64,bool)": EventFragment;
+    "Unpaused(address)": EventFragment;
     "WeightUpdated(address,address,uint32)": EventFragment;
     "WildRatioUpdated(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolRegistered"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WeightUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WildRatioUpdated"): EventFragment;
 }
@@ -252,7 +268,13 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
+
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     poolExists(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -321,7 +343,13 @@ export class ZStakePoolFactory extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  initializeImplementation(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   owner(overrides?: CallOverrides): Promise<string>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
 
   poolExists(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -393,7 +421,11 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    initializeImplementation(overrides?: CallOverrides): Promise<void>;
+
     owner(overrides?: CallOverrides): Promise<string>;
+
+    paused(overrides?: CallOverrides): Promise<boolean>;
 
     poolExists(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -430,6 +462,8 @@ export class ZStakePoolFactory extends BaseContract {
       { previousOwner: string; newOwner: string }
     >;
 
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
+
     PoolRegistered(
       _by?: string | null,
       poolToken?: string | null,
@@ -446,6 +480,8 @@ export class ZStakePoolFactory extends BaseContract {
         isFlashPool: boolean;
       }
     >;
+
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
 
     WeightUpdated(
       _by?: string | null,
@@ -498,7 +534,13 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     poolExists(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -566,7 +608,13 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     poolExists(
       arg0: string,
