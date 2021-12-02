@@ -8,7 +8,7 @@ export const stake = async (
   signer: ethers.Signer,
   config: SubConfig
 ): Promise<ethers.ContractTransaction> => {
-  if (ethers.BigNumber.from(amount) <= ethers.BigNumber.from(0))
+  if (ethers.BigNumber.from(amount).lte(ethers.BigNumber.from(0)))
     throw Error("Cannot call to stake with no value given");
 
   const corePool = await getCorePool(config);

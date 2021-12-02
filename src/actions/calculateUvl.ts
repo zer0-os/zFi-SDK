@@ -11,7 +11,7 @@ export const calculateUvl = async (userAddress: string, config: SubConfig) => {
   const userValueLocked = ethers.BigNumber.from("0");
   for (const deposit of allUserDeposits) {
     // if negative, still locked, if 0 or positive it is unlocked
-    if (timeNow.sub(deposit.lockedUntil) < ethers.BigNumber.from("0")) {
+    if (timeNow.sub(deposit.lockedUntil).lt(ethers.BigNumber.from("0"))) {
       userValueLocked.add(deposit.tokenAmount);
     }
   }
