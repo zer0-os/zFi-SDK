@@ -11,19 +11,19 @@ export const unstake = async (
   const corePool = await getCorePool(config);
 
   const address = await signer.getAddress();
+  
+  if (ethers.BigNumber.from(amount).lte(ethers.BigNumber.from(0)))
+  throw Error("You can only unstake a non-zero amount of tokens");
+  
   const depositsLength = await corePool.getDepositsLength(address);
-
-  if (ethers.BigNumber.from(amount) <= ethers.BigNumber.from(0))
-    throw Error("You can only unstake a non-zero amount of tokens");
-
-  if (depositsLength === ethers.BigNumber.from("0"))
+  if (depositsLength.eq(ethers.BigNumber.from(0)))
     throw Error("There are no deposits for you to unstake");
 
   const deposit: Deposit = await corePool.getDeposit(address, depositId);
-  if (ethers.BigNumber.from(amount) > deposit.tokenAmount)
+  if (ethers.BigNumber.from(amount).gte(deposit.tokenAmount))
     throw Error("You cannot unstake more than the original stake amount");
 
-  if (ethers.BigNumber.from(Date.now()) < deposit.lockedUntil)
+  if (ethers.BigNumber.from(Date.now()).lt(deposit.lockedUntil))
     throw Error(
       "You are not able to unstake when your deposit is still locked"
     );
