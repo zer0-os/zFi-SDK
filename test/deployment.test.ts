@@ -21,8 +21,6 @@ describe("Test Custom SDK Logic", async () => {
     wildPoolAddress: "0x9495B4e974E0e5b2865762d1fd5640E7A6c7Fa37",
   };
 
-  const sdkInstance = createInstance(config);
-
   describe("Test actions.unstake", async () => {
     const mnemonic = process.env["TESTNET_MNEMONIC"];
     if (!mnemonic) throw Error();
