@@ -14,7 +14,7 @@ export const processRewards = async (
 
   const pendingRewards = await pendingYieldRewards(address, config);
 
-  if (pendingRewards === ethers.BigNumber.from("0"))
+  if (pendingRewards.eq(ethers.BigNumber.from("0")))
     throw Error("No rewards to process yet");
 
   // Will send rewards to the locked token pool
