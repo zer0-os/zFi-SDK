@@ -5,13 +5,14 @@ import * as dotenv from "dotenv";
 import { ImportMock } from "ts-mock-imports";
 
 import { Config, SubConfig } from "../src/types";
-import { createInstance } from "../src";
 import * as actions from "../src/actions";
 import * as helpers from "../src/helpers";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
 dotenv.config();
+
+const defaultProvider = ethers.getDefaultProvider();
 
 describe("Test Custom SDK Logic", async () => {
   const config: Config = {
@@ -20,16 +21,139 @@ describe("Test Custom SDK Logic", async () => {
     lpTokenPoolAddress: "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
     wildPoolAddress: "0x9495B4e974E0e5b2865762d1fd5640E7A6c7Fa37",
   };
+  const mnemonic = process.env["TESTNET_MNEMONIC"];
+  if (!mnemonic) throw Error();
 
-  describe("Test actions.unstake", async () => {
-    const mnemonic = process.env["TESTNET_MNEMONIC"];
-    if (!mnemonic) throw Error();
+  const staker = ethers.Wallet.fromMnemonic(mnemonic);
+  const subConfig: SubConfig = {
+    address: config.wildPoolAddress,
+    provider: defaultProvider,
+  };
 
-    const staker = ethers.Wallet.fromMnemonic(mnemonic);
-    const subConfig: SubConfig = {
-      address: config.wildPoolAddress,
-      provider: config.provider,
-    };
+  // calculateUvl
+  describe("changePoolWeight", async () => {
+    it("Fails when given an invalid pool address", async () => {
+      await expect(
+        actions.changePoolWeight(
+          "0x0",
+          ethers.BigNumber.from("230"),
+          staker,
+          subConfig
+        )
+      ).to.be.rejectedWith("Must provide a valid pool address");
+      await expect(
+        actions.changePoolWeight(
+          "",
+          ethers.BigNumber.from("230"),
+          staker,
+          subConfig
+        )
+      ).to.be.rejectedWith("Must provide a valid pool address");
+    });
+    it("Fails when given an invalid weight", async () => {
+      await expect(
+        actions.changePoolWeight(
+          config.wildPoolAddress,
+          ethers.BigNumber.from("0"),
+          staker,
+          subConfig
+        )
+      ).to.be.rejectedWith("Must provide a valid pool weight");
+      await expect(
+        actions.changePoolWeight(
+          config.wildPoolAddress,
+          ethers.BigNumber.from("-1"),
+          staker,
+          subConfig
+        )
+      ).to.be.rejectedWith("Must provide a valid pool weight");
+    });
+    it("Fails when called by an account that is not the owner of the given pool", async () => {
+      const mockPoolFactory = {
+        connect: () => {
+          return {
+            changePoolWeight: () => {
+              return "";
+            },
+          };
+        },
+        owner: () => {
+          return "0x5eA627ba4cA4e043D38DE4Ad34b73BB4354daf8d";
+        },
+      };
+      const mock = ImportMock.mockFunction(
+        helpers,
+        "getPoolFactory",
+        mockPoolFactory
+      );
+      await expect(
+        actions.changePoolWeight(
+          config.wildPoolAddress,
+          ethers.BigNumber.from("230"),
+          staker,
+          subConfig
+        )
+      ).to.be.rejectedWith(
+        "Only the pool factory owner can modify the pool weight"
+      );
+      mock.restore();
+    });
+  });
+  describe("getAllDeposits", async () => {
+    it("Returns an empty array when no deposits are found", async () => {
+      const mockCorePool = {
+        getDepositsLength: async () => {
+          return ethers.BigNumber.from("0");
+        },
+      };
+      const mock = ImportMock.mockFunction(
+        helpers,
+        "getCorePool",
+        mockCorePool
+      );
+      const deposits = await actions.getAllDeposits(
+        config.wildPoolAddress,
+        subConfig
+      );
+      expect(deposits.length).equals(0);
+      mock.restore();
+    });
+    it("Returns a populated array when there are deposits", async () => {
+      const mockCorePool = {
+        getDepositsLength: async () => {
+          return ethers.BigNumber.from("1");
+        },
+        getDeposit: async () => {
+          return { tokenAmount: ethers.BigNumber.from("100")};
+        },
+      };
+      const mock = ImportMock.mockFunction(
+        helpers,
+        "getCorePool",
+        mockCorePool
+      );
+      const deposits = await actions.getAllDeposits(
+        config.wildPoolAddress,
+        subConfig
+      );
+      expect(deposits.length).equals(1);
+      mock.restore();
+    });
+  });
+  // pendingYieldRewards
+  // processRewards
+  describe("stake", async () => {
+    it("Fails when trying to stake nothing or a negative value", async () => {
+      const lockUntil = ethers.BigNumber.from("1");
+      await expect(
+        actions.stake("0", lockUntil, staker, subConfig)
+      ).to.be.rejectedWith("Cannot call to stake with no value given");
+      await expect(
+        actions.stake("-1", lockUntil, staker, subConfig)
+      ).to.be.rejectedWith("Cannot call to stake with no value given");
+    });
+  });
+  describe("unstake", async () => {
     it("Fails when calling to unstake with 0 amount", async () => {
       await expect(
         actions.unstake("0", "0", staker, subConfig)
@@ -116,6 +240,22 @@ describe("Test Custom SDK Logic", async () => {
         "You cannot unstake more than the original stake amount"
       );
       mock.restore();
+    });
+  });
+  describe("updateStakeLock", async () => {
+    it("Fails when trying to stake nothing or a negative value", async () => {
+      let lockUntil = ethers.BigNumber.from("0");
+      await expect(
+        actions.updateStakeLock("0", lockUntil, staker, subConfig)
+      ).to.be.rejectedWith(
+        "Cannot add zero or negative time to your locking period"
+      );
+      lockUntil = ethers.BigNumber.from("-1");
+      await expect(
+        actions.updateStakeLock("0", lockUntil, staker, subConfig)
+      ).to.be.rejectedWith(
+        "Cannot add zero or negative time to your locking period"
+      );
     });
   });
 });

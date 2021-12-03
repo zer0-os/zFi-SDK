@@ -118,9 +118,10 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
       return tokensPerBlock;
     },
     // Calculate user value locked
-    calculateUvl: async (userAddress: string): Promise<ethers.BigNumber> => {
-      const uvl = await actions.calculateUvl(userAddress, config);
-      return uvl;
+    calculateUserValueLocked: async (userAddress: string): Promise<ethers.BigNumber[]> => {
+      // Will return a user's total deposit value that is both locked and unlocked
+      // e.g. [valueLocked, valueUnlocked]
+      return await actions.calculateUserValueLocked(userAddress, config);
     },
   };
 

@@ -50,7 +50,7 @@ export interface PoolInstance {
   getLiquidityPoolWeight: () => Promise<number>;
   getTokenPoolWeight: () => Promise<number>;
   getRewardTokensPerBlock: () => Promise<ethers.BigNumber>;
-  calculateUvl: (address: string) => Promise<ethers.BigNumber>;
+  calculateUserValueLocked: (address: string) => Promise<ethers.BigNumber[]>;
 }
 
 export interface Deposit {

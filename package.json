@@ -18,6 +18,7 @@
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
     "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --config test/.mocharc.json",
+    "test-e2e": "mocha -r ts-node/register 'test/e2e.test.ts' --exit --config test/.mocharc.json --timeout 20000",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
   },
   "devDependencies": {

@@ -8,6 +8,8 @@ export const updateStakeLock = async (
   signer: ethers.Signer,
   config: SubConfig
 ) => {
+  if (lockUntil.lte(ethers.BigNumber.from("0"))) 
+    throw Error("Cannot add zero or negative time to your locking period");
   const corePool = await getCorePool(config);
   const tx = await corePool
     .connect(signer)
