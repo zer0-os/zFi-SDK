@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
 import { getAllDeposits } from ".";
-import { SubConfig } from "../types";
+import { SubConfig, UserValue } from "../types";
 
 export const calculateUserValueLocked = async (
   userAddress: string,
   config: SubConfig
-) => {
+): Promise<UserValue> => {
   if (!userAddress || userAddress.length !== 42)
     throw Error("Must provide a valid user address");
 
@@ -27,5 +27,5 @@ export const calculateUserValueLocked = async (
   return {
     userValueLocked: userValueLocked,
     userValueUnlocked: userValueUnlocked,
-  };
+  } as UserValue;
 };

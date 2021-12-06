@@ -10,6 +10,7 @@ import {
   PoolInstance,
   SubConfig,
   User,
+  UserValue,
 } from "./types";
 
 export const createInstance = (config: Config): Instance => {
@@ -118,7 +119,7 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
       return tokensPerBlock;
     },
     // Calculate user value locked
-    calculateUserValueLocked: async (userAddress: string): Promise<ethers.BigNumber[]> => {
+    calculateUserValueLocked: async (userAddress: string): Promise<UserValue> => {
       // Will return a user's total deposit value that is both locked and unlocked
       // e.g. [valueLocked, valueUnlocked]
       return await actions.calculateUserValueLocked(userAddress, config);

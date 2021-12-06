@@ -1,4 +1,4 @@
-export * from "./calculateUvl";
+export * from "./calculateUserValueLocked";
 export * from "./changePoolWeight";
 export * from "./getAllDeposits";
 export * from "./pendingYieldRewards";
