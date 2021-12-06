@@ -17,8 +17,8 @@ export const createInstance = (config: Config): Instance => {
   // Consumer will do `sdkInstance.wildPool.stake()`
   const factoryConfig: SubConfig = {
     address: config.factoryAddress,
-    provider: config.provider
-  }
+    provider: config.provider,
+  };
   const wildConfig: SubConfig = {
     address: config.wildPoolAddress,
     provider: config.provider,
@@ -119,7 +119,9 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
       return tokensPerBlock;
     },
     // Calculate user value locked
-    calculateUserValueLocked: async (userAddress: string): Promise<UserValue> => {
+    calculateUserValueLocked: async (
+      userAddress: string
+    ): Promise<UserValue> => {
       // Will return a user's total deposit value that is both locked and unlocked
       // e.g. [valueLocked, valueUnlocked]
       return await actions.calculateUserValueLocked(userAddress, config);
