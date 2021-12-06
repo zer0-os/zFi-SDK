@@ -11,10 +11,10 @@ export const unstake = async (
   const corePool = await getCorePool(config);
 
   const address = await signer.getAddress();
-  
+
   if (ethers.BigNumber.from(amount).lte(ethers.BigNumber.from(0)))
-  throw Error("You can only unstake a non-zero amount of tokens");
-  
+    throw Error("You can only unstake a non-zero amount of tokens");
+
   const depositsLength = await corePool.getDepositsLength(address);
   if (depositsLength.eq(ethers.BigNumber.from(0)))
     throw Error("There are no deposits for you to unstake");

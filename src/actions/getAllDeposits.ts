@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { arrayBuffer } from "stream/consumers";
 import { getCorePool } from "../helpers";
 import { SubConfig, Deposit } from "../types";
 
@@ -11,8 +10,7 @@ export const getAllDeposits = async (
 
   const depositLength = await corePool.getDepositsLength(address);
 
-  if (depositLength.eq(ethers.BigNumber.from("0")))
-    return [];
+  if (depositLength.eq(ethers.BigNumber.from("0"))) return [];
 
   const deposits: Deposit[] = [];
 
