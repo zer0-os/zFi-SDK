@@ -32,29 +32,29 @@ describe("Test Custom SDK Logic", async () => {
 
   // calculateUvl
   describe("calculateUserValueLocked", async () => {
-    // it("Fails when a user provides an invalid address", async () => {
-    //   await expect(
-    //     actions.calculateUserValueLocked("0x0", subConfig)
-    //   ).to.be.rejectedWith("Must provide a valid user address");
-    // });
-    // it("Returns nothing when the user has no deposits", async () => {
-    //   const mockCorePool = {
-    //     getDepositsLength: async () => {
-    //       return ethers.BigNumber.from("0");
-    //     },
-    //   };
-    //   const mock = ImportMock.mockFunction(
-    //     helpers,
-    //     "getCorePool",
-    //     mockCorePool
-    //   );
-    //   const deposits = await actions.calculateUserValueLocked(
-    //     "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
-    //     subConfig
-    //   );
-    //   expect(deposits.toNumber()).to.equal(0);
-    //   mock.restore();
-    // });
+    it("Fails when a user provides an invalid address", async () => {
+      await expect(
+        actions.calculateUserValueLocked("0x0", subConfig)
+      ).to.be.rejectedWith("Must provide a valid user address");
+    });
+    it("Returns nothing when the user has no deposits", async () => {
+      const mockCorePool = {
+        getDepositsLength: async () => {
+          return ethers.BigNumber.from("0");
+        },
+      };
+      const mock = ImportMock.mockFunction(
+        helpers,
+        "getCorePool",
+        mockCorePool
+      );
+      const deposits = await actions.calculateUserValueLocked(
+        "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
+        subConfig
+      );
+      expect(deposits.userValueLocked.toNumber()).to.equal(0);
+      mock.restore();
+    });
     it("Doesn't add deposits that are locked", async () => {
       const mockCorePool = {
         getDepositsLength: async () => {
