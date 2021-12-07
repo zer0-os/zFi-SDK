@@ -25,6 +25,7 @@ describe("Test Custom SDK Logic", async () => {
   if (!mnemonic) throw Error();
 
   const staker = ethers.Wallet.fromMnemonic(mnemonic);
+  // const staker = new ethers.VoidSigner("0x0")
   const subConfig: SubConfig = {
     address: config.wildPoolAddress,
     provider: defaultProvider,
@@ -48,8 +49,9 @@ describe("Test Custom SDK Logic", async () => {
         "getCorePool",
         mockCorePool
       );
+      const address = await staker.getAddress();
       const deposits = await actions.calculateUserValueLocked(
-        "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
+        address,
         subConfig
       );
       expect(deposits.userValueLocked.toNumber()).to.equal(0);
@@ -72,8 +74,9 @@ describe("Test Custom SDK Logic", async () => {
         "getCorePool",
         mockCorePool
       );
+      const address = await staker.getAddress();
       const deposits = await actions.calculateUserValueLocked(
-        "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
+        address,
         subConfig
       );
       expect(deposits.userValueLocked.toNumber()).to.equal(100);
@@ -97,8 +100,9 @@ describe("Test Custom SDK Logic", async () => {
         "getCorePool",
         mockCorePool
       );
+      const address = await staker.getAddress();
       const deposits = await actions.calculateUserValueLocked(
-        "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
+        address,
         subConfig
       );
       expect(deposits.userValueLocked.toNumber()).to.equal(0);
@@ -118,7 +122,7 @@ describe("Test Custom SDK Logic", async () => {
       ).to.be.rejectedWith("Must provide a valid pool address");
       await expect(
         actions.changePoolWeight(
-          "",
+          "0x0",
           ethers.BigNumber.from("230"),
           staker,
           subConfig
@@ -219,10 +223,10 @@ describe("Test Custom SDK Logic", async () => {
     it("Fails when given an invalid address", async () => {
       await expect(
         actions.pendingYieldRewards("0x0", subConfig)
-      ).to.be.rejectedWith("Must provide a valid address");
+      ).to.be.rejectedWith("Must provide a valid user address");
       await expect(
         actions.pendingYieldRewards("", subConfig)
-      ).to.be.rejectedWith("Must provide a valid address");
+      ).to.be.rejectedWith("Must provide a valid user address");
     });
   });
   describe("processRewards", async () => {
