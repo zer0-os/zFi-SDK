@@ -17,7 +17,6 @@ export const calculateUserValueLocked = async (
   let userValueLocked = ethers.BigNumber.from("0");
   let userValueUnlocked = ethers.BigNumber.from("0");
   for (const deposit of allUserDeposits) {
-    // if negative, still locked, if 0 or positive it is unlocked
     if (timeNow.lt(deposit.lockedUntil)) {
       userValueLocked = userValueLocked.add(deposit.tokenAmount);
     } else {
