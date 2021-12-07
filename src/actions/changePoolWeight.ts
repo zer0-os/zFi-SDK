@@ -8,7 +8,7 @@ export const changePoolWeight = async (
   signer: ethers.Signer,
   config: SubConfig
 ): Promise<ethers.ContractTransaction> => {
-  if (!poolAddress || poolAddress.length !== 42)
+  if (ethers.utils.isAddress(poolAddress))
     throw Error("Must provide a valid pool address");
 
   if (

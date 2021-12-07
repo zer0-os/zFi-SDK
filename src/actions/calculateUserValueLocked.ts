@@ -6,7 +6,7 @@ export const calculateUserValueLocked = async (
   userAddress: string,
   config: SubConfig
 ): Promise<UserValue> => {
-  if (!userAddress || userAddress.length !== 42)
+  if (ethers.utils.isAddress(userAddress))
     throw Error("Must provide a valid user address");
 
   const allUserDeposits = await getAllDeposits(userAddress, config);

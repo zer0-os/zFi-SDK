@@ -6,6 +6,9 @@ export const getAllDeposits = async (
   address: string,
   config: SubConfig
 ): Promise<Deposit[]> => {
+  if (!ethers.utils.isAddress(address))
+    throw Error("Must provide a valid user address");
+
   const corePool = await getCorePool(config);
 
   const depositLength = await corePool.getDepositsLength(address);
