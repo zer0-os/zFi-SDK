@@ -16,16 +16,14 @@ const defaultProvider = ethers.getDefaultProvider();
 
 describe("Test Custom SDK Logic", async () => {
   const config: Config = {
-    provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"]),
+    provider: ethers.providers.getDefaultProvider(),
     factoryAddress: "0xf06C810c5ee8908A02dc5fE4D82D0578cA53a888",
     lpTokenPoolAddress: "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
     wildPoolAddress: "0x9495B4e974E0e5b2865762d1fd5640E7A6c7Fa37",
   };
-  const mnemonic = process.env["TESTNET_MNEMONIC"];
-  if (!mnemonic) throw Error();
 
-  const staker = ethers.Wallet.fromMnemonic(mnemonic);
-  // const staker = new ethers.VoidSigner("0x0")
+  // Dummy address pulled from Ethers VoidSigner docs
+  const staker = new ethers.VoidSigner("0x8ba1f109551bD432803012645Ac136ddd64DBA72")
   const subConfig: SubConfig = {
     address: config.wildPoolAddress,
     provider: defaultProvider,
