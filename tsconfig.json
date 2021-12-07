@@ -6,6 +6,7 @@
     ],
     "module": "CommonJS",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "strict": true,
     "target": "ES2018",
     "sourceMap": true,
@@ -15,7 +16,8 @@
   },
   "include": [
     "src",
-    "test"
+    "test",
+    "abi/**/*.json"
   ],
   "exclude": [
     "node_modules"

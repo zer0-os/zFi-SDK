@@ -50,7 +50,7 @@ export interface PoolInstance {
   getLiquidityPoolWeight: () => Promise<number>;
   getTokenPoolWeight: () => Promise<number>;
   getRewardTokensPerBlock: () => Promise<ethers.BigNumber>;
-  calculateUvl: (address: string) => Promise<ethers.BigNumber>;
+  calculateUserValueLocked: (address: string) => Promise<UserValue>;
 }
 
 export interface Deposit {
@@ -67,6 +67,11 @@ export interface User {
   tokenAmount: BigNumber;
   totalWeight: BigNumber;
   subYieldRewards: BigNumber;
+}
+
+export interface UserValue {
+  userValueLocked: ethers.BigNumber;
+  userValueUnlocked: ethers.BigNumber;
 }
 
 export interface PoolData {

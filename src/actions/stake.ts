@@ -12,6 +12,7 @@ export const stake = async (
     throw Error("Cannot call to stake with no value given");
 
   const corePool = await getCorePool(config);
-  const tx = await corePool.connect(signer).stake(amount, lockUntil);
+  const stakeAmount = ethers.BigNumber.from(amount);
+  const tx = await corePool.connect(signer).stake(stakeAmount, lockUntil);
   return tx;
 };

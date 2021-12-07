@@ -4,13 +4,13 @@ import { SubConfig } from "../types";
 
 export const getCorePool = async (
   config: SubConfig
-) => {
+): Promise<ZStakeCorePool> => {
   const corePool: ZStakeCorePool = await getZStakeCorePool(
     config.address,
     config.provider
   );
   return corePool;
-}
+};
 
 export const getPoolFactory = async (
   config: SubConfig
