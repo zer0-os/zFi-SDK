@@ -22,7 +22,11 @@ export const getAllDeposits = async (
       address,
       ethers.BigNumber.from(i)
     );
-    deposits.push(deposit);
+    // Deposits are left in array even after being unstaked
+    // Must check for empty deposits and only add valid,
+    // non-zero deposits
+    if (!deposit.tokenAmount.eq(ethers.BigNumber.from("0")))
+      deposits.push(deposit);
   }
   return deposits;
 };
