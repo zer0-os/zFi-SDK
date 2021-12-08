@@ -12,7 +12,7 @@ export const calculateUserValueLocked = async (
   const allUserDeposits = await getAllDeposits(userAddress, config);
 
   // Date.now() returns in milliseconds, convert to seconds for comparison
-  const timeNow = ethers.BigNumber.from(Date.now() * 1000);
+  const timeNow = ethers.BigNumber.from(Math.round(Date.now() / 1000));
 
   let userValueLocked = ethers.BigNumber.from("0");
   let userValueUnlocked = ethers.BigNumber.from("0");
