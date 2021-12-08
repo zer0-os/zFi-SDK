@@ -23,7 +23,9 @@ export const unstake = async (
   if (ethers.BigNumber.from(amount).gt(deposit.tokenAmount))
     throw Error("You cannot unstake more than the original stake amount");
 
-  if (ethers.BigNumber.from(Date.now()).lt(deposit.lockedUntil))
+  // Date.now() is ms, convert to s
+  const dateConverted = Math.round(Date.now() / 1000);
+  if (ethers.BigNumber.from(dateConverted).lt(deposit.lockedUntil))
     throw Error(
       "You are not able to unstake when your deposit is still locked"
     );
