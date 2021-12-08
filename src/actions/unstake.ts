@@ -19,7 +19,7 @@ export const unstake = async (
   if (depositsLength.eq(ethers.BigNumber.from(0)))
     throw Error("There are no deposits for you to unstake");
 
-  const deposit: Deposit = await corePool.getDeposit(address, depositId);
+  const deposit = await corePool.getDeposit(address, depositId);
   if (ethers.BigNumber.from(amount).gt(deposit.tokenAmount))
     throw Error("You cannot unstake more than the original stake amount");
 

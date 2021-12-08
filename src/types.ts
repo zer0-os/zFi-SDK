@@ -54,15 +54,12 @@ export interface PoolInstance {
 }
 
 export interface Deposit {
+  depositId: number;
   tokenAmount: BigNumber;
   weight: BigNumber;
   lockedFrom: BigNumber;
   lockedUntil: BigNumber;
   isYield: boolean;
-}
-
-export interface MappedDeposit extends Deposit {
-  depositId: number;
 }
 
 // Intentionally ignore the Deposit[] prop associated with a user

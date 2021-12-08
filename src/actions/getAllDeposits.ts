@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
 import { getCorePool } from "../helpers";
-import { SubConfig, Deposit, MappedDeposit } from "../types";
+import { SubConfig, Deposit } from "../types";
 
 export const getAllDeposits = async (
   address: string,
   config: SubConfig
-): Promise<MappedDeposit[]> => {
+): Promise<Deposit[]> => {
   if (!ethers.utils.isAddress(address))
     throw Error("Must provide a valid user address");
 
@@ -15,7 +15,7 @@ export const getAllDeposits = async (
 
   if (depositLength.eq(ethers.BigNumber.from("0"))) return [];
 
-  const deposits: MappedDeposit[] = [];
+  const deposits: Deposit[] = [];
 
   for (let i = 0; i < depositLength.toNumber(); i++) {
     const deposit = await corePool.getDeposit(
