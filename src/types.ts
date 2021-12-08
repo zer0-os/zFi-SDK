@@ -61,6 +61,10 @@ export interface Deposit {
   isYield: boolean;
 }
 
+export interface MappedDeposit extends Deposit {
+  depositId: number;
+}
+
 // Intentionally ignore the Deposit[] prop associated with a user
 // we can get that information directly with `getAllDeposits`
 export interface User {
