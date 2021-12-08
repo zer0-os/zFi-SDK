@@ -54,6 +54,7 @@ export interface PoolInstance {
 }
 
 export interface Deposit {
+  depositId: number;
   tokenAmount: BigNumber;
   weight: BigNumber;
   lockedFrom: BigNumber;
