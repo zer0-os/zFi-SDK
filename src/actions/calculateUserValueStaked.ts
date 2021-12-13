@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { getAllDeposits } from ".";
 import { SubConfig, UserValue } from "../types";
 
-export const calculateUserValueLocked = async (
+export const calculateUserValueStaked = async (
   userAddress: string,
   config: SubConfig
 ): Promise<UserValue> => {

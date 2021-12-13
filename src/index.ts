@@ -98,33 +98,14 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
       const poolToken = await corePool.poolToken();
       return poolToken;
     },
-    getLastYieldDistribution: async (): Promise<ethers.BigNumber> => {
-      const corePool = await getCorePool(config);
-      const lastYieldDistribution = await corePool.lastYieldDistribution();
-      return lastYieldDistribution;
-    },
-    getLiquidityPoolWeight: async (): Promise<number> => {
-      const corePool = await getCorePool(config);
-      const weight = await corePool.weight();
-      return weight;
-    },
-    getTokenPoolWeight: async (): Promise<number> => {
-      const corePool = await getCorePool(config);
-      const weight = await corePool.weight();
-      return weight;
-    },
-    getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {
-      const factory = await getPoolFactory(config);
-      const tokensPerBlock = await factory.getRewardTokensPerBlock();
-      return tokensPerBlock;
-    },
+
     // Calculate user value locked
-    calculateUserValueLocked: async (
+    calculateUserValueStaked: async (
       userAddress: string
     ): Promise<UserValue> => {
       // Will return a user's total deposit value that is both locked and unlocked
-      // e.g. [valueLocked, valueUnlocked]
-      return await actions.calculateUserValueLocked(userAddress, config);
+      // e.g. { valueLocked: _, valueUnlocked: _ }
+      return await actions.calculateUserValueStaked(userAddress, config);
     },
   };
 
@@ -133,6 +114,10 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
 
 const getFactoryInstance = (config: SubConfig) => {
   const instance: FactoryInstance = {
+    calculatePoolApy: async (): Promise<any> => {
+      // const factory = await getPoolFactory(config);
+      return await actions.calculatePoolApy(config);
+    },
     getPoolAddress: async (poolToken: string): Promise<string> => {
       const factory = await getPoolFactory(config);
       const poolAddress = await factory.getPoolAddress(poolToken);
@@ -144,6 +129,11 @@ const getFactoryInstance = (config: SubConfig) => {
       const factory = await getPoolFactory(config);
       const poolData: PoolData = await factory.getPoolData(poolAddress);
       return poolData;
+    },
+    getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {
+      const factory = await getPoolFactory(config);
+      const tokensPerBlock = await factory.getRewardTokensPerBlock();
+      return tokensPerBlock;
     },
   };
   return instance;

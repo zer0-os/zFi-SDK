@@ -17,9 +17,9 @@ const defaultProvider = ethers.getDefaultProvider();
 describe("Test Custom SDK Logic", async () => {
   const config: Config = {
     provider: ethers.providers.getDefaultProvider(),
-    factoryAddress: "0xf06C810c5ee8908A02dc5fE4D82D0578cA53a888",
-    lpTokenPoolAddress: "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
-    wildPoolAddress: "0x9495B4e974E0e5b2865762d1fd5640E7A6c7Fa37",
+    factoryAddress: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E",
+    lpTokenPoolAddress: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
+    wildPoolAddress: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
   };
 
   // Dummy address pulled from Ethers VoidSigner docs
@@ -29,11 +29,25 @@ describe("Test Custom SDK Logic", async () => {
     provider: defaultProvider,
   };
 
-  // calculateUvl
-  describe("calculateUserValueLocked", async () => {
+  describe("calculatePoolApy", async () => {
+    it("runs", async () => {
+      const mockPoolFactory = {
+        getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); }
+      }
+      const mock = ImportMock.mockFunction(
+        helpers,
+        "getPoolFactory",
+        mockPoolFactory
+      );
+      const res = await actions.calculatePoolApy(subConfig);
+      console.log(res);
+      mock.restore();
+    })
+  });
+  describe("calculateUserValueStaked", async () => {
     it("Fails when a user provides an invalid address", async () => {
       await expect(
-        actions.calculateUserValueLocked("0x0", subConfig)
+        actions.calculateUserValueStaked("0x0", subConfig)
       ).to.be.rejectedWith("Must provide a valid user address");
     });
     it("Returns nothing when the user has no deposits", async () => {
@@ -48,7 +62,7 @@ describe("Test Custom SDK Logic", async () => {
         mockCorePool
       );
       const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueLocked(
+      const deposits = await actions.calculateUserValueStaked(
         address,
         subConfig
       );
@@ -73,7 +87,7 @@ describe("Test Custom SDK Logic", async () => {
         mockCorePool
       );
       const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueLocked(
+      const deposits = await actions.calculateUserValueStaked(
         address,
         subConfig
       );
@@ -99,7 +113,7 @@ describe("Test Custom SDK Logic", async () => {
         mockCorePool
       );
       const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueLocked(
+      const deposits = await actions.calculateUserValueStaked(
         address,
         subConfig
       );
