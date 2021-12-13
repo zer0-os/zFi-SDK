@@ -3,6 +3,7 @@ import * as ethers from "ethers";
 import { getPoolFactory } from "../helpers";
 import { SubConfig } from "../types";
 
+// https://compound.finance/docs
 export const calculatePoolApy = async (config: SubConfig): Promise<any> => {
   const factory = await getPoolFactory(config);
   // const rewardsPerBlock = await factory.getRewardTokensPerBlock();
