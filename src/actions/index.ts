@@ -1,4 +1,4 @@
-export * from "./calculatePoolApy";
+export * from "./calculatePoolApr";
 export * from "./calculateUserValueStaked";
 export * from "./changePoolWeight";
 export * from "./getAllDeposits";

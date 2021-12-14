@@ -29,19 +29,63 @@ describe("Test Custom SDK Logic", async () => {
     provider: defaultProvider,
   };
 
-  describe("calculatePoolApy", async () => {
+  describe("calculatePoolApr", async () => {
     it("runs", async () => {
-      const mockPoolFactory = {
-        getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); }
+
+      // Mock Factory
+      const mockPoolFactory1 = {
+        getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); },
+        totalWeight: () => { return ethers.BigNumber.from("1000"); },
+        getPoolData: () => {
+          return ["0x0", "0x1", ethers.BigNumber.from("200"), false]
+        }
       }
-      const mock = ImportMock.mockFunction(
+      const mockFactory1 = ImportMock.mockFunction(
         helpers,
         "getPoolFactory",
-        mockPoolFactory
+        mockPoolFactory1
       );
-      const res = await actions.calculatePoolApy(subConfig);
-      console.log(res);
-      mock.restore();
+
+      // Mock Pool
+      const mockCorePool = {
+        poolTokenReserve: () => { return ethers.BigNumber.from("10000000") },
+        factory: () => { return "0x0" },
+        provider: config.provider
+      }
+      const mockPool = ImportMock.mockFunction(
+        helpers,
+        "getCorePool",
+        mockCorePool
+      )
+
+      const wildApr = await actions.calculatePoolApr(subConfig);
+      expect(wildApr).to.equal(47.5814)
+
+      mockFactory1.restore();
+
+      // Mock Factory Again
+      const mockPoolFactory2 = {
+        getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); },
+        totalWeight: () => { return ethers.BigNumber.from("1000"); },
+        getPoolData: () => {
+          return ["0x0", "0x1", ethers.BigNumber.from("800"), false]
+        }
+      }
+
+      const mockFactory2 = ImportMock.mockFunction(
+        helpers,
+        "getPoolFactory",
+        mockPoolFactory2
+      );
+      const lpSubConfig = {
+        address: config.lpTokenPoolAddress,
+        provider: config.provider
+      }
+
+      const lpTokenApr = await actions.calculatePoolApr(lpSubConfig);
+      expect(lpTokenApr).to.equal(190.3256)
+      mockFactory2.restore();
+      mockPool.restore();
     })
   });
   describe("calculateUserValueStaked", async () => {

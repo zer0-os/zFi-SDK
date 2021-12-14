@@ -98,15 +98,16 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
       const poolToken = await corePool.poolToken();
       return poolToken;
     },
-
-    // Calculate user value locked
-    calculateUserValueStaked: async (
+    userValueStaked: async (
       userAddress: string
     ): Promise<UserValue> => {
       // Will return a user's total deposit value that is both locked and unlocked
       // e.g. { valueLocked: _, valueUnlocked: _ }
       return await actions.calculateUserValueStaked(userAddress, config);
     },
+    calculatePoolApr: async (): Promise<Number> => {
+      return await actions.calculatePoolApr(config);
+    }
   };
 
   return instance;
@@ -114,26 +115,25 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
 
 const getFactoryInstance = (config: SubConfig) => {
   const instance: FactoryInstance = {
-    calculatePoolApy: async (): Promise<any> => {
-      // const factory = await getPoolFactory(config);
-      return await actions.calculatePoolApy(config);
-    },
     getPoolAddress: async (poolToken: string): Promise<string> => {
       const factory = await getPoolFactory(config);
       const poolAddress = await factory.getPoolAddress(poolToken);
       return poolAddress;
     },
-    getPoolData: async (poolAddress: string): Promise<PoolData> => {
-      if (poolAddress === "0" || poolAddress === "0x0")
+    getPoolData: async (poolTokenAddress: string): Promise<PoolData> => {
+      if (!ethers.utils.isAddress(poolTokenAddress))
         throw Error("Cannot get pool data for empty pool address");
       const factory = await getPoolFactory(config);
-      const poolData: PoolData = await factory.getPoolData(poolAddress);
+      const poolData: PoolData = await factory.getPoolData(poolTokenAddress);
       return poolData;
     },
     getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {
+      // Rewards per block will be the sum across all pools
+      // Rewards for a specific pool are calculated using their weight
+      // See `calculatePoolApr`
       const factory = await getPoolFactory(config);
-      const tokensPerBlock = await factory.getRewardTokensPerBlock();
-      return tokensPerBlock;
+      const totalTokensPerBlock = await factory.getRewardTokensPerBlock();
+      return totalTokensPerBlock;
     },
   };
   return instance;

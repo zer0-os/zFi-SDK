@@ -19,7 +19,6 @@ export interface Instance {
 }
 
 export interface FactoryInstance {
-  calculatePoolApy: () => Promise<any>;
   getPoolAddress: (poolToken: string) => Promise<string>;
   getPoolData: (poolAddress: string) => Promise<PoolData>;
   getRewardTokensPerBlock: () => Promise<ethers.BigNumber>;
@@ -48,7 +47,8 @@ export interface PoolInstance {
   getAllDeposits: (address: string) => Promise<Deposit[]>;
   getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
-  calculateUserValueStaked: (address: string) => Promise<UserValue>;
+  userValueStaked: (address: string) => Promise<UserValue>;
+  calculatePoolApr: () => Promise<Number>;
 }
 
 export interface Deposit {
