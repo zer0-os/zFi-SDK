@@ -23,7 +23,7 @@ export const calculatePoolApr = async (config: SubConfig): Promise<Number> => {
   const rewardsInNextYear = Number(ethers.utils.formatEther(totalRewardsPerBlock)) * blocksPerYear
 
   const balance = await pool.poolTokenReserve();
-  const apy = (rewardsInNextYear / Number(ethers.utils.formatUnits(balance, 18))) * weightRatio;
+  const apr = (rewardsInNextYear / Number(ethers.utils.formatUnits(balance, 18))) * weightRatio;
 
-  return Number(ethers.utils.formatUnits(apy.toString(), 18));
+  return Number(ethers.utils.formatUnits(apr.toString(), 18));
 }

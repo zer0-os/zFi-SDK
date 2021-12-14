@@ -105,7 +105,7 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
       // e.g. { valueLocked: _, valueUnlocked: _ }
       return await actions.calculateUserValueStaked(userAddress, config);
     },
-    calculatePoolApr: async (): Promise<Number> => {
+    poolApr: async (): Promise<Number> => {
       return await actions.calculatePoolApr(config);
     }
   };

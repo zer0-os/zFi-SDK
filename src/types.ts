@@ -48,7 +48,7 @@ export interface PoolInstance {
   getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
   userValueStaked: (address: string) => Promise<UserValue>;
-  calculatePoolApr: () => Promise<Number>;
+  poolApr: () => Promise<Number>;
 }
 
 export interface Deposit {
