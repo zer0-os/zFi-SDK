@@ -45,6 +45,7 @@ export const createInstance = (config: Config): Instance => {
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
 const getPoolInstance = (config: SubConfig, isLpTokenPool: boolean): PoolInstance => {
   const instance: PoolInstance = {
+    address: config.address,
     approve: async (signer: ethers.Signer) => {
       // have the signer call to ERC20 approve for the pool address
       await actions.approve(signer, config);
