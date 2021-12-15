@@ -12,7 +12,8 @@
     "sourceMap": true,
     "composite": true,
     "outDir": "lib",
-    "rootDir": "src"
+    "rootDir": "src",
+    "esModuleInterop": true
   },
   "include": [
     "src",
