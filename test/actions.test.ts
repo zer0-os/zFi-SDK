@@ -7,6 +7,8 @@ import { ImportMock } from "ts-mock-imports";
 import { Config, SubConfig } from "../src/types";
 import * as actions from "../src/actions";
 import * as helpers from "../src/helpers";
+import { createInstance } from "../src";
+
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -29,6 +31,13 @@ describe("Test Custom SDK Logic", async () => {
     provider: defaultProvider,
   };
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+  // calculateUvl
+  describe("calculateUserValueLocked", async () => {
+=======
+>>>>>>> Stashed changes
   describe("calculatePoolApr", async () => {
     it("runs", async () => {
 
@@ -88,7 +97,17 @@ describe("Test Custom SDK Logic", async () => {
       mockPool.restore();
     })
   });
+<<<<<<< Updated upstream
   describe("calculateUserValueStaked", async () => {
+=======
+  describe("calculatePoolTotalValueLocked", async () => {
+    it("runs", async () => {
+      const res = await actions.calculatePoolTotalValueLocked(false, subConfig);
+    });
+  })
+  describe("calculateUserValueStaked", async () => {
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     it("Fails when a user provides an invalid address", async () => {
       await expect(
         actions.calculateUserValueStaked("0x0", subConfig)
@@ -304,6 +323,26 @@ describe("Test Custom SDK Logic", async () => {
     });
   });
   describe("stake", async () => {
+    it("runs", async () => {
+      // whole thing
+      const config: Config = {
+        provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"]),
+        wildPoolAddress: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
+        lpTokenPoolAddress: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
+        factoryAddress: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E"
+      }
+      const privateKey = process.env["WALLET_PRIVATE_KEY"];
+      if (!privateKey) throw Error("No private key found, cannot create a signing wallet");
+
+      const staker = new ethers.Wallet(privateKey, config.provider);
+
+      const instance = createInstance(config);
+
+      const tx = await instance.wildPool.stake("150", ethers.BigNumber.from("0"), staker);
+      console.log(tx);
+      const receipt = await tx.wait(2);
+      console.log(receipt);
+    });
     it("Fails when trying to stake nothing or a negative value", async () => {
       const lockUntil = ethers.BigNumber.from("1");
       await expect(
