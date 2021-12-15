@@ -1,3 +1,5 @@
+export * from "./approve"
+export * from "./allowance"
 export * from "./calculatePoolApr";
 export * from "./calculatePoolTotalValueLocked";
 export * from "./calculateUserValueStaked";
