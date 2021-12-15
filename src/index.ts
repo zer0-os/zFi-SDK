@@ -29,8 +29,8 @@ export const createInstance = (config: Config): Instance => {
   };
 
   const factory = getFactoryInstance(factoryConfig);
-  const wildPool = getPoolInstance(wildConfig);
-  const liquidityPool = getPoolInstance(liquidityConfig);
+  const wildPool = getPoolInstance(wildConfig, false);
+  const liquidityPool = getPoolInstance(liquidityConfig, true);
 
   return {
     factory: factory,
@@ -41,7 +41,7 @@ export const createInstance = (config: Config): Instance => {
 
 // The zFI SDK requires that you create an instance once for every staking pool.
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
-const getPoolInstance = (config: SubConfig): PoolInstance => {
+const getPoolInstance = (config: SubConfig, isLpTokenPool: boolean): PoolInstance => {
   const instance: PoolInstance = {
     approve: async (signer: ethers.Signer) => {
       // have the signer call to ERC20 approve for the pool address
@@ -106,34 +106,16 @@ const getPoolInstance = (config: SubConfig): PoolInstance => {
       const poolToken = await corePool.poolToken();
       return poolToken;
     },
-    getLastYieldDistribution: async (): Promise<ethers.BigNumber> => {
-      const corePool = await getCorePool(config);
-      const lastYieldDistribution = await corePool.lastYieldDistribution();
-      return lastYieldDistribution;
-    },
-    getLiquidityPoolWeight: async (): Promise<number> => {
-      const corePool = await getCorePool(config);
-      const weight = await corePool.weight();
-      return weight;
-    },
-    getTokenPoolWeight: async (): Promise<number> => {
-      const corePool = await getCorePool(config);
-      const weight = await corePool.weight();
-      return weight;
-    },
-    getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {
-      const factory = await getPoolFactory(config);
-      const tokensPerBlock = await factory.getRewardTokensPerBlock();
-      return tokensPerBlock;
-    },
-    // Calculate user value locked
-    calculateUserValueLocked: async (
+    userValueStaked: async (
       userAddress: string
     ): Promise<UserValue> => {
       // Will return a user's total deposit value that is both locked and unlocked
-      // e.g. [valueLocked, valueUnlocked]
-      return await actions.calculateUserValueLocked(userAddress, config);
+      // e.g. { valueLocked: _, valueUnlocked: _ }
+      return await actions.calculateUserValueStaked(userAddress, config);
     },
+    poolApr: async (): Promise<Number> => {
+      return await actions.calculatePoolApr(isLpTokenPool, config);
+    }
   };
 
   return instance;
@@ -146,12 +128,20 @@ const getFactoryInstance = (config: SubConfig) => {
       const poolAddress = await factory.getPoolAddress(poolToken);
       return poolAddress;
     },
-    getPoolData: async (poolAddress: string): Promise<PoolData> => {
-      if (poolAddress === "0" || poolAddress === "0x0")
+    getPoolData: async (poolTokenAddress: string): Promise<PoolData> => {
+      if (!ethers.utils.isAddress(poolTokenAddress))
         throw Error("Cannot get pool data for empty pool address");
       const factory = await getPoolFactory(config);
-      const poolData: PoolData = await factory.getPoolData(poolAddress);
+      const poolData: PoolData = await factory.getPoolData(poolTokenAddress);
       return poolData;
+    },
+    getRewardTokensPerBlock: async (): Promise<ethers.BigNumber> => {
+      // Rewards per block will be the sum across all pools
+      // Rewards for a specific pool are calculated using their weight
+      // See `calculatePoolApr`
+      const factory = await getPoolFactory(config);
+      const totalTokensPerBlock = await factory.getRewardTokensPerBlock();
+      return totalTokensPerBlock;
     },
   };
   return instance;
