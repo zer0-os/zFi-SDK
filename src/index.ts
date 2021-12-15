@@ -13,6 +13,8 @@ import {
   UserValue,
 } from "./types";
 
+export * from "./types";
+
 export const createInstance = (config: Config): Instance => {
   // Consumer will do `sdkInstance.wildPool.stake()`
   const factoryConfig: SubConfig = {
@@ -47,9 +49,9 @@ const getPoolInstance = (config: SubConfig, isLpTokenPool: boolean): PoolInstanc
       // have the signer call to ERC20 approve for the pool address
       await actions.approve(signer, config);
     },
-    allowance: async (signer: ethers.Signer): Promise<ethers.ContractTransaction> => {
-      const tx = await actions.allowance(signer, config);
-      return tx;
+    allowance: async (signer: ethers.Signer): Promise<ethers.BigNumber> => {
+      const allowance = await actions.allowance(signer, config);
+      return allowance;
     },
     stake: async (
       amount: string,
