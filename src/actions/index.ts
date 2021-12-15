@@ -1,4 +1,5 @@
-export * from "./calculateUserValueLocked";
+export * from "./approve"
+export * from "./allowance"
 export * from "./changePoolWeight";
 export * from "./getAllDeposits";
 export * from "./pendingYieldRewards";
