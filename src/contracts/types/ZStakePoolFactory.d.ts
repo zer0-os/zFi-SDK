@@ -22,26 +22,24 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
   functions: {
     "blockNumber()": FunctionFragment;
-    "blocksPerUpdate()": FunctionFragment;
     "changePoolWeight(address,uint32)": FunctionFragment;
-    "createPool(address,uint64,uint32)": FunctionFragment;
-    "endBlock()": FunctionFragment;
+    "changeRewardTokensPerBlock(uint256)": FunctionFragment;
     "getPoolAddress(address)": FunctionFragment;
     "getPoolData(address)": FunctionFragment;
-    "lastRatioUpdate()": FunctionFragment;
-    "mintYieldTo(address,uint256)": FunctionFragment;
+    "getRewardTokensPerBlock()": FunctionFragment;
+    "initialize(address,address,uint192)": FunctionFragment;
+    "initializeImplementation()": FunctionFragment;
     "owner()": FunctionFragment;
+    "paused()": FunctionFragment;
     "poolExists(address)": FunctionFragment;
     "pools(address)": FunctionFragment;
     "registerPool(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "shouldUpdateRatio()": FunctionFragment;
-    "swild()": FunctionFragment;
+    "rewardToken()": FunctionFragment;
+    "rewardVault()": FunctionFragment;
     "totalWeight()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "updateILVPerBlock()": FunctionFragment;
-    "wild()": FunctionFragment;
-    "wildPerBlock()": FunctionFragment;
+    "transferRewardYield(address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -49,32 +47,32 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "blocksPerUpdate",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "changePoolWeight",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "createPool",
-    values: [string, BigNumberish, BigNumberish]
+    functionFragment: "changeRewardTokensPerBlock",
+    values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "endBlock", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getPoolAddress",
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "getPoolData", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "lastRatioUpdate",
+    functionFragment: "getRewardTokensPerBlock",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "mintYieldTo",
-    values: [string, BigNumberish]
+    functionFragment: "initialize",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "initializeImplementation",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(functionFragment: "poolExists", values: [string]): string;
   encodeFunctionData(functionFragment: "pools", values: [string]): string;
   encodeFunctionData(
@@ -86,10 +84,13 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "shouldUpdateRatio",
+    functionFragment: "rewardToken",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "swild", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "rewardVault",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "totalWeight",
     values?: undefined
@@ -99,13 +100,8 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateILVPerBlock",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "wild", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "wildPerBlock",
-    values?: undefined
+    functionFragment: "transferRewardYield",
+    values: [string, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -113,15 +109,13 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "blocksPerUpdate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "changePoolWeight",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "createPool", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "endBlock", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "changeRewardTokensPerBlock",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getPoolAddress",
     data: BytesLike
@@ -131,14 +125,16 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "lastRatioUpdate",
+    functionFragment: "getRewardTokensPerBlock",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "mintYieldTo",
+    functionFragment: "initializeImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "poolExists", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pools", data: BytesLike): Result;
   decodeFunctionResult(
@@ -150,10 +146,13 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "shouldUpdateRatio",
+    functionFragment: "rewardToken",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "swild", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "rewardVault",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "totalWeight",
     data: BytesLike
@@ -163,24 +162,23 @@ interface ZStakePoolFactoryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateILVPerBlock",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "wild", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "wildPerBlock",
+    functionFragment: "transferRewardYield",
     data: BytesLike
   ): Result;
 
   events: {
     "OwnershipTransferred(address,address)": EventFragment;
+    "Paused(address)": EventFragment;
     "PoolRegistered(address,address,address,uint64,bool)": EventFragment;
+    "Unpaused(address)": EventFragment;
     "WeightUpdated(address,address,uint32)": EventFragment;
     "WildRatioUpdated(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolRegistered"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WeightUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WildRatioUpdated"): EventFragment;
 }
@@ -231,22 +229,16 @@ export class ZStakePoolFactory extends BaseContract {
   functions: {
     blockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    blocksPerUpdate(overrides?: CallOverrides): Promise<[number]>;
-
     changePoolWeight(
       poolAddr: string,
       weight: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    createPool(
-      poolToken: string,
-      initBlock: BigNumberish,
-      weight: BigNumberish,
+    changeRewardTokensPerBlock(
+      perBlock: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    endBlock(overrides?: CallOverrides): Promise<[number]>;
 
     getPoolAddress(
       poolToken: string,
@@ -267,15 +259,22 @@ export class ZStakePoolFactory extends BaseContract {
       ]
     >;
 
-    lastRatioUpdate(overrides?: CallOverrides): Promise<[number]>;
+    getRewardTokensPerBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    mintYieldTo(
-      _to: string,
-      _amount: BigNumberish,
+    initialize(
+      _rewardToken: string,
+      _rewardsVault: string,
+      _rewardTokensPerBlock: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    initializeImplementation(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
+
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     poolExists(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -290,9 +289,9 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    shouldUpdateRatio(overrides?: CallOverrides): Promise<[boolean]>;
+    rewardToken(overrides?: CallOverrides): Promise<[string]>;
 
-    swild(overrides?: CallOverrides): Promise<[string]>;
+    rewardVault(overrides?: CallOverrides): Promise<[string]>;
 
     totalWeight(overrides?: CallOverrides): Promise<[number]>;
 
@@ -301,18 +300,14 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    updateILVPerBlock(
+    transferRewardYield(
+      _to: string,
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    wild(overrides?: CallOverrides): Promise<[string]>;
-
-    wildPerBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
-
-  blocksPerUpdate(overrides?: CallOverrides): Promise<number>;
 
   changePoolWeight(
     poolAddr: string,
@@ -320,14 +315,10 @@ export class ZStakePoolFactory extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  createPool(
-    poolToken: string,
-    initBlock: BigNumberish,
-    weight: BigNumberish,
+  changeRewardTokensPerBlock(
+    perBlock: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  endBlock(overrides?: CallOverrides): Promise<number>;
 
   getPoolAddress(poolToken: string, overrides?: CallOverrides): Promise<string>;
 
@@ -343,15 +334,22 @@ export class ZStakePoolFactory extends BaseContract {
     }
   >;
 
-  lastRatioUpdate(overrides?: CallOverrides): Promise<number>;
+  getRewardTokensPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
-  mintYieldTo(
-    _to: string,
-    _amount: BigNumberish,
+  initialize(
+    _rewardToken: string,
+    _rewardsVault: string,
+    _rewardTokensPerBlock: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  initializeImplementation(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   owner(overrides?: CallOverrides): Promise<string>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
 
   poolExists(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -366,9 +364,9 @@ export class ZStakePoolFactory extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  shouldUpdateRatio(overrides?: CallOverrides): Promise<boolean>;
+  rewardToken(overrides?: CallOverrides): Promise<string>;
 
-  swild(overrides?: CallOverrides): Promise<string>;
+  rewardVault(overrides?: CallOverrides): Promise<string>;
 
   totalWeight(overrides?: CallOverrides): Promise<number>;
 
@@ -377,18 +375,14 @@ export class ZStakePoolFactory extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  updateILVPerBlock(
+  transferRewardYield(
+    _to: string,
+    _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  wild(overrides?: CallOverrides): Promise<string>;
-
-  wildPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
-
   callStatic: {
     blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
-
-    blocksPerUpdate(overrides?: CallOverrides): Promise<number>;
 
     changePoolWeight(
       poolAddr: string,
@@ -396,14 +390,10 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    createPool(
-      poolToken: string,
-      initBlock: BigNumberish,
-      weight: BigNumberish,
+    changeRewardTokensPerBlock(
+      perBlock: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    endBlock(overrides?: CallOverrides): Promise<number>;
 
     getPoolAddress(
       poolToken: string,
@@ -422,15 +412,20 @@ export class ZStakePoolFactory extends BaseContract {
       }
     >;
 
-    lastRatioUpdate(overrides?: CallOverrides): Promise<number>;
+    getRewardTokensPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    mintYieldTo(
-      _to: string,
-      _amount: BigNumberish,
+    initialize(
+      _rewardToken: string,
+      _rewardsVault: string,
+      _rewardTokensPerBlock: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    initializeImplementation(overrides?: CallOverrides): Promise<void>;
+
     owner(overrides?: CallOverrides): Promise<string>;
+
+    paused(overrides?: CallOverrides): Promise<boolean>;
 
     poolExists(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -440,9 +435,9 @@ export class ZStakePoolFactory extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
-    shouldUpdateRatio(overrides?: CallOverrides): Promise<boolean>;
+    rewardToken(overrides?: CallOverrides): Promise<string>;
 
-    swild(overrides?: CallOverrides): Promise<string>;
+    rewardVault(overrides?: CallOverrides): Promise<string>;
 
     totalWeight(overrides?: CallOverrides): Promise<number>;
 
@@ -451,11 +446,11 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    updateILVPerBlock(overrides?: CallOverrides): Promise<void>;
-
-    wild(overrides?: CallOverrides): Promise<string>;
-
-    wildPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
+    transferRewardYield(
+      _to: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -466,6 +461,8 @@ export class ZStakePoolFactory extends BaseContract {
       [string, string],
       { previousOwner: string; newOwner: string }
     >;
+
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
 
     PoolRegistered(
       _by?: string | null,
@@ -483,6 +480,8 @@ export class ZStakePoolFactory extends BaseContract {
         isFlashPool: boolean;
       }
     >;
+
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
 
     WeightUpdated(
       _by?: string | null,
@@ -505,22 +504,16 @@ export class ZStakePoolFactory extends BaseContract {
   estimateGas: {
     blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-    blocksPerUpdate(overrides?: CallOverrides): Promise<BigNumber>;
-
     changePoolWeight(
       poolAddr: string,
       weight: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    createPool(
-      poolToken: string,
-      initBlock: BigNumberish,
-      weight: BigNumberish,
+    changeRewardTokensPerBlock(
+      perBlock: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    endBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
     getPoolAddress(
       poolToken: string,
@@ -532,15 +525,22 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    lastRatioUpdate(overrides?: CallOverrides): Promise<BigNumber>;
+    getRewardTokensPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    mintYieldTo(
-      _to: string,
-      _amount: BigNumberish,
+    initialize(
+      _rewardToken: string,
+      _rewardsVault: string,
+      _rewardTokensPerBlock: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    initializeImplementation(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     poolExists(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -555,9 +555,9 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    shouldUpdateRatio(overrides?: CallOverrides): Promise<BigNumber>;
+    rewardToken(overrides?: CallOverrides): Promise<BigNumber>;
 
-    swild(overrides?: CallOverrides): Promise<BigNumber>;
+    rewardVault(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalWeight(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -566,19 +566,15 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    updateILVPerBlock(
+    transferRewardYield(
+      _to: string,
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    wild(overrides?: CallOverrides): Promise<BigNumber>;
-
-    wildPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     blockNumber(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    blocksPerUpdate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     changePoolWeight(
       poolAddr: string,
@@ -586,14 +582,10 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    createPool(
-      poolToken: string,
-      initBlock: BigNumberish,
-      weight: BigNumberish,
+    changeRewardTokensPerBlock(
+      perBlock: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    endBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getPoolAddress(
       poolToken: string,
@@ -605,15 +597,24 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    lastRatioUpdate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getRewardTokensPerBlock(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    mintYieldTo(
-      _to: string,
-      _amount: BigNumberish,
+    initialize(
+      _rewardToken: string,
+      _rewardsVault: string,
+      _rewardTokensPerBlock: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    initializeImplementation(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     poolExists(
       arg0: string,
@@ -634,9 +635,9 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    shouldUpdateRatio(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    rewardToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    swild(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    rewardVault(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalWeight(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -645,12 +646,10 @@ export class ZStakePoolFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    updateILVPerBlock(
+    transferRewardYield(
+      _to: string,
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    wild(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    wildPerBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

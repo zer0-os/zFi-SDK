@@ -21,49 +21,54 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ZStakeCorePoolInterface extends ethers.utils.Interface {
   functions: {
+    "__zStakePoolBase__init(address,address,address,uint64,uint32)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "blockNumber()": FunctionFragment;
-    "checkVaultRewardsPerWeight()": FunctionFragment;
+    "changeRewardLockPeriod(uint256)": FunctionFragment;
     "factory()": FunctionFragment;
     "getDeposit(address,uint256)": FunctionFragment;
     "getDepositsLength(address)": FunctionFragment;
+    "initialize(address,address,address,uint64,uint32)": FunctionFragment;
+    "initializeImplementation()": FunctionFragment;
     "isFlashPool()": FunctionFragment;
     "lastYieldDistribution()": FunctionFragment;
     "now256()": FunctionFragment;
-    "pendingVaultRewards(address)": FunctionFragment;
+    "owner()": FunctionFragment;
+    "paused()": FunctionFragment;
     "pendingYieldRewards(address)": FunctionFragment;
     "poolToken()": FunctionFragment;
     "poolTokenReserve()": FunctionFragment;
-    "processRewards(bool)": FunctionFragment;
-    "receiveVaultRewards(uint256)": FunctionFragment;
+    "processRewards()": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "rewardLockPeriod()": FunctionFragment;
     "rewardToWeight(uint256,uint256)": FunctionFragment;
-    "setVault(address)": FunctionFragment;
+    "rewardToken()": FunctionFragment;
     "setWeight(uint32)": FunctionFragment;
-    "stake(uint256,uint64,bool)": FunctionFragment;
+    "stake(uint256,uint64)": FunctionFragment;
     "stakeAsPool(address,uint256)": FunctionFragment;
-    "swild()": FunctionFragment;
     "sync()": FunctionFragment;
-    "testFunc()": FunctionFragment;
-    "unstake(uint256,uint256,bool)": FunctionFragment;
-    "updateStakeLock(uint256,uint64,bool)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
+    "unstake(uint256,uint256)": FunctionFragment;
+    "updateStakeLock(uint256,uint64)": FunctionFragment;
     "users(address)": FunctionFragment;
     "usersLockingWeight()": FunctionFragment;
-    "vault()": FunctionFragment;
-    "vaultRewardsPerWeight()": FunctionFragment;
     "weight()": FunctionFragment;
     "weightToReward(uint256,uint256)": FunctionFragment;
-    "wild()": FunctionFragment;
     "yieldRewardsPerWeight()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "__zStakePoolBase__init",
+    values: [string, string, string, BigNumberish, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(
     functionFragment: "blockNumber",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "checkVaultRewardsPerWeight",
-    values?: undefined
+    functionFragment: "changeRewardLockPeriod",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "factory", values?: undefined): string;
   encodeFunctionData(
@@ -75,6 +80,14 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "initialize",
+    values: [string, string, string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "initializeImplementation",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "isFlashPool",
     values?: undefined
   ): string;
@@ -83,10 +96,8 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "now256", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "pendingVaultRewards",
-    values: [string]
-  ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pendingYieldRewards",
     values: [string]
@@ -98,48 +109,52 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "processRewards",
-    values: [boolean]
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "receiveVaultRewards",
-    values: [BigNumberish]
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "rewardLockPeriod",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "rewardToWeight",
     values: [BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "setVault", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "rewardToken",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "setWeight",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "stake",
-    values: [BigNumberish, BigNumberish, boolean]
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "stakeAsPool",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "swild", values?: undefined): string;
   encodeFunctionData(functionFragment: "sync", values?: undefined): string;
-  encodeFunctionData(functionFragment: "testFunc", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "unstake",
-    values: [BigNumberish, BigNumberish, boolean]
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "updateStakeLock",
-    values: [BigNumberish, BigNumberish, boolean]
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "users", values: [string]): string;
   encodeFunctionData(
     functionFragment: "usersLockingWeight",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "vault", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "vaultRewardsPerWeight",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "weight", values?: undefined): string;
@@ -147,25 +162,33 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     functionFragment: "weightToReward",
     values: [BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "wild", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "yieldRewardsPerWeight",
     values?: undefined
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "__zStakePoolBase__init",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "blockNumber",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "checkVaultRewardsPerWeight",
+    functionFragment: "changeRewardLockPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "factory", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getDepositsLength",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "initializeImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -177,10 +200,8 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "now256", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "pendingVaultRewards",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pendingYieldRewards",
     data: BytesLike
@@ -195,23 +216,32 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "receiveVaultRewards",
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "rewardLockPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "rewardToWeight",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setVault", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "rewardToken",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setWeight", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "stake", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "stakeAsPool",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "swild", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sync", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "testFunc", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "unstake", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateStakeLock",
@@ -222,42 +252,36 @@ interface ZStakeCorePoolInterface extends ethers.utils.Interface {
     functionFragment: "usersLockingWeight",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "vault", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "vaultRewardsPerWeight",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "weight", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "weightToReward",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "wild", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "yieldRewardsPerWeight",
     data: BytesLike
   ): Result;
 
   events: {
+    "OwnershipTransferred(address,address)": EventFragment;
+    "Paused(address)": EventFragment;
     "PoolWeightUpdated(address,uint32,uint32)": EventFragment;
     "StakeLockUpdated(address,uint256,uint64,uint64)": EventFragment;
     "Staked(address,address,uint256)": EventFragment;
     "Synchronized(address,uint256,uint64)": EventFragment;
+    "Unpaused(address)": EventFragment;
     "Unstaked(address,address,uint256)": EventFragment;
-    "VaultRewardsClaimed(address,address,uint256)": EventFragment;
-    "VaultRewardsReceived(address,uint256)": EventFragment;
-    "VaultUpdated(address,address,address)": EventFragment;
-    "YieldClaimed(address,address,bool,uint256)": EventFragment;
+    "YieldClaimed(address,address,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolWeightUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StakeLockUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Staked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Synchronized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unstaked"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "VaultRewardsClaimed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "VaultRewardsReceived"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "VaultUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "YieldClaimed"): EventFragment;
 }
 
@@ -305,11 +329,23 @@ export class ZStakeCorePool extends BaseContract {
   interface: ZStakeCorePoolInterface;
 
   functions: {
+    __zStakePoolBase__init(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     balanceOf(_user: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     blockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    checkVaultRewardsPerWeight(overrides?: CallOverrides): Promise<[BigNumber]>;
+    changeRewardLockPeriod(
+      _rewardLockPeriod: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     factory(overrides?: CallOverrides): Promise<[string]>;
 
@@ -334,16 +370,28 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    initialize(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     isFlashPool(overrides?: CallOverrides): Promise<[boolean]>;
 
     lastYieldDistribution(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     now256(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    pendingVaultRewards(
-      _staker: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { pending: BigNumber }>;
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     pendingYieldRewards(
       _staker: string,
@@ -355,14 +403,14 @@ export class ZStakeCorePool extends BaseContract {
     poolTokenReserve(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     processRewards(
-      _useSWILD: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    receiveVaultRewards(
-      _rewardsAmount: BigNumberish,
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    rewardLockPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     rewardToWeight(
       reward: BigNumberish,
@@ -370,10 +418,7 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    setVault(
-      _vault: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    rewardToken(overrides?: CallOverrides): Promise<[string]>;
 
     setWeight(
       _weight: BigNumberish,
@@ -383,7 +428,6 @@ export class ZStakeCorePool extends BaseContract {
     stake(
       _amount: BigNumberish,
       _lockUntil: BigNumberish,
-      _useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -393,25 +437,24 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    swild(overrides?: CallOverrides): Promise<[string]>;
-
     sync(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    testFunc(overrides?: CallOverrides): Promise<[string]>;
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     unstake(
       _depositId: BigNumberish,
       _amount: BigNumberish,
-      _useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     updateStakeLock(
       depositId: BigNumberish,
       lockedUntil: BigNumberish,
-      useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -419,19 +462,14 @@ export class ZStakeCorePool extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [BigNumber, BigNumber, BigNumber] & {
         tokenAmount: BigNumber;
         totalWeight: BigNumber;
         subYieldRewards: BigNumber;
-        subVaultRewards: BigNumber;
       }
     >;
 
     usersLockingWeight(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    vault(overrides?: CallOverrides): Promise<[string]>;
-
-    vaultRewardsPerWeight(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     weight(overrides?: CallOverrides): Promise<[number]>;
 
@@ -441,16 +479,26 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    wild(overrides?: CallOverrides): Promise<[string]>;
-
     yieldRewardsPerWeight(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
+
+  __zStakePoolBase__init(
+    _rewardToken: string,
+    _factory: string,
+    _poolToken: string,
+    _initBlock: BigNumberish,
+    _weight: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   balanceOf(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-  checkVaultRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
+  changeRewardLockPeriod(
+    _rewardLockPeriod: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   factory(overrides?: CallOverrides): Promise<string>;
 
@@ -473,16 +521,28 @@ export class ZStakeCorePool extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  initialize(
+    _rewardToken: string,
+    _factory: string,
+    _poolToken: string,
+    _initBlock: BigNumberish,
+    _weight: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  initializeImplementation(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   isFlashPool(overrides?: CallOverrides): Promise<boolean>;
 
   lastYieldDistribution(overrides?: CallOverrides): Promise<BigNumber>;
 
   now256(overrides?: CallOverrides): Promise<BigNumber>;
 
-  pendingVaultRewards(
-    _staker: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
 
   pendingYieldRewards(
     _staker: string,
@@ -494,14 +554,14 @@ export class ZStakeCorePool extends BaseContract {
   poolTokenReserve(overrides?: CallOverrides): Promise<BigNumber>;
 
   processRewards(
-    _useSWILD: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  receiveVaultRewards(
-    _rewardsAmount: BigNumberish,
+  renounceOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  rewardLockPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   rewardToWeight(
     reward: BigNumberish,
@@ -509,10 +569,7 @@ export class ZStakeCorePool extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  setVault(
-    _vault: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  rewardToken(overrides?: CallOverrides): Promise<string>;
 
   setWeight(
     _weight: BigNumberish,
@@ -522,7 +579,6 @@ export class ZStakeCorePool extends BaseContract {
   stake(
     _amount: BigNumberish,
     _lockUntil: BigNumberish,
-    _useSILV: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -532,25 +588,24 @@ export class ZStakeCorePool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  swild(overrides?: CallOverrides): Promise<string>;
-
   sync(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  testFunc(overrides?: CallOverrides): Promise<string>;
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   unstake(
     _depositId: BigNumberish,
     _amount: BigNumberish,
-    _useSILV: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   updateStakeLock(
     depositId: BigNumberish,
     lockedUntil: BigNumberish,
-    useSILV: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -558,19 +613,14 @@ export class ZStakeCorePool extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
+    [BigNumber, BigNumber, BigNumber] & {
       tokenAmount: BigNumber;
       totalWeight: BigNumber;
       subYieldRewards: BigNumber;
-      subVaultRewards: BigNumber;
     }
   >;
 
   usersLockingWeight(overrides?: CallOverrides): Promise<BigNumber>;
-
-  vault(overrides?: CallOverrides): Promise<string>;
-
-  vaultRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
 
   weight(overrides?: CallOverrides): Promise<number>;
 
@@ -580,16 +630,26 @@ export class ZStakeCorePool extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  wild(overrides?: CallOverrides): Promise<string>;
-
   yieldRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
+    __zStakePoolBase__init(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     balanceOf(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-    checkVaultRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
+    changeRewardLockPeriod(
+      _rewardLockPeriod: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     factory(overrides?: CallOverrides): Promise<string>;
 
@@ -612,16 +672,26 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    initialize(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    initializeImplementation(overrides?: CallOverrides): Promise<void>;
+
     isFlashPool(overrides?: CallOverrides): Promise<boolean>;
 
     lastYieldDistribution(overrides?: CallOverrides): Promise<BigNumber>;
 
     now256(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pendingVaultRewards(
-      _staker: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    owner(overrides?: CallOverrides): Promise<string>;
+
+    paused(overrides?: CallOverrides): Promise<boolean>;
 
     pendingYieldRewards(
       _staker: string,
@@ -632,15 +702,11 @@ export class ZStakeCorePool extends BaseContract {
 
     poolTokenReserve(overrides?: CallOverrides): Promise<BigNumber>;
 
-    processRewards(
-      _useSWILD: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    processRewards(overrides?: CallOverrides): Promise<void>;
 
-    receiveVaultRewards(
-      _rewardsAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    rewardLockPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardToWeight(
       reward: BigNumberish,
@@ -648,14 +714,13 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    setVault(_vault: string, overrides?: CallOverrides): Promise<void>;
+    rewardToken(overrides?: CallOverrides): Promise<string>;
 
     setWeight(_weight: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     stake(
       _amount: BigNumberish,
       _lockUntil: BigNumberish,
-      _useSILV: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -665,23 +730,22 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    swild(overrides?: CallOverrides): Promise<string>;
-
     sync(overrides?: CallOverrides): Promise<void>;
 
-    testFunc(overrides?: CallOverrides): Promise<string>;
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     unstake(
       _depositId: BigNumberish,
       _amount: BigNumberish,
-      _useSILV: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
     updateStakeLock(
       depositId: BigNumberish,
       lockedUntil: BigNumberish,
-      useSILV: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -689,19 +753,14 @@ export class ZStakeCorePool extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [BigNumber, BigNumber, BigNumber] & {
         tokenAmount: BigNumber;
         totalWeight: BigNumber;
         subYieldRewards: BigNumber;
-        subVaultRewards: BigNumber;
       }
     >;
 
     usersLockingWeight(overrides?: CallOverrides): Promise<BigNumber>;
-
-    vault(overrides?: CallOverrides): Promise<string>;
-
-    vaultRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
 
     weight(overrides?: CallOverrides): Promise<number>;
 
@@ -711,12 +770,20 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    wild(overrides?: CallOverrides): Promise<string>;
-
     yieldRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
+
     PoolWeightUpdated(
       _by?: string | null,
       _fromVal?: null,
@@ -763,6 +830,8 @@ export class ZStakeCorePool extends BaseContract {
       }
     >;
 
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
+
     Unstaked(
       _by?: string | null,
       _to?: string | null,
@@ -772,7 +841,7 @@ export class ZStakeCorePool extends BaseContract {
       { _by: string; _to: string; amount: BigNumber }
     >;
 
-    VaultRewardsClaimed(
+    YieldClaimed(
       _by?: string | null,
       _to?: string | null,
       amount?: null
@@ -780,41 +849,26 @@ export class ZStakeCorePool extends BaseContract {
       [string, string, BigNumber],
       { _by: string; _to: string; amount: BigNumber }
     >;
-
-    VaultRewardsReceived(
-      _by?: string | null,
-      amount?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { _by: string; amount: BigNumber }
-    >;
-
-    VaultUpdated(
-      _by?: string | null,
-      _fromVal?: null,
-      _toVal?: null
-    ): TypedEventFilter<
-      [string, string, string],
-      { _by: string; _fromVal: string; _toVal: string }
-    >;
-
-    YieldClaimed(
-      _by?: string | null,
-      _to?: string | null,
-      sIlv?: null,
-      amount?: null
-    ): TypedEventFilter<
-      [string, string, boolean, BigNumber],
-      { _by: string; _to: string; sIlv: boolean; amount: BigNumber }
-    >;
   };
 
   estimateGas: {
+    __zStakePoolBase__init(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     balanceOf(_user: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     blockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-    checkVaultRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
+    changeRewardLockPeriod(
+      _rewardLockPeriod: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     factory(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -829,16 +883,28 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    initialize(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     isFlashPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     lastYieldDistribution(overrides?: CallOverrides): Promise<BigNumber>;
 
     now256(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pendingVaultRewards(
-      _staker: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     pendingYieldRewards(
       _staker: string,
@@ -850,14 +916,14 @@ export class ZStakeCorePool extends BaseContract {
     poolTokenReserve(overrides?: CallOverrides): Promise<BigNumber>;
 
     processRewards(
-      _useSWILD: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    receiveVaultRewards(
-      _rewardsAmount: BigNumberish,
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    rewardLockPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     rewardToWeight(
       reward: BigNumberish,
@@ -865,10 +931,7 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    setVault(
-      _vault: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    rewardToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     setWeight(
       _weight: BigNumberish,
@@ -878,7 +941,6 @@ export class ZStakeCorePool extends BaseContract {
     stake(
       _amount: BigNumberish,
       _lockUntil: BigNumberish,
-      _useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -888,35 +950,30 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    swild(overrides?: CallOverrides): Promise<BigNumber>;
-
     sync(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    testFunc(overrides?: CallOverrides): Promise<BigNumber>;
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     unstake(
       _depositId: BigNumberish,
       _amount: BigNumberish,
-      _useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     updateStakeLock(
       depositId: BigNumberish,
       lockedUntil: BigNumberish,
-      useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     users(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     usersLockingWeight(overrides?: CallOverrides): Promise<BigNumber>;
-
-    vault(overrides?: CallOverrides): Promise<BigNumber>;
-
-    vaultRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
 
     weight(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -926,12 +983,19 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    wild(overrides?: CallOverrides): Promise<BigNumber>;
-
     yieldRewardsPerWeight(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    __zStakePoolBase__init(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     balanceOf(
       _user: string,
       overrides?: CallOverrides
@@ -939,8 +1003,9 @@ export class ZStakeCorePool extends BaseContract {
 
     blockNumber(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    checkVaultRewardsPerWeight(
-      overrides?: CallOverrides
+    changeRewardLockPeriod(
+      _rewardLockPeriod: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -956,6 +1021,19 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    initialize(
+      _rewardToken: string,
+      _factory: string,
+      _poolToken: string,
+      _initBlock: BigNumberish,
+      _weight: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    initializeImplementation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     isFlashPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     lastYieldDistribution(
@@ -964,10 +1042,9 @@ export class ZStakeCorePool extends BaseContract {
 
     now256(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    pendingVaultRewards(
-      _staker: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pendingYieldRewards(
       _staker: string,
@@ -979,14 +1056,14 @@ export class ZStakeCorePool extends BaseContract {
     poolTokenReserve(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     processRewards(
-      _useSWILD: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    receiveVaultRewards(
-      _rewardsAmount: BigNumberish,
+    renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    rewardLockPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     rewardToWeight(
       reward: BigNumberish,
@@ -994,10 +1071,7 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    setVault(
-      _vault: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    rewardToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setWeight(
       _weight: BigNumberish,
@@ -1007,7 +1081,6 @@ export class ZStakeCorePool extends BaseContract {
     stake(
       _amount: BigNumberish,
       _lockUntil: BigNumberish,
-      _useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1017,25 +1090,24 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    swild(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     sync(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    testFunc(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     unstake(
       _depositId: BigNumberish,
       _amount: BigNumberish,
-      _useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     updateStakeLock(
       depositId: BigNumberish,
       lockedUntil: BigNumberish,
-      useSILV: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1048,12 +1120,6 @@ export class ZStakeCorePool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    vault(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    vaultRewardsPerWeight(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     weight(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     weightToReward(
@@ -1061,8 +1127,6 @@ export class ZStakeCorePool extends BaseContract {
       rewardPerWeight: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    wild(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     yieldRewardsPerWeight(
       overrides?: CallOverrides
