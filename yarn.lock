@@ -712,7 +712,7 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.22.tgz#47020d7e4cf19194d43b5202f35f75bd2ad35ce7"
   integrity sha512-tFfcE+DSTzWAgifkjik9AySNqIyNoYwmR+uecPwwD/XRNfvOjmC/FjCxpiUGDkDVDphPfCUecSQVFw+lN3M3kQ==
 
-"@types/coingecko-api@^1.0.6":
+"@types/coingecko-api@1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@types/coingecko-api/-/coingecko-api-1.0.6.tgz#e73fd6bd2addd8df55475481f288e48f1caa48fd"
   integrity sha512-OKzs9J5YuMlhYZXbX7O4GFCtvl32dAiyam+aBjkccN0zWaY45TD7TVTty7nIoYiD8P6E+qCWK40cRZYkIbBlyg==

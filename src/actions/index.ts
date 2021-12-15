@@ -1,4 +1,5 @@
 export * from "./calculatePoolApr";
+export * from "./calculatePoolTotalValueLocked";
 export * from "./calculateUserValueStaked";
 export * from "./changePoolWeight";
 export * from "./getAllDeposits";
