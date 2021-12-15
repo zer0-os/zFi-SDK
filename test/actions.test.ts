@@ -7,33 +7,96 @@ import { ImportMock } from "ts-mock-imports";
 import { Config, SubConfig } from "../src/types";
 import * as actions from "../src/actions";
 import * as helpers from "../src/helpers";
+import { createInstance } from "../src";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
 dotenv.config();
 
-const defaultProvider = ethers.getDefaultProvider();
-
 describe("Test Custom SDK Logic", async () => {
   const config: Config = {
-    provider: ethers.providers.getDefaultProvider(),
-    factoryAddress: "0xf06C810c5ee8908A02dc5fE4D82D0578cA53a888",
-    lpTokenPoolAddress: "0x69A38AF3D05C8E7A07Ddbe27Dd84Bd7DfCDb0BE6",
-    wildPoolAddress: "0x9495B4e974E0e5b2865762d1fd5640E7A6c7Fa37",
+    provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"]),
+    factoryAddress: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E",
+    lpTokenPoolAddress: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
+    wildPoolAddress: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
   };
 
   // Dummy address pulled from Ethers VoidSigner docs
   const staker = new ethers.VoidSigner("0x8ba1f109551bD432803012645Ac136ddd64DBA72")
   const subConfig: SubConfig = {
     address: config.wildPoolAddress,
-    provider: defaultProvider,
+    provider: config.provider,
   };
 
-  // calculateUvl
-  describe("calculateUserValueLocked", async () => {
+  // describe("calculatePoolApr", async () => {
+  //   it("runs", async () => {
+  //     // Mock Factory
+  //     const mockPoolFactory1 = {
+  //       getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); },
+  //       totalWeight: () => { return ethers.BigNumber.from("1000"); },
+  //       getPoolData: () => {
+  //         return ["0x0", "0x1", ethers.BigNumber.from("200"), false]
+  //       }
+  //     }
+  //     const mockFactory1 = ImportMock.mockFunction(
+  //       helpers,
+  //       "getPoolFactory",
+  //       mockPoolFactory1
+  //     );
+
+  //     // Mock Pool
+  //     const mockCorePool = {
+  //       poolTokenReserve: () => { return ethers.BigNumber.from("10000000") },
+  //       factory: () => { return "0x0" },
+  //       provider: config.provider
+  //     }
+  //     const mockPool = ImportMock.mockFunction(
+  //       helpers,
+  //       "getCorePool",
+  //       mockCorePool
+  //     )
+
+  //     const wildApr = await actions.calculatePoolApr(false, subConfig);
+  //     expect(wildApr).to.equal(47.5814)
+
+  //     mockFactory1.restore();
+
+  //     // Mock Factory Again
+  //     const mockPoolFactory2 = {
+  //       getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); },
+  //       totalWeight: () => { return ethers.BigNumber.from("1000"); },
+  //       getPoolData: () => {
+  //         return ["0x0", "0x1", ethers.BigNumber.from("800"), false]
+  //       }
+  //     }
+
+  //     const mockFactory2 = ImportMock.mockFunction(
+  //       helpers,
+  //       "getPoolFactory",
+  //       mockPoolFactory2
+  //     );
+
+  //     const lpSubConfig = {
+  //       address: config.lpTokenPoolAddress,
+  //       provider: config.provider
+  //     }
+
+  //     // Fails because we haven't deployed mainnet pools yet.
+  //     const lpTokenApr = await actions.calculatePoolApr(true, lpSubConfig);
+  //     expect(lpTokenApr).to.equal(Infinity)
+  //     mockFactory2.restore();
+  //     mockPool.restore();
+  //   })
+  // });
+  describe("calculatePoolTotalValueLocked", async () => {
+    it("runs", async () => {
+      const res = await actions.calculatePoolTotalValueLocked(false, subConfig);
+    });
+  })
+  describe("calculateUserValueStaked", async () => {
     it("Fails when a user provides an invalid address", async () => {
       await expect(
-        actions.calculateUserValueLocked("0x0", subConfig)
+        actions.calculateUserValueStaked("0x0", subConfig)
       ).to.be.rejectedWith("Must provide a valid user address");
     });
     it("Returns nothing when the user has no deposits", async () => {
@@ -48,7 +111,7 @@ describe("Test Custom SDK Logic", async () => {
         mockCorePool
       );
       const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueLocked(
+      const deposits = await actions.calculateUserValueStaked(
         address,
         subConfig
       );
@@ -73,7 +136,7 @@ describe("Test Custom SDK Logic", async () => {
         mockCorePool
       );
       const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueLocked(
+      const deposits = await actions.calculateUserValueStaked(
         address,
         subConfig
       );
@@ -99,7 +162,7 @@ describe("Test Custom SDK Logic", async () => {
         mockCorePool
       );
       const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueLocked(
+      const deposits = await actions.calculateUserValueStaked(
         address,
         subConfig
       );
@@ -246,6 +309,23 @@ describe("Test Custom SDK Logic", async () => {
     });
   });
   describe("stake", async () => {
+    it("runs", async () => {
+      // whole thing
+      const config: Config = {
+        provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"]),
+        wildPoolAddress: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
+        lpTokenPoolAddress: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
+        factoryAddress: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E"
+      }
+      const privateKey = process.env["WALLET_PRIVATE_KEY"];
+      if (!privateKey) throw Error("No private key found, cannot create a signing wallet");
+
+      const staker = new ethers.Wallet(privateKey, config.provider);
+
+      const instance = createInstance(config);
+
+      await instance.wildPool.stake("150", ethers.BigNumber.from("0"), staker);
+    });
     it("Fails when trying to stake nothing or a negative value", async () => {
       const lockUntil = ethers.BigNumber.from("1");
       await expect(
