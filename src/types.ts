@@ -21,6 +21,7 @@ export interface Instance {
 export interface FactoryInstance {
   getPoolAddress: (poolToken: string) => Promise<string>;
   getPoolData: (poolAddress: string) => Promise<PoolData>;
+  getRewardTokensPerBlock: () => Promise<ethers.BigNumber>;
 }
 
 export interface PoolInstance {
@@ -46,11 +47,8 @@ export interface PoolInstance {
   getAllDeposits: (address: string) => Promise<Deposit[]>;
   getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
-  getLastYieldDistribution: () => Promise<ethers.BigNumber>;
-  getLiquidityPoolWeight: () => Promise<number>;
-  getTokenPoolWeight: () => Promise<number>;
-  getRewardTokensPerBlock: () => Promise<ethers.BigNumber>;
-  calculateUserValueLocked: (address: string) => Promise<UserValue>;
+  userValueStaked: (address: string) => Promise<UserValue>;
+  poolApr: (isLpTokenPool: boolean) => Promise<Number>;
 }
 
 export interface Deposit {
