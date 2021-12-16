@@ -6,11 +6,12 @@ import { SubConfig } from "../types";
 const erc20Abi = ["function approve(address spender, uint256 amount) public"];
 
 // e.g. token.connect(staker).approve(poolAddress, amount)
-export const approve = async (signer: ethers.Signer, config: SubConfig) => {
+export const approve = async (signer: ethers.Signer, config: SubConfig): Promise<ethers.ContractTransaction> => {
   const pool = await getCorePool(config);
   const poolToken = await pool.poolToken();
 
   const tokenInstance = new ethers.Contract(poolToken, erc20Abi, config.provider);
-  await tokenInstance.connect(signer)
+  const tx = await tokenInstance.connect(signer)
     .approve(config.address, ethers.constants.MaxUint256);
+  return tx;
 }

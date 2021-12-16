@@ -26,8 +26,8 @@ export interface FactoryInstance {
 
 export interface PoolInstance {
   address: string;
-  approve: (signer: ethers.Signer) => void
-  allowance: (signer: ethers.Signer) => Promise<ethers.BigNumber>
+  approve: (signer: ethers.Signer) => Promise<ethers.ContractTransaction>;
+  allowance: (signer: ethers.Signer) => Promise<ethers.BigNumber>;
   stake: (
     amount: string,
     lockUntil: ethers.BigNumber,
