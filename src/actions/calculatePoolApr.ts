@@ -3,25 +3,32 @@ import CoinGecko from "coingecko-api";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool, getPoolFactory } from "../helpers";
 import { SubConfig } from "../types";
-
-enum Addresses {
-  KOVAN_WILD = "0x50A0A3E9873D7e7d306299a75Dc05bd3Ab2d251F",
-  KOVAN_wETH = "0xf3a6679b266899042276804930b3bfbaf807f15b",
-  MAINNET_WILD = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
-  MAINNET_wETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  UNISWAP_PAIR = "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5",
-}
+import { networkAddresses } from "./helpers";
 
 const erc20Abi = [
   "function balanceOf(address _owner) public view returns (uint256)",
   "function totalSupply() public view returns (uint256)"
 ];
 
-export const calculatePoolApr = async (isLpTokenPool: boolean, config: SubConfig): Promise<any> => {
+export const calculatePoolApr = async (network: string, isLpTokenPool: boolean, config: SubConfig): Promise<any> => {
+  let addresses;
+  switch (network) {
+    case "mainnet":
+      addresses = networkAddresses.mainnet;
+      break;
+    case "kovan":
+      addresses = networkAddresses.kovan;
+    default:
+      break;
+  }
+
+  if (!addresses) 
+  throw Error("No addresses could be inferred from the network. Use mainnet or kovan")
+
   const pool: ZStakeCorePool = await getCorePool(config);
 
   // Get the pool's factory as well
-  const factoryAddress = await pool.factory();
+  const factoryAddress = addresses.factory
   const provider = await pool.provider;
   const factory = await getPoolFactory({ address: factoryAddress, provider: provider });
 
@@ -51,13 +58,13 @@ export const calculatePoolApr = async (isLpTokenPool: boolean, config: SubConfig
   const wildPriceUsd = wildData.data.market_data.current_price.usd;
   const ethPriceUsd = ethData.data.market_data.current_price.usd;
 
-  const wildToken = new ethers.Contract(Addresses.MAINNET_WILD, erc20Abi, config.provider);
-  const wEthToken = new ethers.Contract(Addresses.MAINNET_wETH, erc20Abi, config.provider);
-  const lpToken = new ethers.Contract(Addresses.UNISWAP_PAIR, erc20Abi, config.provider);
+  const wildToken = new ethers.Contract(addresses.WILD, erc20Abi, config.provider);
+  const wEthToken = new ethers.Contract(addresses.wETH, erc20Abi, config.provider);
+  const lpToken = new ethers.Contract(addresses.UniswapPool, erc20Abi, config.provider);
 
-  const wildBalance = await wildToken.balanceOf(Addresses.UNISWAP_PAIR);
-  const wEthBalance = await wEthToken.balanceOf(Addresses.UNISWAP_PAIR);
-  const lpTokenPoolBalance = await lpToken.balanceOf(config.address);
+  const wildBalance = await wildToken.balanceOf(addresses.UniswapPool);
+  const wEthBalance = await wEthToken.balanceOf(addresses.UniswapPool);
+  const lpTokenPoolBalance = await lpToken.balanceOf(addresses.lpTokenStakingPool);
   const lpTokenTotalSupply = await lpToken.totalSupply();
 
   console.log(wildBalance, wEthBalance);

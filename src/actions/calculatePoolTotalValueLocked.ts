@@ -3,21 +3,28 @@ import CoinGecko from "coingecko-api";
 import { SubConfig } from "../types";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool, getPoolFactory } from "../helpers";
-
-enum Addresses {
-  KOVAN_WILD = "0x50A0A3E9873D7e7d306299a75Dc05bd3Ab2d251F",
-  KOVAN_wETH = "0xf3a6679b266899042276804930b3bfbaf807f15b",
-  MAINNET_WILD = "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
-  MAINNET_wETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  UNISWAP_PAIR = "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5",
-}
+import { networkAddresses } from "./helpers";
 
 const erc20Abi = [
   "function balanceOf(address _owner) public view returns (uint256)",
   "function totalSupply() public view returns (uint256)"
 ];
 
-export const calculatePoolTotalValueLocked = async (isLpTokenPool: boolean, config: SubConfig) => {
+export const calculatePoolTotalValueLocked = async (network: string, isLpTokenPool: boolean, config: SubConfig) => {
+  let addresses;
+  switch (network) {
+    case "mainnet":
+      addresses = networkAddresses.mainnet;
+      break;
+    case "kovan":
+      addresses = networkAddresses.kovan;
+    default:
+      break;
+  }
+
+  if (!addresses) 
+    throw Error("No addresses could be inferred from the network. Use mainnet or kovan")
+
   const pool: ZStakeCorePool = await getCorePool(config);
 
   const balance = await pool.poolTokenReserve();
@@ -36,18 +43,17 @@ export const calculatePoolTotalValueLocked = async (isLpTokenPool: boolean, conf
   
   const ethPriceUsd = ethData.data.market_data.current_price.usd;
   
-  const wildToken = new ethers.Contract(Addresses.MAINNET_WILD, erc20Abi, config.provider);
-  const wEthToken = new ethers.Contract(Addresses.MAINNET_wETH, erc20Abi, config.provider);
+  const wildToken = new ethers.Contract(addresses.WILD, erc20Abi, config.provider);
+  const wEthToken = new ethers.Contract(addresses.wETH, erc20Abi, config.provider);
 
-  const wildBalance = await wildToken.balanceOf(Addresses.UNISWAP_PAIR);
-  const wEthBalance = await wEthToken.balanceOf(Addresses.UNISWAP_PAIR);
+  const wildBalance = await wildToken.balanceOf(addresses.lpTokenStakingPool);
+  const wEthBalance = await wEthToken.balanceOf(addresses.lpTokenStakingPool);
 
   console.log(wildBalance, wEthBalance);
 
   const lpWildTvl = wildPriceUsd * Number(ethers.utils.formatEther(wildBalance));
   const lpWEthTvl = ethPriceUsd * Number(ethers.utils.formatEther(wEthBalance));
 
-  // TVL of Uniswap pool
-  const lpTvl = lpWildTvl + lpWEthTvl;
-  return lpTvl;
+  const tvl = lpWildTvl + lpWEthTvl;
+  return tvl;
 }
