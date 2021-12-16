@@ -46,9 +46,10 @@ export const createInstance = (config: Config): Instance => {
 const getPoolInstance = (config: SubConfig, isLpTokenPool: boolean): PoolInstance => {
   const instance: PoolInstance = {
     address: config.address,
-    approve: async (signer: ethers.Signer) => {
+    approve: async (signer: ethers.Signer): Promise<ethers.ContractTransaction> => {
       // have the signer call to ERC20 approve for the pool address
-      await actions.approve(signer, config);
+      const tx = await actions.approve(signer, config);
+      return tx;
     },
     allowance: async (signer: ethers.Signer): Promise<ethers.BigNumber> => {
       const allowance = await actions.allowance(signer, config);
