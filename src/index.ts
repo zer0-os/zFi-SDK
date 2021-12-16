@@ -118,7 +118,14 @@ const getPoolInstance = (config: SubConfig, isLpTokenPool: boolean): PoolInstanc
       return await actions.calculateUserValueStaked(userAddress, config);
     },
     poolApr: async (): Promise<Number> => {
-      return await actions.calculatePoolApr(isLpTokenPool, config);
+      const providerNetwork = await config.provider.getNetwork();
+      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
+      return await actions.calculatePoolApr(network, isLpTokenPool, config);
+    },
+    poolTvl: async (): Promise<Number> => {
+      const providerNetwork = await config.provider.getNetwork();
+      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
+      return await actions.calculatePoolTotalValueLocked(network, isLpTokenPool, config);
     }
   };
 

@@ -4,7 +4,7 @@ import { SubConfig } from "../types";
 
 export const stake = async (
   amount: string,
-  lockUntil: ethers.BigNumber,
+  lockUntil: ethers.BigNumberish,
   signer: ethers.Signer,
   config: SubConfig
 ): Promise<ethers.ContractTransaction> => {

@@ -52,6 +52,7 @@ export interface PoolInstance {
   getPoolToken: () => Promise<string>;
   userValueStaked: (address: string) => Promise<UserValue>;
   poolApr: () => Promise<Number>;
+  poolTvl: () => Promise<Number>;
 }
 
 export interface Deposit {

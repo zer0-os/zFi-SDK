@@ -88,11 +88,11 @@ describe("Test Custom SDK Logic", async () => {
   //     mockPool.restore();
   //   })
   // });
-  describe("calculatePoolTotalValueLocked", async () => {
-    it("runs", async () => {
-      const res = await actions.calculatePoolTotalValueLocked(false, subConfig);
-    });
-  })
+  // describe("calculatePoolTotalValueLocked", async () => {
+  //   it("runs", async () => {
+  //     const res = await actions.calculatePoolTotalValueLocked("kovan", false, subConfig);
+  //   });
+  // })
   describe("calculateUserValueStaked", async () => {
     it("Fails when a user provides an invalid address", async () => {
       await expect(
