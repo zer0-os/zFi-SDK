@@ -51,8 +51,8 @@ export interface PoolInstance {
   getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
   userValueStaked: (address: string) => Promise<UserValue>;
-  poolApr: () => Promise<Number>;
-  poolTvl: () => Promise<Number>;
+  poolApr: () => Promise<number>;
+  poolTvl: () => Promise<TotalValueLocked>;
 }
 
 export interface Deposit {
@@ -82,4 +82,9 @@ export interface PoolData {
   poolAddress: string;
   weight: number;
   isFlashPool: boolean;
+}
+
+export interface TotalValueLocked {
+  numberOfTokens: number;
+  valueOfTokensUSD: number;
 }
