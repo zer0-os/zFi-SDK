@@ -14,7 +14,7 @@ export const calculatePoolApr = async (
   network: string,
   isLpTokenPool: boolean,
   config: SubConfig
-): Promise<any> => {
+): Promise<number> => {
   let addresses;
   switch (network) {
     case "mainnet":
