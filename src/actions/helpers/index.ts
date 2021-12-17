@@ -2,10 +2,10 @@ export const networkAddresses = {
   mainnet: {
     WILD: "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
     wETH: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    wildStakingPool: "", // not deployed on mainnet yet
-    lpTokenStakingPool: "",
-    factory: "",
-    UniswapPool: "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5"
+    wildStakingPool: "0x3aC551725ac98C5DCdeA197cEaaE7cDb8a71a2B4",
+    lpTokenStakingPool: "0x9E87a268D42B0Aba399C121428fcE2c626Ea01FF",
+    factory: "0xF133faFd49f4671ac63EE3a3aE7E7C4C9B84cE4a",
+    UniswapPool: "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5",
   },
   kovan: {
     WILD: "0x50A0A3E9873D7e7d306299a75Dc05bd3Ab2d251F",
@@ -13,6 +13,6 @@ export const networkAddresses = {
     wildStakingPool: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
     lpTokenStakingPool: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
     factory: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E",
-    UniswapPool: "0xD364C50c33902110230255FE1D730D84FA23e48e"
-  }
-}
+    UniswapPool: "0xD364C50c33902110230255FE1D730D84FA23e48e",
+  },
+};
