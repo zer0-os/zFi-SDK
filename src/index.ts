@@ -9,6 +9,7 @@ import {
   PoolData,
   PoolInstance,
   SubConfig,
+  TotalValueLocked,
   User,
   UserValue,
 } from "./types";
@@ -43,10 +44,15 @@ export const createInstance = (config: Config): Instance => {
 
 // The zFI SDK requires that you create an instance once for every staking pool.
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
-const getPoolInstance = (config: SubConfig, isLpTokenPool: boolean): PoolInstance => {
+const getPoolInstance = (
+  config: SubConfig,
+  isLpTokenPool: boolean
+): PoolInstance => {
   const instance: PoolInstance = {
     address: config.address,
-    approve: async (signer: ethers.Signer): Promise<ethers.ContractTransaction> => {
+    approve: async (
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
       // have the signer call to ERC20 approve for the pool address
       const tx = await actions.approve(signer, config);
       return tx;
@@ -110,23 +116,25 @@ const getPoolInstance = (config: SubConfig, isLpTokenPool: boolean): PoolInstanc
       const poolToken = await corePool.poolToken();
       return poolToken;
     },
-    userValueStaked: async (
-      userAddress: string
-    ): Promise<UserValue> => {
+    userValueStaked: async (userAddress: string): Promise<UserValue> => {
       // Will return a user's total deposit value that is both locked and unlocked
       // e.g. { valueLocked: _, valueUnlocked: _ }
       return await actions.calculateUserValueStaked(userAddress, config);
     },
-    poolApr: async (): Promise<Number> => {
+    poolApr: async (): Promise<number> => {
       const providerNetwork = await config.provider.getNetwork();
       const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
       return await actions.calculatePoolApr(network, isLpTokenPool, config);
     },
-    poolTvl: async (): Promise<Number> => {
+    poolTvl: async (): Promise<TotalValueLocked> => {
       const providerNetwork = await config.provider.getNetwork();
       const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
-      return await actions.calculatePoolTotalValueLocked(network, isLpTokenPool, config);
-    }
+      return await actions.calculatePoolTotalValueLocked(
+        network,
+        isLpTokenPool,
+        config
+      );
+    },
   };
 
   return instance;
