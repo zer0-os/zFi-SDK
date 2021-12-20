@@ -59,9 +59,9 @@ export const calculatePoolApr = async (
   if (!isLpTokenPool) {
     const balance = await pool.poolTokenReserve();
     const apr =
-      (rewardsInNextYear / Number(ethers.utils.formatUnits(balance, 18))) *
+      (rewardsInNextYear / Number(ethers.utils.formatUnits(balance, 18))) * 
       weightRatio;
-    return apr;
+    return apr * 100; // as percentage
   }
 
   const client = new CoinGecko();
@@ -111,5 +111,5 @@ export const calculatePoolApr = async (
 
   const lpTokenPoolApr =
     ((rewardsInNextYear * wildPriceUsd) / lpTokenPoolTvl) * weightRatio;
-  return lpTokenPoolApr;
+  return lpTokenPoolApr * 100; // as percentage
 };
