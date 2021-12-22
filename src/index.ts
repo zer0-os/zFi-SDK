@@ -117,9 +117,13 @@ const getPoolInstance = (
       return poolToken;
     },
     userValueStaked: async (userAddress: string): Promise<UserValue> => {
-      // Will return a user's total deposit value that is both locked and unlocked
+      // Will return a user's total deposit value that is both locked and unlocked,
+      // as well as each of those values in USD for formatting
       // e.g. { valueLocked: _, valueUnlocked: _ }
-      return await actions.calculateUserValueStaked(userAddress, config);
+
+      const providerNetwork = await config.provider.getNetwork();
+      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
+      return await actions.calculateUserValueStaked(userAddress, isLpTokenPool, network, config);
     },
     poolApr: async (): Promise<number> => {
       const providerNetwork = await config.provider.getNetwork();

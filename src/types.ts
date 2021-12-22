@@ -74,7 +74,9 @@ export interface User {
 
 export interface UserValue {
   userValueLocked: ethers.BigNumber;
+  userValueLockedUsd: number;
   userValueUnlocked: ethers.BigNumber;
+  userValueUnlockedUsd: number;
 }
 
 export interface PoolData {
