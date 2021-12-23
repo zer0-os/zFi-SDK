@@ -37,8 +37,8 @@ export const calculateUserValueStaked = async (
 
   return {
     userValueLocked: userValueLocked,
-    userValueLockedUsd: userValueLocked.eq("0") ? 0 : userValueLocked.toNumber() * tokenPrice,
+    userValueLockedUsd: userValueLocked.toNumber() * tokenPrice,
     userValueUnlocked: userValueUnlocked,
-    userValueUnlockedUsd: userValueUnlocked.eq("0") ? 0 : userValueUnlocked.toNumber() * tokenPrice,
+    userValueUnlockedUsd: userValueUnlocked.toNumber() * tokenPrice,
   };
 };
