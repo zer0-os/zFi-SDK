@@ -23,10 +23,15 @@ describe("Test Custom SDK Logic", () => {
 
   // Dummy address pulled from Ethers VoidSigner docs
   const staker = new ethers.VoidSigner("0x8ba1f109551bD432803012645Ac136ddd64DBA72")
+  
   const subConfig: SubConfig = {
     address: config.wildPoolAddress,
     provider: config.provider,
   };
+  const lpSubConfig: SubConfig = {
+    address: config.lpTokenPoolAddress,
+    provider: config.provider,
+  }
 
   describe("calculatePoolApr", () => {
     it("runs", async () => {
@@ -60,7 +65,7 @@ describe("Test Custom SDK Logic", () => {
       )
 
       // Call as wildStakingPool
-      const wildApr = await actions.calculatePoolApr(false, subConfig);
+      const wildApr = await actions.calculatePoolAnnualPercentageRate(false, subConfig);
       console.log(wildApr);
 
       mockFactory1.restore();
@@ -80,13 +85,8 @@ describe("Test Custom SDK Logic", () => {
         mockPoolFactory2
       );
 
-      const lpSubConfig = {
-        address: config.lpTokenPoolAddress,
-        provider: config.provider
-      }
-
       // Call as lpTokenStakingPool
-      const lpTokenPoolApr = await actions.calculatePoolApr(true, lpSubConfig);
+      const lpTokenPoolApr = await actions.calculatePoolAnnualPercentageRate(true, lpSubConfig);
       console.log(lpTokenPoolApr)
     });
   });
@@ -96,7 +96,7 @@ describe("Test Custom SDK Logic", () => {
       console.log(res);
     });
     it("runs as lp token pool", async () => {
-      const res = await actions.calculatePoolTotalValueLocked(true, subConfig);
+      const res = await actions.calculatePoolTotalValueLocked(true, lpSubConfig);
       console.log(res);
     });
   })
@@ -119,14 +119,22 @@ describe("Test Custom SDK Logic", () => {
         "getCorePool",
         mockCorePool
       );
-      const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueStaked(
-        address,
+      const stakerAddress = await staker.getAddress();
+      const wildTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
         false,
         subConfig
       );
-      const value = deposits.userValueLocked.toNumber();
-      expect(value).to.equal(0);
+      const lpTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        true,
+        lpSubConfig
+      )
+      const wildValue = wildTokenDeposits.userValueLocked.toNumber();
+      expect(wildValue).to.equal(0);
+      
+      const lpTokenValue = lpTokenDeposits.userValueLocked.toNumber();
+      expect(lpTokenValue).to.equal(0);
     });
     it("Doesn't add deposits that are locked", async () => {
       ImportMock.restore();
@@ -146,14 +154,25 @@ describe("Test Custom SDK Logic", () => {
         "getCorePool",
         mockCorePool
       );
-      const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueStaked(
-        address,
+      const stakerAddress = await staker.getAddress();
+
+      // Call as wild token pool
+      const wildTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
         false,
         subConfig
       );
-      expect(deposits.userValueLocked.toNumber()).to.equal(100);
-      expect(deposits.userValueUnlocked.toNumber()).to.equal(0);
+      expect(wildTokenDeposits.userValueLocked.toNumber()).to.equal(100);
+      expect(wildTokenDeposits.userValueUnlocked.toNumber()).to.equal(0);
+
+      // Call as liquidity token pool
+      const lpTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        false,
+        subConfig
+      );
+      expect(lpTokenDeposits.userValueLocked.toNumber()).to.equal(100);
+      expect(lpTokenDeposits.userValueUnlocked.toNumber()).to.equal(0);
     });
     it("Adds deposits that are unlocked", async () => {
       ImportMock.restore();
@@ -173,14 +192,25 @@ describe("Test Custom SDK Logic", () => {
         "getCorePool",
         mockCorePool
       );
-      const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueStaked(
-        address,
+      const stakerAddress = await staker.getAddress();
+
+      // Call as wild token pool
+      const wildTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
         false,
         subConfig
       );
-      expect(deposits.userValueLocked.toNumber()).to.equal(0);
-      expect(deposits.userValueUnlocked.toNumber()).to.equal(100);
+      expect(wildTokenDeposits.userValueLocked.toNumber()).to.equal(0);
+      expect(wildTokenDeposits.userValueUnlocked.toNumber()).to.equal(100);
+
+      // Call as liquidity token pool
+      const lpTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        false,
+        subConfig
+      );
+      expect(lpTokenDeposits.userValueLocked.toNumber()).to.equal(0);
+      expect(lpTokenDeposits.userValueUnlocked.toNumber()).to.equal(100);
     });
   });
   describe("changePoolWeight", () => {

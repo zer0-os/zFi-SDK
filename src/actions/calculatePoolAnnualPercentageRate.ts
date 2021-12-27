@@ -16,7 +16,7 @@ const erc20Abi = [
   "function totalSupply() public view returns (uint256)",
 ];
 
-export const calculatePoolApr = async (
+export const calculatePoolAnnualPercentageRate = async (
   isLpTokenPool: boolean,
   config: SubConfig
 ): Promise<number> => {
