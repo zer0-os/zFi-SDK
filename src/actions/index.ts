@@ -1,6 +1,6 @@
 export * from "./approve"
 export * from "./allowance"
-export * from "./calculatePoolApr";
+export * from "./calculatePoolAnnualPercentageRate";
 export * from "./calculatePoolTotalValueLocked";
 export * from "./calculateUserValueStaked";
 export * from "./changePoolWeight";

@@ -1,3 +1,11 @@
+import CoinGecko from "coingecko-api";
+import * as ethers from "ethers";
+
+const erc20Abi = [
+  "function balanceOf(address _owner) public view returns (uint256)",
+  "function totalSupply() public view returns (uint256)",
+];
+
 export const networkAddresses = {
   mainnet: {
     WILD: "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
@@ -16,3 +24,102 @@ export const networkAddresses = {
     UniswapPool: "0xD364C50c33902110230255FE1D730D84FA23e48e",
   },
 };
+
+export const getWildToken = async (
+  provider: ethers.providers.Provider
+): Promise<ethers.Contract> => {
+  const network = await provider.getNetwork();
+  let address = network.chainId === 1 ?
+    networkAddresses.mainnet.WILD :
+    networkAddresses.kovan.WILD;
+
+  const wildToken = new ethers.Contract(
+    address,
+    erc20Abi,
+    provider
+  );
+
+  return wildToken;
+}
+
+export const getWethToken = async (
+  provider: ethers.providers.Provider
+): Promise<ethers.Contract> => {
+  const network = await provider.getNetwork();
+  const address = network.chainId === 1 ?
+    networkAddresses.mainnet.wETH :
+    networkAddresses.kovan.wETH;
+
+  const wEthToken = new ethers.Contract(
+    address,
+    erc20Abi,
+    provider
+  );
+
+  return wEthToken;
+}
+
+export const getLpToken = async (
+  provider: ethers.providers.Provider
+): Promise<ethers.Contract> => {
+  const network = await provider.getNetwork();
+  const address = network.chainId === 1 ?
+    networkAddresses.mainnet.UniswapPool :
+    networkAddresses.kovan.UniswapPool;
+
+  const lpToken = new ethers.Contract(
+    address,
+    erc20Abi,
+    provider
+  );
+
+  return lpToken;
+}
+
+export const wildPriceUsd = async () => {
+  const client = new CoinGecko();
+  const wildData = await client.coins.fetch("wilder-world", {
+    market_data: true,
+  });
+  const wildPriceUsd = wildData.data.market_data.current_price.usd;
+  return wildPriceUsd;
+}
+
+export const ethPriceUsd = async () => {
+  const client = new CoinGecko();
+  const ethData = await client.coins.fetch("ethereum", {
+    market_data: true
+  });
+  const ethPriceUsd = ethData.data.market_data.current_price.usd;
+  return ethPriceUsd;
+}
+
+export const lpTokenPriceUsd = async (provider: ethers.providers.Provider) => {
+  const network = await provider.getNetwork();
+  const uniswapPool = network.chainId === 1 ?
+  networkAddresses.mainnet.UniswapPool :
+  networkAddresses.kovan.UniswapPool;
+
+  const wildPrice = await wildPriceUsd();
+  const ethPrice = await ethPriceUsd();
+  
+  const lpToken = await getLpToken(provider);
+  const wildToken = await getWildToken(provider);
+  const wethToken = await getWethToken(provider);
+
+  const wildBalance = await wildToken.balanceOf(uniswapPool);
+  const wethBalance = await wethToken.balanceOf(uniswapPool);
+
+  const lpTokenTotalSupply = await lpToken.totalSupply();
+
+  const lpWildTvl = wildPrice * Number(ethers.utils.formatEther(wildBalance));
+  const lpWEthTvl = ethPrice * Number(ethers.utils.formatEther(wethBalance));
+
+  // TVL of Uniswap pool
+  const lpTvl = lpWildTvl + lpWEthTvl;
+
+  const lpTokenPrice =
+    lpTvl / Number(ethers.utils.formatEther(lpTokenTotalSupply));
+
+  return lpTokenPrice;
+}

@@ -1,28 +1,35 @@
 import * as ethers from "ethers";
-import CoinGecko from "coingecko-api";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool, getPoolFactory } from "../helpers";
 import { SubConfig } from "../types";
-import { networkAddresses } from "./helpers";
+import {
+  ethPriceUsd,
+  getLpToken,
+  getWethToken,
+  getWildToken,
+  networkAddresses,
+  wildPriceUsd
+} from "./helpers";
 
 const erc20Abi = [
   "function balanceOf(address _owner) public view returns (uint256)",
   "function totalSupply() public view returns (uint256)",
 ];
 
-export const calculatePoolApr = async (
-  network: string,
+export const calculatePoolAnnualPercentageRate = async (
   isLpTokenPool: boolean,
   config: SubConfig
 ): Promise<number> => {
   let addresses;
-  switch (network) {
-    case "mainnet":
+  const network = await config.provider.getNetwork();
+  switch (network.chainId) {
+    case 1:
       addresses = networkAddresses.mainnet;
       break;
-    case "kovan":
+    case 42:
       addresses = networkAddresses.kovan;
     default:
+      addresses = networkAddresses.kovan;
       break;
   }
 
@@ -59,35 +66,17 @@ export const calculatePoolApr = async (
   if (!isLpTokenPool) {
     const balance = await pool.poolTokenReserve();
     const apr =
-      (rewardsInNextYear / Number(ethers.utils.formatUnits(balance, 18))) * 
+      (rewardsInNextYear / Number(ethers.utils.formatUnits(balance, 18))) *
       weightRatio;
     return apr * 100; // as percentage
   }
 
-  const client = new CoinGecko();
-  const wildData = await client.coins.fetch("wilder-world", {
-    market_data: true,
-  });
-  const ethData = await client.coins.fetch("ethereum", { market_data: true });
+  const wildToken = await getWildToken(config.provider);
+  const wEthToken = await getWethToken(config.provider);
+  const lpToken = await getLpToken(config.provider);
 
-  const wildPriceUsd = wildData.data.market_data.current_price.usd;
-  const ethPriceUsd = ethData.data.market_data.current_price.usd;
-
-  const wildToken = new ethers.Contract(
-    addresses.WILD,
-    erc20Abi,
-    config.provider
-  );
-  const wEthToken = new ethers.Contract(
-    addresses.wETH,
-    erc20Abi,
-    config.provider
-  );
-  const lpToken = new ethers.Contract(
-    addresses.UniswapPool,
-    erc20Abi,
-    config.provider
-  );
+  const wildPrice = await wildPriceUsd();
+  const ethPrice = await ethPriceUsd();
 
   const wildBalance = await wildToken.balanceOf(addresses.UniswapPool);
   const wEthBalance = await wEthToken.balanceOf(addresses.UniswapPool);
@@ -97,8 +86,8 @@ export const calculatePoolApr = async (
   const lpTokenTotalSupply = await lpToken.totalSupply();
 
   const lpWildTvl =
-    wildPriceUsd * Number(ethers.utils.formatEther(wildBalance));
-  const lpWEthTvl = ethPriceUsd * Number(ethers.utils.formatEther(wEthBalance));
+    wildPrice * Number(ethers.utils.formatEther(wildBalance));
+  const lpWEthTvl = ethPrice * Number(ethers.utils.formatEther(wEthBalance));
 
   // TVL of Uniswap pool
   const lpTvl = lpWildTvl + lpWEthTvl;
@@ -110,6 +99,6 @@ export const calculatePoolApr = async (
     lpTokenPrice * Number(ethers.utils.formatEther(lpTokenPoolBalance));
 
   const lpTokenPoolApr =
-    ((rewardsInNextYear * wildPriceUsd) / lpTokenPoolTvl) * weightRatio;
+    ((rewardsInNextYear * wildPrice) / lpTokenPoolTvl) * weightRatio;
   return lpTokenPoolApr * 100; // as percentage
 };

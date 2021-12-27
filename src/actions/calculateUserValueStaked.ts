@@ -1,9 +1,11 @@
 import { ethers } from "ethers";
 import { getAllDeposits } from ".";
 import { SubConfig, UserValue } from "../types";
+import { lpTokenPriceUsd, wildPriceUsd } from "./helpers";
 
 export const calculateUserValueStaked = async (
   userAddress: string,
+  isLpTokenPool: boolean,
   config: SubConfig
 ): Promise<UserValue> => {
   if (!ethers.utils.isAddress(userAddress))
@@ -24,8 +26,18 @@ export const calculateUserValueStaked = async (
     }
   }
 
+  let tokenPrice;
+
+  if (isLpTokenPool) {
+    tokenPrice = await lpTokenPriceUsd(config.provider)
+  } else {
+    tokenPrice = await wildPriceUsd();
+  }
+
   return {
     userValueLocked: userValueLocked,
+    userValueLockedUsd: userValueLocked.toNumber() * tokenPrice,
     userValueUnlocked: userValueUnlocked,
-  } as UserValue;
+    userValueUnlockedUsd: userValueUnlocked.toNumber() * tokenPrice,
+  };
 };

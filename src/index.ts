@@ -46,7 +46,7 @@ export const createInstance = (config: Config): Instance => {
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
 const getPoolInstance = (
   config: SubConfig,
-  isLpTokenPool: boolean
+  isLpTokenPool: boolean // flag for if we are using the liquidity pool token
 ): PoolInstance => {
   const instance: PoolInstance = {
     address: config.address,
@@ -117,20 +117,17 @@ const getPoolInstance = (
       return poolToken;
     },
     userValueStaked: async (userAddress: string): Promise<UserValue> => {
-      // Will return a user's total deposit value that is both locked and unlocked
+      // Will return a user's total deposit value that is both locked and unlocked,
+      // as well as each of those values in USD for formatting
       // e.g. { valueLocked: _, valueUnlocked: _ }
-      return await actions.calculateUserValueStaked(userAddress, config);
+
+      return await actions.calculateUserValueStaked(userAddress, isLpTokenPool, config);
     },
     poolApr: async (): Promise<number> => {
-      const providerNetwork = await config.provider.getNetwork();
-      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
-      return await actions.calculatePoolApr(network, isLpTokenPool, config);
+      return await actions.calculatePoolAnnualPercentageRate(isLpTokenPool, config);
     },
     poolTvl: async (): Promise<TotalValueLocked> => {
-      const providerNetwork = await config.provider.getNetwork();
-      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
       return await actions.calculatePoolTotalValueLocked(
-        network,
         isLpTokenPool,
         config
       );

@@ -13,93 +13,102 @@ chai.use(chaiAsPromised.default);
 const expect = chai.expect;
 dotenv.config();
 
-describe("Test Custom SDK Logic", async () => {
+describe("Test Custom SDK Logic", () => {
   const config: Config = {
     provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"]),
-    factoryAddress: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E",
-    lpTokenPoolAddress: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
-    wildPoolAddress: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
+    factoryAddress: "0xF133faFd49f4671ac63EE3a3aE7E7C4C9B84cE4a",
+    lpTokenPoolAddress: "0x9E87a268D42B0Aba399C121428fcE2c626Ea01FF",
+    wildPoolAddress: "0x3aC551725ac98C5DCdeA197cEaaE7cDb8a71a2B4",
   };
 
   // Dummy address pulled from Ethers VoidSigner docs
   const staker = new ethers.VoidSigner("0x8ba1f109551bD432803012645Ac136ddd64DBA72")
+  
   const subConfig: SubConfig = {
     address: config.wildPoolAddress,
     provider: config.provider,
   };
+  const lpSubConfig: SubConfig = {
+    address: config.lpTokenPoolAddress,
+    provider: config.provider,
+  }
 
-  // describe("calculatePoolApr", async () => {
-  //   it("runs", async () => {
-  //     // Mock Factory
-  //     const mockPoolFactory1 = {
-  //       getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); },
-  //       totalWeight: () => { return ethers.BigNumber.from("1000"); },
-  //       getPoolData: () => {
-  //         return ["0x0", "0x1", ethers.BigNumber.from("200"), false]
-  //       }
-  //     }
-  //     const mockFactory1 = ImportMock.mockFunction(
-  //       helpers,
-  //       "getPoolFactory",
-  //       mockPoolFactory1
-  //     );
+  describe("calculatePoolApr", () => {
+    it("runs", async () => {
+      // Mock Factory
+      const mockPoolFactory1 = {
+        getRewardTokensPerBlock: () => { return ethers.utils.parseEther("4"); },
+        totalWeight: () => { return ethers.BigNumber.from("1000"); },
+        getPoolData: () => {
+          return ["0x0", "0x1", ethers.BigNumber.from("150"), false]
+        }
+      }
+      const mockFactory1 = ImportMock.mockFunction(
+        helpers,
+        "getPoolFactory",
+        mockPoolFactory1
+      );
 
-  //     // Mock Pool
-  //     const mockCorePool = {
-  //       poolTokenReserve: () => { return ethers.BigNumber.from("10000000") },
-  //       factory: () => { return "0x0" },
-  //       provider: config.provider
-  //     }
-  //     const mockPool = ImportMock.mockFunction(
-  //       helpers,
-  //       "getCorePool",
-  //       mockCorePool
-  //     )
+      // Mock Pool
+      const mockCorePool = {
+        poolToken: () => { return "0x0" },
+        // 18 decimals of precision, value pulled from etherscan
+        poolTokenReserve: () => { return ethers.BigNumber.from("144062219306360209234098") },
+        factory: () => { return "0x0" },
+        provider: config.provider,
+        address: config.wildPoolAddress
+      }
+      const mockPool = ImportMock.mockFunction(
+        helpers,
+        "getCorePool",
+        mockCorePool
+      )
 
-  //     const wildApr = await actions.calculatePoolApr(false, subConfig);
-  //     expect(wildApr).to.equal(47.5814)
+      // Call as wildStakingPool
+      const wildApr = await actions.calculatePoolAnnualPercentageRate(false, subConfig);
+      console.log(wildApr);
 
-  //     mockFactory1.restore();
+      mockFactory1.restore();
 
-  //     // Mock Factory Again
-  //     const mockPoolFactory2 = {
-  //       getRewardTokensPerBlock: () => { return ethers.utils.parseUnits("1000", 18); },
-  //       totalWeight: () => { return ethers.BigNumber.from("1000"); },
-  //       getPoolData: () => {
-  //         return ["0x0", "0x1", ethers.BigNumber.from("800"), false]
-  //       }
-  //     }
+      // Mock Factory Again
+      const mockPoolFactory2 = {
+        getRewardTokensPerBlock: () => { return ethers.utils.parseEther("4"); },
+        totalWeight: () => { return ethers.BigNumber.from("1000"); },
+        getPoolData: () => {
+          return ["0x0", "0x1", ethers.BigNumber.from("850"), false]
+        }
+      }
 
-  //     const mockFactory2 = ImportMock.mockFunction(
-  //       helpers,
-  //       "getPoolFactory",
-  //       mockPoolFactory2
-  //     );
+      ImportMock.mockFunction(
+        helpers,
+        "getPoolFactory",
+        mockPoolFactory2
+      );
 
-  //     const lpSubConfig = {
-  //       address: config.lpTokenPoolAddress,
-  //       provider: config.provider
-  //     }
-
-  //     // Fails because we haven't deployed mainnet pools yet.
-  //     const lpTokenApr = await actions.calculatePoolApr(true, lpSubConfig);
-  //     expect(lpTokenApr).to.equal(Infinity)
-  //     mockFactory2.restore();
-  //     mockPool.restore();
-  //   })
-  // });
-  // describe("calculatePoolTotalValueLocked", async () => {
-  //   it("runs", async () => {
-  //     const res = await actions.calculatePoolTotalValueLocked("kovan", false, subConfig);
-  //   });
-  // })
-  describe("calculateUserValueStaked", async () => {
+      // Call as lpTokenStakingPool
+      const lpTokenPoolApr = await actions.calculatePoolAnnualPercentageRate(true, lpSubConfig);
+      console.log(lpTokenPoolApr)
+    });
+  });
+  describe("calculatePoolTotalValueLocked", () => {
+    it("runs as wild pool", async () => {
+      const res = await actions.calculatePoolTotalValueLocked(false, subConfig);
+      console.log(res);
+    });
+    it("runs as lp token pool", async () => {
+      const res = await actions.calculatePoolTotalValueLocked(true, lpSubConfig);
+      console.log(res);
+    });
+  })
+  describe("calculateUserValueStaked", () => {
     it("Fails when a user provides an invalid address", async () => {
+      const address = await staker.getAddress()
       await expect(
-        actions.calculateUserValueStaked("0x0", subConfig)
+        actions.calculateUserValueStaked("0x0", false, subConfig)
       ).to.be.rejectedWith("Must provide a valid user address");
     });
     it("Returns nothing when the user has no deposits", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         getDepositsLength: async () => {
           return ethers.BigNumber.from("0");
@@ -110,15 +119,25 @@ describe("Test Custom SDK Logic", async () => {
         "getCorePool",
         mockCorePool
       );
-      const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueStaked(
-        address,
+      const stakerAddress = await staker.getAddress();
+      const wildTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        false,
         subConfig
       );
-      expect(deposits.userValueLocked.toNumber()).to.equal(0);
-      mock.restore();
+      const lpTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        true,
+        lpSubConfig
+      )
+      const wildValue = wildTokenDeposits.userValueLocked.toNumber();
+      expect(wildValue).to.equal(0);
+      
+      const lpTokenValue = lpTokenDeposits.userValueLocked.toNumber();
+      expect(lpTokenValue).to.equal(0);
     });
     it("Doesn't add deposits that are locked", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         getDepositsLength: async () => {
           return ethers.BigNumber.from("1");
@@ -135,16 +154,28 @@ describe("Test Custom SDK Logic", async () => {
         "getCorePool",
         mockCorePool
       );
-      const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueStaked(
-        address,
+      const stakerAddress = await staker.getAddress();
+
+      // Call as wild token pool
+      const wildTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        false,
         subConfig
       );
-      expect(deposits.userValueLocked.toNumber()).to.equal(100);
-      expect(deposits.userValueUnlocked.toNumber()).to.equal(0);
-      mock.restore();
+      expect(wildTokenDeposits.userValueLocked.toNumber()).to.equal(100);
+      expect(wildTokenDeposits.userValueUnlocked.toNumber()).to.equal(0);
+
+      // Call as liquidity token pool
+      const lpTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        false,
+        subConfig
+      );
+      expect(lpTokenDeposits.userValueLocked.toNumber()).to.equal(100);
+      expect(lpTokenDeposits.userValueUnlocked.toNumber()).to.equal(0);
     });
     it("Adds deposits that are unlocked", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         getDepositsLength: async () => {
           return ethers.BigNumber.from("1");
@@ -161,18 +192,30 @@ describe("Test Custom SDK Logic", async () => {
         "getCorePool",
         mockCorePool
       );
-      const address = await staker.getAddress();
-      const deposits = await actions.calculateUserValueStaked(
-        address,
+      const stakerAddress = await staker.getAddress();
+
+      // Call as wild token pool
+      const wildTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        false,
         subConfig
       );
-      expect(deposits.userValueLocked.toNumber()).to.equal(0);
-      expect(deposits.userValueUnlocked.toNumber()).to.equal(100);
-      mock.restore();
+      expect(wildTokenDeposits.userValueLocked.toNumber()).to.equal(0);
+      expect(wildTokenDeposits.userValueUnlocked.toNumber()).to.equal(100);
+
+      // Call as liquidity token pool
+      const lpTokenDeposits = await actions.calculateUserValueStaked(
+        stakerAddress,
+        false,
+        subConfig
+      );
+      expect(lpTokenDeposits.userValueLocked.toNumber()).to.equal(0);
+      expect(lpTokenDeposits.userValueUnlocked.toNumber()).to.equal(100);
     });
   });
-  describe("changePoolWeight", async () => {
+  describe("changePoolWeight", () => {
     it("Fails when given an invalid pool address", async () => {
+      ImportMock.restore();
       await expect(
         actions.changePoolWeight(
           "0x0",
@@ -209,6 +252,7 @@ describe("Test Custom SDK Logic", async () => {
       ).to.be.rejectedWith("Must provide a valid pool weight");
     });
     it("Fails when called by an account that is not the owner of the given pool", async () => {
+      ImportMock.restore();
       const mockPoolFactory = {
         connect: () => {
           return {
@@ -236,11 +280,11 @@ describe("Test Custom SDK Logic", async () => {
       ).to.be.rejectedWith(
         "Only the pool factory owner can modify the pool weight"
       );
-      mock.restore();
     });
   });
-  describe("getAllDeposits", async () => {
+  describe("getAllDeposits", () => {
     it("Returns an empty array when no deposits are found", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         getDepositsLength: async () => {
           return ethers.BigNumber.from("0");
@@ -256,9 +300,9 @@ describe("Test Custom SDK Logic", async () => {
         subConfig
       );
       expect(deposits.length).equals(0);
-      mock.restore();
     });
     it("Returns a populated array when there are deposits", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         getDepositsLength: async () => {
           return ethers.BigNumber.from("1");
@@ -277,10 +321,9 @@ describe("Test Custom SDK Logic", async () => {
         subConfig
       );
       expect(deposits.length).equals(1);
-      mock.restore();
     });
   });
-  describe("pendingYieldRewards", async () => {
+  describe("pendingYieldRewards", () => {
     it("Fails when given an invalid address", async () => {
       await expect(
         actions.pendingYieldRewards("0x0", subConfig)
@@ -290,8 +333,9 @@ describe("Test Custom SDK Logic", async () => {
       ).to.be.rejectedWith("Must provide a valid user address");
     });
   });
-  describe("processRewards", async () => {
+  describe("processRewards", () => {
     it("Fails when there are no rewards to process", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         pendingYieldRewards: () => {
           return ethers.BigNumber.from("0");
@@ -305,27 +349,9 @@ describe("Test Custom SDK Logic", async () => {
       await expect(
         actions.processRewards(staker, subConfig)
       ).to.be.rejectedWith("No rewards to process yet");
-      mock.restore();
     });
   });
-  describe("stake", async () => {
-    it("runs", async () => {
-      // whole thing
-      const config: Config = {
-        provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"]),
-        wildPoolAddress: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
-        lpTokenPoolAddress: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
-        factoryAddress: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E"
-      }
-      const privateKey = process.env["WALLET_PRIVATE_KEY"];
-      if (!privateKey) throw Error("No private key found, cannot create a signing wallet");
-
-      const staker = new ethers.Wallet(privateKey, config.provider);
-
-      const instance = createInstance(config);
-
-      await instance.wildPool.stake("150", ethers.BigNumber.from("0"), staker);
-    });
+  describe("stake", () => {
     it("Fails when trying to stake nothing or a negative value", async () => {
       const lockUntil = ethers.BigNumber.from("1");
       await expect(
@@ -336,13 +362,14 @@ describe("Test Custom SDK Logic", async () => {
       ).to.be.rejectedWith("Cannot call to stake with no value given");
     });
   });
-  describe("unstake", async () => {
+  describe("unstake", () => {
     it("Fails when calling to unstake with 0 amount", async () => {
       await expect(
         actions.unstake("0", "0", staker, subConfig)
       ).to.be.rejectedWith("You can only unstake a non-zero amount of tokens");
     });
     it("Fails when calling to unstake with no deposits", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         connect: () => {
           return {
@@ -363,9 +390,9 @@ describe("Test Custom SDK Logic", async () => {
       await expect(
         actions.unstake("0", "1", staker, subConfig)
       ).to.be.rejectedWith("There are no deposits for you to unstake");
-      mock.restore();
     });
     it("Fails when you try to unstake more than you have staked", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         connect: () => {
           return {
@@ -391,9 +418,9 @@ describe("Test Custom SDK Logic", async () => {
       ).to.be.rejectedWith(
         "You cannot unstake more than the original stake amount"
       );
-      mock.restore();
     });
     it("Fails when you try to remove a deposit that is still locked", async () => {
+      ImportMock.restore();
       const mockCorePool = {
         connect: () => {
           return {
@@ -422,10 +449,9 @@ describe("Test Custom SDK Logic", async () => {
       ).to.be.rejectedWith(
         "You are not able to unstake when your deposit is still locked"
       );
-      mock.restore();
     });
   });
-  describe("updateStakeLock", async () => {
+  describe("updateStakeLock", () => {
     it("Fails when trying to stake nothing or a negative value", async () => {
       let lockUntil = ethers.BigNumber.from("0");
       await expect(
