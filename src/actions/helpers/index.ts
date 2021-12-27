@@ -26,10 +26,10 @@ export const networkAddresses = {
 };
 
 export const getWildToken = async (
-  network: string,
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
-  const address = network === "mainnet" ?
+  const network = await provider.getNetwork();
+  let address = network.chainId === 1 ?
     networkAddresses.mainnet.WILD :
     networkAddresses.kovan.WILD;
 
@@ -43,10 +43,10 @@ export const getWildToken = async (
 }
 
 export const getWethToken = async (
-  network: string,
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
-  const address = network === "mainnet" ?
+  const network = await provider.getNetwork();
+  const address = network.chainId === 1 ?
     networkAddresses.mainnet.wETH :
     networkAddresses.kovan.wETH;
 
@@ -60,10 +60,10 @@ export const getWethToken = async (
 }
 
 export const getLpToken = async (
-  network: string,
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
-  const address = network === "mainnet" ?
+  const network = await provider.getNetwork();
+  const address = network.chainId === 1 ?
     networkAddresses.mainnet.UniswapPool :
     networkAddresses.kovan.UniswapPool;
 
@@ -94,15 +94,18 @@ export const ethPriceUsd = async () => {
   return ethPriceUsd;
 }
 
-export const lpTokenPriceUsd = async (network: string, provider: ethers.providers.Provider) => {
-  const uniswapPool = network === "mainnet" ? networkAddresses.mainnet.UniswapPool : networkAddresses.kovan.UniswapPool;
+export const lpTokenPriceUsd = async (provider: ethers.providers.Provider) => {
+  const network = await provider.getNetwork();
+  const uniswapPool = network.chainId === 1 ?
+  networkAddresses.mainnet.UniswapPool :
+  networkAddresses.kovan.UniswapPool;
 
   const wildPrice = await wildPriceUsd();
   const ethPrice = await ethPriceUsd();
-  const lpToken = await getLpToken(network, provider);
-
-  const wildToken = await getWildToken(network, provider);
-  const wethToken = await getWethToken(network, provider);
+  
+  const lpToken = await getLpToken(provider);
+  const wildToken = await getWildToken(provider);
+  const wethToken = await getWethToken(provider);
 
   const wildBalance = await wildToken.balanceOf(uniswapPool);
   const wethBalance = await wethToken.balanceOf(uniswapPool);

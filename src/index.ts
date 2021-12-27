@@ -121,20 +121,13 @@ const getPoolInstance = (
       // as well as each of those values in USD for formatting
       // e.g. { valueLocked: _, valueUnlocked: _ }
 
-      const providerNetwork = await config.provider.getNetwork();
-      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
-      return await actions.calculateUserValueStaked(userAddress, isLpTokenPool, network, config);
+      return await actions.calculateUserValueStaked(userAddress, isLpTokenPool, config);
     },
     poolApr: async (): Promise<number> => {
-      const providerNetwork = await config.provider.getNetwork();
-      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
-      return await actions.calculatePoolApr(network, isLpTokenPool, config);
+      return await actions.calculatePoolApr(isLpTokenPool, config);
     },
     poolTvl: async (): Promise<TotalValueLocked> => {
-      const providerNetwork = await config.provider.getNetwork();
-      const network = providerNetwork.chainId === 1 ? "mainnet" : "kovan";
       return await actions.calculatePoolTotalValueLocked(
-        network,
         isLpTokenPool,
         config
       );

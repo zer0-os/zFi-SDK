@@ -17,18 +17,19 @@ const erc20Abi = [
 ];
 
 export const calculatePoolApr = async (
-  network: string,
   isLpTokenPool: boolean,
   config: SubConfig
 ): Promise<number> => {
   let addresses;
-  switch (network) {
-    case "mainnet":
+  const network = await config.provider.getNetwork();
+  switch (network.chainId) {
+    case 1:
       addresses = networkAddresses.mainnet;
       break;
-    case "kovan":
+    case 42:
       addresses = networkAddresses.kovan;
     default:
+      addresses = networkAddresses.kovan;
       break;
   }
 
@@ -70,9 +71,9 @@ export const calculatePoolApr = async (
     return apr * 100; // as percentage
   }
 
-  const wildToken = await getWildToken(network, config.provider);
-  const wEthToken = await getWethToken(network, config.provider);
-  const lpToken = await getLpToken(network, config.provider);
+  const wildToken = await getWildToken(config.provider);
+  const wEthToken = await getWethToken(config.provider);
+  const lpToken = await getLpToken(config.provider);
 
   const wildPrice = await wildPriceUsd();
   const ethPrice = await ethPriceUsd();

@@ -5,19 +5,19 @@ import { getCorePool } from "../helpers";
 import { getLpToken, lpTokenPriceUsd, networkAddresses, wildPriceUsd } from "./helpers";
 
 export const calculatePoolTotalValueLocked = async (
-  network: string,
   isLpTokenPool: boolean,
   config: SubConfig
 ): Promise<TotalValueLocked> => {
-  console.log("test");
   let addresses;
-  switch (network) {
-    case "mainnet":
+  const network = await config.provider.getNetwork();
+  switch (network.chainId) {
+    case 1:
       addresses = networkAddresses.mainnet;
       break;
-    case "kovan":
+    case 42:
       addresses = networkAddresses.kovan;
     default:
+      addresses = networkAddresses.kovan;
       break;
   }
 
@@ -42,13 +42,13 @@ export const calculatePoolTotalValueLocked = async (
     } as TotalValueLocked;
   }
 
-  const lpToken = await getLpToken(network, config.provider);
+  const lpToken = await getLpToken(config.provider);
 
   const lpTokenPoolBalance = await lpToken.balanceOf(
     addresses.lpTokenStakingPool
   );
 
-  const lpTokenPrice = await lpTokenPriceUsd(network, config.provider);
+  const lpTokenPrice = await lpTokenPriceUsd(config.provider);
 
   const lpTokenPoolTvl =
     lpTokenPrice * Number(ethers.utils.formatEther(lpTokenPoolBalance));

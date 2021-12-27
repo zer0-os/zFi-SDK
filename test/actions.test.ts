@@ -60,7 +60,7 @@ describe("Test Custom SDK Logic", () => {
       )
 
       // Call as wildStakingPool
-      const wildApr = await actions.calculatePoolApr("mainnet", false, subConfig);
+      const wildApr = await actions.calculatePoolApr(false, subConfig);
       console.log(wildApr);
 
       mockFactory1.restore();
@@ -74,7 +74,7 @@ describe("Test Custom SDK Logic", () => {
         }
       }
 
-      const mockFactory2 = ImportMock.mockFunction(
+      ImportMock.mockFunction(
         helpers,
         "getPoolFactory",
         mockPoolFactory2
@@ -86,17 +86,17 @@ describe("Test Custom SDK Logic", () => {
       }
 
       // Call as lpTokenStakingPool
-      const lpTokenPoolApr = await actions.calculatePoolApr("mainnet", true, lpSubConfig);
+      const lpTokenPoolApr = await actions.calculatePoolApr(true, lpSubConfig);
       console.log(lpTokenPoolApr)
     });
   });
   describe("calculatePoolTotalValueLocked", () => {
     it("runs as wild pool", async () => {
-      const res = await actions.calculatePoolTotalValueLocked("mainnet", false, subConfig);
+      const res = await actions.calculatePoolTotalValueLocked(false, subConfig);
       console.log(res);
     });
     it("runs as lp token pool", async () => {
-      const res = await actions.calculatePoolTotalValueLocked("mainnet", true, subConfig);
+      const res = await actions.calculatePoolTotalValueLocked(true, subConfig);
       console.log(res);
     });
   })
@@ -104,7 +104,7 @@ describe("Test Custom SDK Logic", () => {
     it("Fails when a user provides an invalid address", async () => {
       const address = await staker.getAddress()
       await expect(
-        actions.calculateUserValueStaked("0x0", false, "mainnet", subConfig)
+        actions.calculateUserValueStaked("0x0", false, subConfig)
       ).to.be.rejectedWith("Must provide a valid user address");
     });
     it("Returns nothing when the user has no deposits", async () => {
@@ -123,7 +123,6 @@ describe("Test Custom SDK Logic", () => {
       const deposits = await actions.calculateUserValueStaked(
         address,
         false,
-        "mainnet",
         subConfig
       );
       const value = deposits.userValueLocked.toNumber();
@@ -151,7 +150,6 @@ describe("Test Custom SDK Logic", () => {
       const deposits = await actions.calculateUserValueStaked(
         address,
         false,
-        "mainnet",
         subConfig
       );
       expect(deposits.userValueLocked.toNumber()).to.equal(100);
@@ -179,7 +177,6 @@ describe("Test Custom SDK Logic", () => {
       const deposits = await actions.calculateUserValueStaked(
         address,
         false,
-        "mainnet",
         subConfig
       );
       expect(deposits.userValueLocked.toNumber()).to.equal(0);
