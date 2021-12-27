@@ -46,7 +46,7 @@ export const createInstance = (config: Config): Instance => {
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
 const getPoolInstance = (
   config: SubConfig,
-  isLpTokenPool: boolean
+  isLpTokenPool: boolean // flag for if we are using the liquidity pool token
 ): PoolInstance => {
   const instance: PoolInstance = {
     address: config.address,
@@ -124,7 +124,7 @@ const getPoolInstance = (
       return await actions.calculateUserValueStaked(userAddress, isLpTokenPool, config);
     },
     poolApr: async (): Promise<number> => {
-      return await actions.calculatePoolApr(isLpTokenPool, config);
+      return await actions.calculatePoolAnnualPercentageRate(isLpTokenPool, config);
     },
     poolTvl: async (): Promise<TotalValueLocked> => {
       return await actions.calculatePoolTotalValueLocked(
