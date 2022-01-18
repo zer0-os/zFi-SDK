@@ -34,10 +34,16 @@ export const calculateUserValueStaked = async (
     tokenPrice = await wildPriceUsd();
   }
 
+  const formattedValueLocked = ethers.utils.formatEther(userValueLocked);
+  const formattedValueUnlocked = ethers.utils.formatEther(userValueUnlocked);
+
+  const userValueLockedUsd = Number(formattedValueLocked) * tokenPrice;
+  const userValueUnlockedUsd = Number(formattedValueUnlocked) * tokenPrice;
+
   return {
     userValueLocked: userValueLocked,
-    userValueLockedUsd: userValueLocked.toNumber() * tokenPrice,
+    userValueLockedUsd: userValueLockedUsd,
     userValueUnlocked: userValueUnlocked,
-    userValueUnlockedUsd: userValueUnlocked.toNumber() * tokenPrice,
+    userValueUnlockedUsd: userValueUnlockedUsd
   };
 };
