@@ -14,18 +14,17 @@ export const getAllDeposits = async (
 
   if (depositLength.eq(ethers.BigNumber.from("0"))) return [];
 
-  const deposits: Deposit[] = [];
-
+  const promiseArray: Promise<any>[] = [];
+  
   for (let i = 0; i < depositLength.toNumber(); i++) {
-    const deposit = await corePool.getDeposit(
+    const depositPromise = corePool.getDeposit(
       address,
       ethers.BigNumber.from(i)
     );
-    // Deposits are left in array even after being unstaked
-    // Must check for empty deposits and only add valid,
-    // non-zero deposits
-    if (!deposit.tokenAmount.eq(ethers.BigNumber.from("0")))
-      deposits.push({ depositId: i, ...deposit });
+    promiseArray.push(depositPromise);
   }
+
+  let deposits = (await Promise.all(promiseArray)).map<Deposit>(d => { return {...d} as Deposit });
+  deposits = deposits.filter(deposit => !deposit.tokenAmount.eq(ethers.BigNumber.from("0")));
   return deposits;
 };
