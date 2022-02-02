@@ -4,9 +4,10 @@ import * as ethers from "ethers";
 import * as dotenv from "dotenv";
 import { ImportMock } from "ts-mock-imports";
 
-import { Config, SubConfig } from "../src/types";
+import { Config, Deposit, SubConfig } from "../src/types";
 import * as actions from "../src/actions";
 import * as helpers from "../src/helpers";
+import { Console } from "console";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -111,7 +112,7 @@ describe("Test Custom SDK Logic", () => {
       const brettsTestAddress = "0x0DDdA1dd73C063Af0A8D4Df0CDd2a6818685f9CE"
       const wildPool = await helpers.getCorePool(wildSubConfig); 
       const depositsLength = await wildPool.getDepositsLength(brettsTestAddress);
-      expect(depositsLength); // 67 from kovan etherscan
+      expect(depositsLength); // 69 from kovan etherscan
 
       const userValueLocked = await actions.calculateUserValueStaked(
         brettsTestAddress,
@@ -335,6 +336,13 @@ describe("Test Custom SDK Logic", () => {
       );
       expect(deposits.length).equals(1);
     });
+    it("Tests the `promise.all` functionality speed", async () => {
+      ImportMock.restore();
+      const brettsTestAddress = "0x0DDdA1dd73C063Af0A8D4Df0CDd2a6818685f9CE";
+
+      const allDeposits: Deposit[] = await actions.getAllDeposits(brettsTestAddress, wildSubConfig);
+      console.log(allDeposits);
+    })
   });
   describe("pendingYieldRewards", () => {
     it("Fails when given an invalid address", async () => {
