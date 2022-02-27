@@ -15,7 +15,7 @@ export const getAllDeposits = async (
   if (depositLength.eq(ethers.BigNumber.from("0"))) return [];
 
   const promiseArray: Promise<any>[] = [];
-  
+
   for (let i = 0; i < depositLength.toNumber(); i++) {
     const depositPromise = corePool.getDeposit(
       address,
@@ -24,7 +24,11 @@ export const getAllDeposits = async (
     promiseArray.push(depositPromise);
   }
 
-  let deposits = (await Promise.all(promiseArray)).map<Deposit>(d => { return {...d} as Deposit });
-  deposits = deposits.filter(deposit => !deposit.tokenAmount.eq(ethers.BigNumber.from("0")));
+  let deposits = (await Promise.all(promiseArray)).map<Deposit>((d, i) => {
+    return { depositId: i, ...d } as Deposit;
+  });
+  deposits = deposits.filter(
+    (deposit) => !deposit.tokenAmount.eq(ethers.BigNumber.from("0"))
+  );
   return deposits;
 };
