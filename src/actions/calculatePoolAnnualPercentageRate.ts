@@ -48,15 +48,10 @@ export const calculatePoolAnnualPercentageRate = async (
     provider: provider,
   });
 
-  const promises = [
-    pool.poolToken(),
-    factory.totalWeight(),
-    factory.getRewardTokensPerBlock(),
-  ];
+  const poolToken = await pool.poolToken();
+  const totalWeight = await factory.totalWeight();
 
-  const [poolToken, totalWeight, totalRewardsPerBlock] = await Promise.all(
-    promises
-  );
+  const totalRewardsPerBlock = await factory.getRewardTokensPerBlock();
 
   const poolData = await factory.getPoolData(String(poolToken));
 
@@ -65,7 +60,9 @@ export const calculatePoolAnnualPercentageRate = async (
   const blocksPerYear = 2379070;
 
   const rewardsInNextYear =
-    Number(ethers.utils.formatUnits(totalRewardsPerBlock, 18)) * blocksPerYear;
+    Number(
+      ethers.utils.formatUnits(ethers.BigNumber.from(totalRewardsPerBlock), 18)
+    ) * blocksPerYear;
 
   // If token pool, we have what we need APR
   if (!isLpTokenPool) {

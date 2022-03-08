@@ -1,3 +1,5 @@
+/// <reference path="../node_modules/@types/mocha/index.d.ts" />
+
 import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as ethers from "ethers";
@@ -336,13 +338,6 @@ describe("Test Custom SDK Logic", () => {
       );
       expect(deposits.length).equals(1);
     });
-    it("Tests the `promise.all` functionality speed", async () => {
-      ImportMock.restore();
-      const brettsTestAddress = "0x0DDdA1dd73C063Af0A8D4Df0CDd2a6818685f9CE";
-
-      const allDeposits: Deposit[] = await actions.getAllDeposits(brettsTestAddress, wildSubConfig);
-      console.log(allDeposits);
-    })
   });
   describe("pendingYieldRewards", () => {
     it("Fails when given an invalid address", async () => {
