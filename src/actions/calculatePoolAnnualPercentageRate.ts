@@ -8,7 +8,7 @@ import {
   getWethToken,
   getWildToken,
   networkAddresses,
-  wildPriceUsd
+  wildPriceUsd,
 } from "./helpers";
 
 const erc20Abi = [
@@ -48,15 +48,20 @@ export const calculatePoolAnnualPercentageRate = async (
     provider: provider,
   });
 
-  const poolToken = await pool.poolToken();
+  const promises = [
+    pool.poolToken(),
+    factory.totalWeight(),
+    factory.getRewardTokensPerBlock(),
+  ];
 
-  const poolData = await factory.getPoolData(poolToken);
+  const [poolToken, totalWeight, totalRewardsPerBlock] = await Promise.all(
+    promises
+  );
+
+  const poolData = await factory.getPoolData(String(poolToken));
+
   const poolWeight = poolData[2];
-  const totalWeight = await factory.totalWeight();
-
-  const weightRatio = poolWeight / totalWeight;
-
-  const totalRewardsPerBlock = await factory.getRewardTokensPerBlock();
+  const weightRatio = poolWeight / Number(totalWeight);
   const blocksPerYear = 2379070;
 
   const rewardsInNextYear =
@@ -71,23 +76,32 @@ export const calculatePoolAnnualPercentageRate = async (
     return apr * 100; // as percentage
   }
 
-  const wildToken = await getWildToken(config.provider);
-  const wEthToken = await getWethToken(config.provider);
-  const lpToken = await getLpToken(config.provider);
+  const tokenPromises = [
+    getWildToken(config.provider),
+    getWethToken(config.provider),
+    getLpToken(config.provider),
+  ];
 
-  const wildPrice = await wildPriceUsd();
-  const ethPrice = await ethPriceUsd();
+  const [wildToken, wethToken, lpToken] = await Promise.all(tokenPromises);
 
-  const wildBalance = await wildToken.balanceOf(addresses.UniswapPool);
-  const wEthBalance = await wEthToken.balanceOf(addresses.UniswapPool);
-  const lpTokenPoolBalance = await lpToken.balanceOf(
-    addresses.lpTokenStakingPool
+  const pricePromises = [wildPriceUsd(), ethPriceUsd()];
+
+  const [wildPrice, ethPrice] = await Promise.all(pricePromises);
+
+  let balancePromises = [
+    wildToken.balanceOf(addresses.UniswapPool) as ethers.BigNumber,
+    wethToken.balanceOf(addresses.UniswapPool) as ethers.BigNumber,
+    lpToken.totalSupply() as ethers.BigNumber,
+  ];
+
+  const [wildBalance, wethBalance, lpTokenPoolBalance] = await Promise.all(
+    balancePromises
   );
+
   const lpTokenTotalSupply = await lpToken.totalSupply();
 
-  const lpWildTvl =
-    wildPrice * Number(ethers.utils.formatEther(wildBalance));
-  const lpWEthTvl = ethPrice * Number(ethers.utils.formatEther(wEthBalance));
+  const lpWildTvl = wildPrice * Number(ethers.utils.formatEther(wildBalance));
+  const lpWEthTvl = ethPrice * Number(ethers.utils.formatEther(wethBalance));
 
   // TVL of Uniswap pool
   const lpTvl = lpWildTvl + lpWEthTvl;

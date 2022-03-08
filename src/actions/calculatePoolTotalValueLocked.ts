@@ -2,7 +2,12 @@ import * as ethers from "ethers";
 import { SubConfig, TotalValueLocked } from "../types";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool } from "../helpers";
-import { getLpToken, lpTokenPriceUsd, networkAddresses, wildPriceUsd } from "./helpers";
+import {
+  getLpToken,
+  lpTokenPriceUsd,
+  networkAddresses,
+  wildPriceUsd,
+} from "./helpers";
 
 export const calculatePoolTotalValueLocked = async (
   isLpTokenPool: boolean,
@@ -28,13 +33,17 @@ export const calculatePoolTotalValueLocked = async (
 
   const pool: ZStakeCorePool = await getCorePool(config);
 
-  const balance = await pool.poolTokenReserve();
+  const promises = [pool.poolTokenReserve(), wildPriceUsd()];
 
-  const wildPrice = await wildPriceUsd();
+  const [balance, wildPrice] = await Promise.all<ethers.BigNumber | number>(
+    promises
+  );
 
-  // If token pool, we have what we need to show APR
+  // If wild pool, we have what we need to show APR
   if (!isLpTokenPool) {
-    const tvl = Number(ethers.utils.formatEther(balance)) * wildPrice;
+    // `wildPriceUsd()` returns a number already, but `wildPrice` is
+    // type `ethers.BigNumber | number`, so must be explicit for compiler
+    const tvl = Number(wildPrice) * Number(ethers.utils.formatEther(balance));
 
     return {
       numberOfTokens: Number(ethers.utils.formatEther(balance)),
@@ -44,14 +53,17 @@ export const calculatePoolTotalValueLocked = async (
 
   const lpToken = await getLpToken(config.provider);
 
-  const lpTokenPoolBalance = await lpToken.balanceOf(
-    addresses.lpTokenStakingPool
+  let lpTokenPoolPromises = [
+    lpToken.balanceOf(addresses.lpTokenStakingPool),
+    lpTokenPriceUsd(config.provider),
+  ];
+
+  const [lpTokenPoolBalance, lpTokenPrice] = await Promise.all(
+    lpTokenPoolPromises
   );
 
-  const lpTokenPrice = await lpTokenPriceUsd(config.provider);
-
   const lpTokenPoolTvl =
-    lpTokenPrice * Number(ethers.utils.formatEther(lpTokenPoolBalance));
+    Number(lpTokenPrice) * Number(ethers.utils.formatEther(lpTokenPoolBalance));
 
   return {
     numberOfTokens: Number(ethers.utils.formatEther(lpTokenPoolBalance)),
