@@ -33,9 +33,9 @@ export const calculatePoolTotalValueLocked = async (
 
   const pool: ZStakeCorePool = await getCorePool(config);
 
-  const promises = [pool.poolTokenReserve(), wildPriceUsd()];
+  const promises = [pool.poolTokenReserve(), wildPriceUsd()] as const;
 
-  const [balance, wildPrice] = await Promise.all<ethers.BigNumber | number>(
+  const [balance, wildPrice] = await Promise.all(
     promises
   );
 
@@ -43,7 +43,7 @@ export const calculatePoolTotalValueLocked = async (
   if (!isLpTokenPool) {
     // `wildPriceUsd()` returns a number already, but `wildPrice` is
     // type `ethers.BigNumber | number`, so must be explicit for compiler
-    const tvl = Number(wildPrice) * Number(ethers.utils.formatEther(balance));
+    const tvl = wildPrice * Number(ethers.utils.formatEther(balance));
 
     return {
       numberOfTokens: Number(ethers.utils.formatEther(balance)),
