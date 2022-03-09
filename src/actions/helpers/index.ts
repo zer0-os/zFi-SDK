@@ -29,52 +29,43 @@ export const getWildToken = async (
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
   const network = await provider.getNetwork();
-  let address = network.chainId === 1 ?
-    networkAddresses.mainnet.WILD :
-    networkAddresses.kovan.WILD;
+  let address =
+    network.chainId === 1
+      ? networkAddresses.mainnet.WILD
+      : networkAddresses.kovan.WILD;
 
-  const wildToken = new ethers.Contract(
-    address,
-    erc20Abi,
-    provider
-  );
+  const wildToken = new ethers.Contract(address, erc20Abi, provider);
 
   return wildToken;
-}
+};
 
 export const getWethToken = async (
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
   const network = await provider.getNetwork();
-  const address = network.chainId === 1 ?
-    networkAddresses.mainnet.wETH :
-    networkAddresses.kovan.wETH;
+  const address =
+    network.chainId === 1
+      ? networkAddresses.mainnet.wETH
+      : networkAddresses.kovan.wETH;
 
-  const wEthToken = new ethers.Contract(
-    address,
-    erc20Abi,
-    provider
-  );
+  const wEthToken = new ethers.Contract(address, erc20Abi, provider);
 
   return wEthToken;
-}
+};
 
 export const getLpToken = async (
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
   const network = await provider.getNetwork();
-  const address = network.chainId === 1 ?
-    networkAddresses.mainnet.UniswapPool :
-    networkAddresses.kovan.UniswapPool;
+  const address =
+    network.chainId === 1
+      ? networkAddresses.mainnet.UniswapPool
+      : networkAddresses.kovan.UniswapPool;
 
-  const lpToken = new ethers.Contract(
-    address,
-    erc20Abi,
-    provider
-  );
+  const lpToken = new ethers.Contract(address, erc20Abi, provider);
 
   return lpToken;
-}
+};
 
 export const wildPriceUsd = async () => {
   const client = new CoinGecko();
@@ -83,37 +74,53 @@ export const wildPriceUsd = async () => {
   });
   const wildPriceUsd = wildData.data.market_data.current_price.usd;
   return wildPriceUsd;
-}
+};
 
 export const ethPriceUsd = async () => {
   const client = new CoinGecko();
   const ethData = await client.coins.fetch("ethereum", {
-    market_data: true
+    market_data: true,
   });
   const ethPriceUsd = ethData.data.market_data.current_price.usd;
   return ethPriceUsd;
-}
+};
 
 export const lpTokenPriceUsd = async (provider: ethers.providers.Provider) => {
   const network = await provider.getNetwork();
-  const uniswapPool = network.chainId === 1 ?
-  networkAddresses.mainnet.UniswapPool :
-  networkAddresses.kovan.UniswapPool;
+  const uniswapPool =
+    network.chainId === 1
+      ? networkAddresses.mainnet.UniswapPool
+      : networkAddresses.kovan.UniswapPool;
 
-  const wildPrice = await wildPriceUsd();
-  const ethPrice = await ethPriceUsd();
-  
-  const lpToken = await getLpToken(provider);
-  const wildToken = await getWildToken(provider);
-  const wethToken = await getWethToken(provider);
+  let tokenPromises = [
+    getLpToken(provider),
+    getWildToken(provider),
+    getWethToken(provider),
+  ];
 
-  const wildBalance = await wildToken.balanceOf(uniswapPool);
-  const wethBalance = await wethToken.balanceOf(uniswapPool);
+  const [lpToken, wildToken, wethToken] = await Promise.all(tokenPromises);
 
-  const lpTokenTotalSupply = await lpToken.totalSupply();
+  // Must separate promises of different implicit types
+  let pricePromises = [wildPriceUsd(), ethPriceUsd()];
 
-  const lpWildTvl = wildPrice * Number(ethers.utils.formatEther(wildBalance));
-  const lpWEthTvl = ethPrice * Number(ethers.utils.formatEther(wethBalance));
+  const [wildPrice, ethPrice] = await Promise.all(pricePromises);
+
+  // Because we use Function Fragments internally, these return `any` types if nt
+  // explicitly defined
+  let balancePromises = [
+    wildToken.balanceOf(uniswapPool) as ethers.BigNumber,
+    wethToken.balanceOf(uniswapPool) as ethers.BigNumber,
+    lpToken.totalSupply() as ethers.BigNumber,
+  ];
+
+  const [wildBalance, wethBalance, lpTokenTotalSupply] = await Promise.all(
+    balancePromises
+  );
+
+  const lpWildTvl =
+    Number(wildPrice) * Number(ethers.utils.formatEther(wildBalance));
+  const lpWEthTvl =
+    Number(ethPrice) * Number(ethers.utils.formatEther(wethBalance));
 
   // TVL of Uniswap pool
   const lpTvl = lpWildTvl + lpWEthTvl;
@@ -122,4 +129,4 @@ export const lpTokenPriceUsd = async (provider: ethers.providers.Provider) => {
     lpTvl / Number(ethers.utils.formatEther(lpTokenTotalSupply));
 
   return lpTokenPrice;
-}
+};
