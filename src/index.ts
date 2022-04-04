@@ -145,8 +145,9 @@ const getFactoryInstance = (config: SubConfig) => {
       return poolAddress;
     },
     getPoolData: async (poolTokenAddress: string): Promise<PoolData> => {
-      if (!ethers.utils.isAddress(poolTokenAddress))
+      if (!ethers.utils.isAddress(poolTokenAddress)) {
         throw Error("Cannot get pool data for empty pool address");
+      }
       const factory = await getPoolFactory(config);
       const poolData: PoolData = await factory.getPoolData(poolTokenAddress);
       return poolData;

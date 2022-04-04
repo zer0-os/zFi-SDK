@@ -4,7 +4,6 @@ import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as ethers from "ethers";
 import * as dotenv from "dotenv";
-import { ImportMock } from "ts-mock-imports";
 
 import { Config, Deposit, SubConfig } from "../src/types";
 import * as helpers from "../src/helpers";
@@ -27,9 +26,10 @@ describe("Test Custom SDK Logic", () => {
       provider: provider,
     };
 
-
-
     const sdk = createInstance(config);
+    const token = await sdk.wildPool.getPoolToken();
+    const data = await sdk.factory.getPoolData(token);
+    console.log(data);
 
     const poolApr = await sdk.wildPool.poolApr();
     console.log(poolApr);
