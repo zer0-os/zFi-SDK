@@ -64,6 +64,12 @@ export interface Deposit {
   isYield: boolean;
 }
 
+export enum NetworkChainId {
+  mainnet = 1,
+  rinkeby = 4,
+  kovan = 42,
+}
+
 // Intentionally ignore the Deposit[] prop associated with a user
 // we can get that information directly with `getAllDeposits`
 export interface User {

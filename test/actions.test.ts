@@ -18,9 +18,9 @@ dotenv.config();
 describe("Test Custom SDK Logic", () => {
   const config: Config = {
     provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"], 42),
-    factoryAddress: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E",
-    lpTokenPoolAddress: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
-    wildPoolAddress: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
+    factoryAddress: "0xb1d051095B6b2f6C93198Cbaa9bb7cB2d607215C",
+    lpTokenPoolAddress: "0xe7BEeedAf11eE695C4aE64A01b24F3F7eA294aB6",
+    wildPoolAddress: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",
   };
 
   // Dummy address pulled from Ethers VoidSigner docs
