@@ -1,7 +1,7 @@
 import * as ethers from "ethers";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool, getPoolFactory } from "../helpers";
-import { SubConfig } from "../types";
+import { NetworkChainId, SubConfig } from "../types";
 import {
   ethPriceUsd,
   getLpToken,
@@ -11,31 +11,18 @@ import {
   wildPriceUsd,
 } from "./helpers";
 
-const erc20Abi = [
-  "function balanceOf(address _owner) public view returns (uint256)",
-  "function totalSupply() public view returns (uint256)",
-];
-
 export const calculatePoolAnnualPercentageRate = async (
   isLpTokenPool: boolean,
   config: SubConfig
 ): Promise<number> => {
   let addresses;
   const network = await config.provider.getNetwork();
-  switch (network.chainId) {
-    case 1:
-      addresses = networkAddresses.mainnet;
-      break;
-    case 42:
-      addresses = networkAddresses.kovan;
-    default:
-      addresses = networkAddresses.kovan;
-      break;
-  }
+  const chainId: NetworkChainId = network.chainId
+  addresses = networkAddresses[chainId]
 
   if (!addresses)
     throw Error(
-      "No addresses could be inferred from the network. Use mainnet or kovan"
+      "No addresses could be inferred from the network. Use mainnet, rinkeby, or kovan"
     );
 
   const pool: ZStakeCorePool = await getCorePool(config);
@@ -58,7 +45,7 @@ export const calculatePoolAnnualPercentageRate = async (
     promises
   );
 
-  const poolData = await factory.getPoolData(String(poolToken));
+  const poolData = await factory.getPoolData(poolToken);
 
   const poolWeight = poolData[2];
   const weightRatio = poolWeight / totalWeight;
@@ -85,11 +72,11 @@ export const calculatePoolAnnualPercentageRate = async (
   ] as const;
 
   const [wildToken, wethToken, lpToken, wildPrice, ethPrice] =
-    await Promise.all(tokenPromises);
+  await Promise.all(tokenPromises);
 
   const balancePromises = [
-    wildToken.balanceOf(addresses.UniswapPool) as ethers.BigNumber,
-    wethToken.balanceOf(addresses.UniswapPool) as ethers.BigNumber,
+    wildToken.balanceOf(addresses.UniswapPoolToken) as ethers.BigNumber,
+    wethToken.balanceOf(addresses.UniswapPoolToken) as ethers.BigNumber,
     lpToken.totalSupply() as ethers.BigNumber,
   ] as const;
 

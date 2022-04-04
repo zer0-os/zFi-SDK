@@ -1,5 +1,5 @@
 import * as ethers from "ethers";
-import { SubConfig, TotalValueLocked } from "../types";
+import { NetworkChainId, SubConfig, TotalValueLocked } from "../types";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool } from "../helpers";
 import {
@@ -15,20 +15,12 @@ export const calculatePoolTotalValueLocked = async (
 ): Promise<TotalValueLocked> => {
   let addresses;
   const network = await config.provider.getNetwork();
-  switch (network.chainId) {
-    case 1:
-      addresses = networkAddresses.mainnet;
-      break;
-    case 42:
-      addresses = networkAddresses.kovan;
-    default:
-      addresses = networkAddresses.kovan;
-      break;
-  }
+  const chainId: NetworkChainId = network.chainId;
+  addresses = networkAddresses[chainId];
 
   if (!addresses)
     throw Error(
-      "No addresses could be inferred from the network. Use mainnet or kovan"
+      "No addresses could be inferred from the network. Use mainnet, rinkeby, or kovan"
     );
 
   const pool: ZStakeCorePool = await getCorePool(config);

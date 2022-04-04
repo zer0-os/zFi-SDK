@@ -13,6 +13,8 @@ export const stake = async (
 
   const corePool = await getCorePool(config);
   const stakeAmount = ethers.BigNumber.from(amount);
-  const tx = await corePool.connect(signer).stake(stakeAmount, lockUntil);
+  const tx = await corePool
+    .connect(signer)
+    .stake(stakeAmount, lockUntil);
   return tx;
 };

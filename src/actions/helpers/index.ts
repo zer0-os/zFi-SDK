@@ -1,5 +1,6 @@
 import CoinGecko from "coingecko-api";
 import * as ethers from "ethers";
+import { NetworkChainId } from "../../types";
 
 const erc20Abi = [
   "function balanceOf(address _owner) public view returns (uint256)",
@@ -7,33 +8,39 @@ const erc20Abi = [
 ];
 
 export const networkAddresses = {
-  mainnet: {
+  1: { // mainnet
     WILD: "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
     wETH: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     wildStakingPool: "0x3aC551725ac98C5DCdeA197cEaaE7cDb8a71a2B4",
     lpTokenStakingPool: "0x9E87a268D42B0Aba399C121428fcE2c626Ea01FF",
     factory: "0xF133faFd49f4671ac63EE3a3aE7E7C4C9B84cE4a",
-    UniswapPool: "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5",
+    UniswapPoolToken: "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5",
   },
-  kovan: {
+  42: { // kovan
     WILD: "0x50A0A3E9873D7e7d306299a75Dc05bd3Ab2d251F",
     wETH: "0x61659a8093FeAe3be9E1fb1B410e8E3C6de38894", // Mock wETH
     wildStakingPool: "0x4E226a8BbECAa435d2c77D3E4a096F87322Ef1Ae",
     lpTokenStakingPool: "0x9CF0DaD38E4182d944a1A4463c56CFD1e6fa8fE7",
     factory: "0x47946797E05A34B47ffE7151D0Fbc15E8297650E",
-    UniswapPool: "0xD364C50c33902110230255FE1D730D84FA23e48e",
+    UniswapPoolToken: "0xD364C50c33902110230255FE1D730D84FA23e48e",
   },
+  4: { // rinkeby
+    WILD: "0x3Ae5d499cfb8FB645708CC6DA599C90e64b33A79",
+    wETH: "0x5bAbCA2Af93A9887C86161083b8A90160DA068f2", // Actually mLOOT
+    wildStakingPool: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",
+    lpTokenStakingPool: "0xe7BEeedAf11eE695C4aE64A01b24F3F7eA294aB6",
+    factory: "0xb1d051095B6b2f6C93198Cbaa9bb7cB2d607215C",
+    UniswapPoolToken: "0x0A0f5AD73077108cFD806a0de77333AdA928cC99",
+  }
 };
 
 export const getWildToken = async (
-  provider: ethers.providers.Provider
+  provider: ethers.providers.Provider,
 ): Promise<ethers.Contract> => {
   const network = await provider.getNetwork();
-  let address =
-    network.chainId === 1
-      ? networkAddresses.mainnet.WILD
-      : networkAddresses.kovan.WILD;
+  const chainId: NetworkChainId = network.chainId;
 
+  const address = networkAddresses[chainId].WILD
   const wildToken = new ethers.Contract(address, erc20Abi, provider);
 
   return wildToken;
@@ -43,10 +50,8 @@ export const getWethToken = async (
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
   const network = await provider.getNetwork();
-  const address =
-    network.chainId === 1
-      ? networkAddresses.mainnet.wETH
-      : networkAddresses.kovan.wETH;
+  const chainId: NetworkChainId = network.chainId;
+  const address = networkAddresses[chainId].wETH
 
   const wEthToken = new ethers.Contract(address, erc20Abi, provider);
 
@@ -57,13 +62,10 @@ export const getLpToken = async (
   provider: ethers.providers.Provider
 ): Promise<ethers.Contract> => {
   const network = await provider.getNetwork();
-  const address =
-    network.chainId === 1
-      ? networkAddresses.mainnet.UniswapPool
-      : networkAddresses.kovan.UniswapPool;
+  const chainId: NetworkChainId = network.chainId;
+  const address = networkAddresses[chainId].UniswapPoolToken;
 
   const lpToken = new ethers.Contract(address, erc20Abi, provider);
-
   return lpToken;
 };
 
@@ -87,10 +89,8 @@ export const ethPriceUsd = async () => {
 
 export const lpTokenPriceUsd = async (provider: ethers.providers.Provider) => {
   const network = await provider.getNetwork();
-  const uniswapPool =
-    network.chainId === 1
-      ? networkAddresses.mainnet.UniswapPool
-      : networkAddresses.kovan.UniswapPool;
+  const chainId: NetworkChainId = network.chainId;
+  const uniswapPoolAddress = networkAddresses[chainId].UniswapPoolToken;
 
   let tokenPromises = [
     getLpToken(provider),
@@ -108,8 +108,8 @@ export const lpTokenPriceUsd = async (provider: ethers.providers.Provider) => {
   // Because we use Function Fragments internally, these return `any` types if nt
   // explicitly defined
   let balancePromises = [
-    wildToken.balanceOf(uniswapPool) as ethers.BigNumber,
-    wethToken.balanceOf(uniswapPool) as ethers.BigNumber,
+    wildToken.balanceOf(uniswapPoolAddress) as ethers.BigNumber,
+    wethToken.balanceOf(uniswapPoolAddress) as ethers.BigNumber,
     lpToken.totalSupply() as ethers.BigNumber,
   ];
 
