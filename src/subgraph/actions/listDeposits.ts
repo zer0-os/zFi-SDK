@@ -1,9 +1,6 @@
 import { ApolloClient } from "@apollo/client/core";
 import { Deposit } from "../../types";
-// import { TokenSalesDto } from "../types";
 import * as queries from "../queries";
-import { DepositDto } from "../types";
-// import { TokenSale, TokenSaleCollection } from "../../types";
 
 export const listDeposits = async <T>(
   apolloClient: ApolloClient<T>,
@@ -11,7 +8,7 @@ export const listDeposits = async <T>(
 ): Promise<Deposit[]> => {
   const collection: Deposit[] = [];
 
-  const queryResult = await apolloClient.query<DepositDto[]>({
+  const queryResult = await apolloClient.query<Deposit[]>({
     query: queries.getPoolDeposits,
     variables: {
       poolAddress: poolAddress
@@ -24,7 +21,6 @@ export const listDeposits = async <T>(
 
   queryResult.data.map((e) => {
     collection.push({
-      id: e.id,
       by: e.by,
       depositId: e.depositId,
       amount: e.amount,

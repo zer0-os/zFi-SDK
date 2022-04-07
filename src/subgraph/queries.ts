@@ -1,25 +1,5 @@
 import { gql } from "@apollo/client/core";
 
-// Get every deposit
-export const getAllDeposits = gql`
-  query AllDeposits() {
-    deposits {
-      id
-      by {
-        id
-      }
-      depositId
-      amount
-      lockedFrom
-      lockedUntil
-      pool {
-        id
-      }
-      timestamp
-    }
-  }
-`;
-
 // Get every deposit for a specific pool
 export const getPoolDeposits = gql`
   query DepositsByPool($poolAddress: String!) {
@@ -41,8 +21,8 @@ export const getPoolDeposits = gql`
 `;
 
 export const getAccountDeposits = gql`
-  query DepositsByAccount($account: String!) {
-    deposits(where: { by: $account }) {
+  query DepositsByAccount($poolAddress: String, $accountAddress: String!) {
+    deposits(where: { pool: $poolAddress, by: $accountAddress }) {
       id
       by {
         id
@@ -54,23 +34,6 @@ export const getAccountDeposits = gql`
       }
       lockedFrom
       lockedUntil
-      timestamp
-    }
-  }
-`;
-
-// Rewards
-export const getAllRewards = gql`
-  query AllRewards() {
-    rewards {
-      id
-      for {
-        id
-      }
-      amount
-      pool {
-        id
-      }
       timestamp
     }
   }
@@ -93,8 +56,8 @@ export const getPoolRewards = gql`
 `;
 
 export const getAccountRewards = gql`
-  query ReawrdsByAccount($account: String!) {
-    rewards(where: { for: $account }) {
+  query ReawrdsByAccount($poolAddress: String!, $accountAddress: String!) {
+    rewards(where: { pool: $poolAddress, for: $accountAddress }) {
       id
       for {
         id

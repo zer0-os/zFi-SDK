@@ -4,7 +4,7 @@ export interface FactoryConfig {
   address: string;
   provider: ethers.providers.Provider;
 }
-export interface PoolConfig extends FactoryConfig{
+export interface PoolConfig extends FactoryConfig {
   subgraphUri: string;
 }
 
@@ -30,7 +30,10 @@ export interface FactoryInstance {
 
 export interface PoolInstance {
   address: string;
-  listDeposits: (poolAddress: string) => Promise<Deposit[]>;
+  listDeposits: () => Promise<Deposit[]>;
+  listDepositsByAccount: (accountAddress: string) => Promise<Deposit[]>;
+  listRewards: () => Promise<Reward[]>;
+  listRewardsByAccount: (accountAddress: string) => Promise<Reward[]>;
   approve: (signer: ethers.Signer) => Promise<ethers.ContractTransaction>;
   allowance: (signer: ethers.Signer) => Promise<ethers.BigNumber>;
   stake: (
@@ -61,13 +64,19 @@ export interface PoolInstance {
 }
 
 export interface Deposit {
-  id: string;
   by: string;
   depositId: string;
   amount: string;
   lockedFrom: string;
   lockedUntil: string;
-  pool: string
+  pool: string;
+  timestamp: string;
+}
+
+export interface Reward {
+  for: string;
+  amount: string;
+  pool: string;
   timestamp: string;
 }
 

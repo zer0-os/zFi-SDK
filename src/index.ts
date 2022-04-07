@@ -11,6 +11,7 @@ import {
   PoolConfig,
   PoolData,
   PoolInstance,
+  Reward,
   TotalValueLocked,
   User,
   UserValue,
@@ -54,14 +55,22 @@ const getPoolInstance = (
 ): PoolInstance => {
   const subgraphClient: subgraph.SubgraphClient = subgraph.createClient(
     config.subgraphUri,
-    isLpTokenPool
   );
   const instance: PoolInstance = {
     address: config.address,
+    // Lists all deposits within the given pool
     listDeposits: async (): Promise<Deposit[]> => {
       return subgraphClient.listDeposits(config.address);
     },
-    // to add more
+    listDepositsByAccount: async (accountAddress): Promise<Deposit[]> => {
+      return subgraphClient.listDepositsByAccount(config.address, accountAddress);
+    },
+    listRewards: async (): Promise<Reward[]> => {
+      return subgraphClient.listRewards(config.address);
+    },
+    listRewardsByAccount: async (accountAddress): Promise<Reward[]> => {
+      return subgraphClient.listRewardsByAccount(config.address, accountAddress)
+    },
     approve: async (
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
