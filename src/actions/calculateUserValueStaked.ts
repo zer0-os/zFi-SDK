@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import { getAllDeposits } from ".";
-import { SubConfig, UserValue } from "../types";
+import { PoolConfig, UserValue } from "../types";
 import { lpTokenPriceUsd, wildPriceUsd } from "./helpers";
 
 export const calculateUserValueStaked = async (
   userAddress: string,
   isLpTokenPool: boolean,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<UserValue> => {
   if (!ethers.utils.isAddress(userAddress))
     throw Error("Must provide a valid user address");
@@ -20,9 +20,9 @@ export const calculateUserValueStaked = async (
   let userValueUnlocked = ethers.BigNumber.from("0");
   for (const deposit of allUserDeposits) {
     if (timeNow.lt(deposit.lockedUntil)) {
-      userValueLocked = userValueLocked.add(deposit.tokenAmount);
+      userValueLocked = userValueLocked.add(deposit.amount);
     } else {
-      userValueUnlocked = userValueUnlocked.add(deposit.tokenAmount);
+      userValueUnlocked = userValueUnlocked.add(deposit.amount);
     }
   }
 

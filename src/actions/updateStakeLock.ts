@@ -1,12 +1,12 @@
 import * as ethers from "ethers";
 import { getCorePool } from "../helpers";
-import { SubConfig } from "../types";
+import { PoolConfig } from "../types";
 
 export const updateStakeLock = async (
   depositId: string,
   lockUntil: ethers.BigNumber,
   signer: ethers.Signer,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<ethers.ContractTransaction> => {
   if (lockUntil.lte(ethers.BigNumber.from("0")))
     throw Error("Cannot add zero or negative time to your locking period");

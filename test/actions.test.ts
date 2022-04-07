@@ -6,7 +6,7 @@ import * as ethers from "ethers";
 import * as dotenv from "dotenv";
 import { ImportMock } from "ts-mock-imports";
 
-import { Config, Deposit, SubConfig } from "../src/types";
+import { Config, Deposit, PoolConfig } from "../src/types";
 import * as actions from "../src/actions";
 import * as helpers from "../src/helpers";
 import { Console } from "console";
@@ -26,11 +26,11 @@ describe("Test Custom SDK Logic", () => {
   // Dummy address pulled from Ethers VoidSigner docs
   const staker = new ethers.VoidSigner("0x8ba1f109551bD432803012645Ac136ddd64DBA72")
   
-  const wildSubConfig: SubConfig = {
+  const wildPoolConfig: PoolConfig = {
     address: config.wildPoolAddress,
     provider: config.provider,
   };
-  const lpSubConfig: SubConfig = {
+  const lpPoolConfig: PoolConfig = {
     address: config.lpTokenPoolAddress,
     provider: config.provider,
   }
@@ -67,7 +67,7 @@ describe("Test Custom SDK Logic", () => {
       )
 
       // Call as wildStakingPool
-      const wildApr = await actions.calculatePoolAnnualPercentageRate(false, wildSubConfig);
+      const wildApr = await actions.calculatePoolAnnualPercentageRate(false, wildPoolConfig);
       console.log(wildApr);
 
       mockFactory1.restore();
@@ -88,17 +88,17 @@ describe("Test Custom SDK Logic", () => {
       );
 
       // Call as lpTokenStakingPool
-      const lpTokenPoolApr = await actions.calculatePoolAnnualPercentageRate(true, lpSubConfig);
+      const lpTokenPoolApr = await actions.calculatePoolAnnualPercentageRate(true, lpPoolConfig);
       console.log(lpTokenPoolApr)
     });
   });
   describe("calculatePoolTotalValueLocked", () => {
     it("runs as wild pool", async () => {
-      const res = await actions.calculatePoolTotalValueLocked(false, wildSubConfig);
+      const res = await actions.calculatePoolTotalValueLocked(false, wildPoolConfig);
       console.log(res);
     });
     it("runs as lp token pool", async () => {
-      const res = await actions.calculatePoolTotalValueLocked(true, lpSubConfig);
+      const res = await actions.calculatePoolTotalValueLocked(true, lpPoolConfig);
       console.log(res);
     });
   })
@@ -106,20 +106,20 @@ describe("Test Custom SDK Logic", () => {
     it("Fails when a user provides an invalid address", async () => {
       const address = await staker.getAddress()
       await expect(
-        actions.calculateUserValueStaked("0x0", false, wildSubConfig)
+        actions.calculateUserValueStaked("0x0", false, wildPoolConfig)
       ).to.be.rejectedWith("Must provide a valid user address");
     });
     it("runs against real values", async () => {
       ImportMock.restore();
       const brettsTestAddress = "0x0DDdA1dd73C063Af0A8D4Df0CDd2a6818685f9CE"
-      const wildPool = await helpers.getCorePool(wildSubConfig); 
+      const wildPool = await helpers.getCorePool(wildPoolConfig); 
       const depositsLength = await wildPool.getDepositsLength(brettsTestAddress);
       expect(depositsLength); // 69 from kovan etherscan
 
       const userValueLocked = await actions.calculateUserValueStaked(
         brettsTestAddress,
         false,
-        wildSubConfig
+        wildPoolConfig
       );
       expect(userValueLocked);
     });
@@ -139,12 +139,12 @@ describe("Test Custom SDK Logic", () => {
       const wildTokenDeposits = await actions.calculateUserValueStaked(
         stakerAddress,
         false,
-        wildSubConfig
+        wildPoolConfig
       );
       const lpTokenDeposits = await actions.calculateUserValueStaked(
         stakerAddress,
         true,
-        lpSubConfig
+        lpPoolConfig
       )
       const wildValue = wildTokenDeposits.userValueLocked.toNumber();
       expect(wildValue).to.equal(0);
@@ -176,7 +176,7 @@ describe("Test Custom SDK Logic", () => {
       const wildTokenDeposits = await actions.calculateUserValueStaked(
         stakerAddress,
         false,
-        wildSubConfig
+        wildPoolConfig
       );
       expect(wildTokenDeposits.userValueLocked.toNumber()).to.equal(100);
       expect(wildTokenDeposits.userValueUnlocked.toNumber()).to.equal(0);
@@ -185,7 +185,7 @@ describe("Test Custom SDK Logic", () => {
       const lpTokenDeposits = await actions.calculateUserValueStaked(
         stakerAddress,
         false,
-        wildSubConfig
+        wildPoolConfig
       );
       expect(lpTokenDeposits.userValueLocked.toNumber()).to.equal(100);
       expect(lpTokenDeposits.userValueUnlocked.toNumber()).to.equal(0);
@@ -214,7 +214,7 @@ describe("Test Custom SDK Logic", () => {
       const wildTokenDeposits = await actions.calculateUserValueStaked(
         stakerAddress,
         false,
-        wildSubConfig
+        wildPoolConfig
       );
       expect(wildTokenDeposits.userValueLocked.toNumber()).to.equal(0);
       expect(wildTokenDeposits.userValueUnlocked.toNumber()).to.equal(100);
@@ -223,7 +223,7 @@ describe("Test Custom SDK Logic", () => {
       const lpTokenDeposits = await actions.calculateUserValueStaked(
         stakerAddress,
         false,
-        wildSubConfig
+        wildPoolConfig
       );
       expect(lpTokenDeposits.userValueLocked.toNumber()).to.equal(0);
       expect(lpTokenDeposits.userValueUnlocked.toNumber()).to.equal(100);
@@ -237,7 +237,7 @@ describe("Test Custom SDK Logic", () => {
           "0x0",
           ethers.BigNumber.from("230"),
           staker,
-          wildSubConfig
+          wildPoolConfig
         )
       ).to.be.rejectedWith("Must provide a valid pool address");
       await expect(
@@ -245,7 +245,7 @@ describe("Test Custom SDK Logic", () => {
           "0x0",
           ethers.BigNumber.from("230"),
           staker,
-          wildSubConfig
+          wildPoolConfig
         )
       ).to.be.rejectedWith("Must provide a valid pool address");
     });
@@ -255,7 +255,7 @@ describe("Test Custom SDK Logic", () => {
           config.wildPoolAddress,
           ethers.BigNumber.from("0"),
           staker,
-          wildSubConfig
+          wildPoolConfig
         )
       ).to.be.rejectedWith("Must provide a valid pool weight");
       await expect(
@@ -263,7 +263,7 @@ describe("Test Custom SDK Logic", () => {
           config.wildPoolAddress,
           ethers.BigNumber.from("-1"),
           staker,
-          wildSubConfig
+          wildPoolConfig
         )
       ).to.be.rejectedWith("Must provide a valid pool weight");
     });
@@ -291,7 +291,7 @@ describe("Test Custom SDK Logic", () => {
           config.wildPoolAddress,
           ethers.BigNumber.from("230"),
           staker,
-          wildSubConfig
+          wildPoolConfig
         )
       ).to.be.rejectedWith(
         "Only the pool factory owner can modify the pool weight"
@@ -313,7 +313,7 @@ describe("Test Custom SDK Logic", () => {
       );
       const deposits = await actions.getAllDeposits(
         config.wildPoolAddress,
-        wildSubConfig
+        wildPoolConfig
       );
       expect(deposits.length).equals(0);
     });
@@ -334,7 +334,7 @@ describe("Test Custom SDK Logic", () => {
       );
       const deposits = await actions.getAllDeposits(
         config.wildPoolAddress,
-        wildSubConfig
+        wildPoolConfig
       );
       expect(deposits.length).equals(1);
     });
@@ -342,10 +342,10 @@ describe("Test Custom SDK Logic", () => {
   describe("pendingYieldRewards", () => {
     it("Fails when given an invalid address", async () => {
       await expect(
-        actions.pendingYieldRewards("0x0", wildSubConfig)
+        actions.pendingYieldRewards("0x0", wildPoolConfig)
       ).to.be.rejectedWith("Must provide a valid user address");
       await expect(
-        actions.pendingYieldRewards("", wildSubConfig)
+        actions.pendingYieldRewards("", wildPoolConfig)
       ).to.be.rejectedWith("Must provide a valid user address");
     });
   });
@@ -363,7 +363,7 @@ describe("Test Custom SDK Logic", () => {
         mockCorePool
       );
       await expect(
-        actions.processRewards(staker, wildSubConfig)
+        actions.processRewards(staker, wildPoolConfig)
       ).to.be.rejectedWith("No rewards to process yet");
     });
   });
@@ -371,17 +371,17 @@ describe("Test Custom SDK Logic", () => {
     it("Fails when trying to stake nothing or a negative value", async () => {
       const lockUntil = ethers.BigNumber.from("1");
       await expect(
-        actions.stake("0", lockUntil, staker, wildSubConfig)
+        actions.stake("0", lockUntil, staker, wildPoolConfig)
       ).to.be.rejectedWith("Cannot call to stake with no value given");
       await expect(
-        actions.stake("-1", lockUntil, staker, wildSubConfig)
+        actions.stake("-1", lockUntil, staker, wildPoolConfig)
       ).to.be.rejectedWith("Cannot call to stake with no value given");
     });
   });
   describe("unstake", () => {
     it("Fails when calling to unstake with 0 amount", async () => {
       await expect(
-        actions.unstake("0", "0", staker, wildSubConfig)
+        actions.unstake("0", "0", staker, wildPoolConfig)
       ).to.be.rejectedWith("You can only unstake a non-zero amount of tokens");
     });
     it("Fails when calling to unstake with no deposits", async () => {
@@ -404,7 +404,7 @@ describe("Test Custom SDK Logic", () => {
         mockCorePool
       );
       await expect(
-        actions.unstake("0", "1", staker, wildSubConfig)
+        actions.unstake("0", "1", staker, wildPoolConfig)
       ).to.be.rejectedWith("There are no deposits for you to unstake");
     });
     it("Fails when you try to unstake more than you have staked", async () => {
@@ -430,7 +430,7 @@ describe("Test Custom SDK Logic", () => {
         mockCorePool
       );
       await expect(
-        actions.unstake("0", "10", staker, wildSubConfig)
+        actions.unstake("0", "10", staker, wildPoolConfig)
       ).to.be.rejectedWith(
         "You cannot unstake more than the original stake amount"
       );
@@ -461,7 +461,7 @@ describe("Test Custom SDK Logic", () => {
         mockCorePool
       );
       await expect(
-        actions.unstake("0", "1", staker, wildSubConfig)
+        actions.unstake("0", "1", staker, wildPoolConfig)
       ).to.be.rejectedWith(
         "You are not able to unstake when your deposit is still locked"
       );
@@ -471,13 +471,13 @@ describe("Test Custom SDK Logic", () => {
     it("Fails when trying to stake nothing or a negative value", async () => {
       let lockUntil = ethers.BigNumber.from("0");
       await expect(
-        actions.updateStakeLock("0", lockUntil, staker, wildSubConfig)
+        actions.updateStakeLock("0", lockUntil, staker, wildPoolConfig)
       ).to.be.rejectedWith(
         "Cannot add zero or negative time to your locking period"
       );
       lockUntil = ethers.BigNumber.from("-1");
       await expect(
-        actions.updateStakeLock("0", lockUntil, staker, wildSubConfig)
+        actions.updateStakeLock("0", lockUntil, staker, wildPoolConfig)
       ).to.be.rejectedWith(
         "Cannot add zero or negative time to your locking period"
       );

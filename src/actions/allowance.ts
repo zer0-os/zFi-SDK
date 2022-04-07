@@ -1,11 +1,11 @@
 import * as ethers from "ethers";
 import { getCorePool } from "../helpers";
-import { SubConfig } from "../types";
+import { PoolConfig } from "../types";
 
 // Add ERC20 `allowance`
 const erc20Abi = ["function allowance(address _owner, address _spender) public view returns (uint256)"];
 
-export const allowance = async (signer: ethers.Signer, config: SubConfig): Promise<ethers.BigNumber> => {
+export const allowance = async (signer: ethers.Signer, config: PoolConfig): Promise<ethers.BigNumber> => {
   const pool = await getCorePool(config);
   const poolToken = await pool.poolToken();
   const signerAddress = await signer.getAddress();

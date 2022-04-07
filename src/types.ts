@@ -1,14 +1,18 @@
 import { BigNumber, ethers } from "ethers";
 
-export interface SubConfig {
+export interface FactoryConfig {
   address: string;
   provider: ethers.providers.Provider;
+}
+export interface PoolConfig extends FactoryConfig{
+  subgraphUri: string;
 }
 
 export interface Config {
   wildPoolAddress: string;
   lpTokenPoolAddress: string;
   factoryAddress: string;
+  subgraphUri: string;
   provider: ethers.providers.Provider;
 }
 
@@ -26,6 +30,7 @@ export interface FactoryInstance {
 
 export interface PoolInstance {
   address: string;
+  listDeposits: (poolAddress: string) => Promise<Deposit[]>;
   approve: (signer: ethers.Signer) => Promise<ethers.ContractTransaction>;
   allowance: (signer: ethers.Signer) => Promise<ethers.BigNumber>;
   stake: (
@@ -45,7 +50,7 @@ export interface PoolInstance {
     depositId: string,
     lockUntil: ethers.BigNumber,
     signer: ethers.Signer
-  ) => Promise<ethers.ContractTransaction>;
+  ) => Promise<ethers.ContractTransaction | null>;
   pendingYieldRewards: (address: string) => Promise<ethers.BigNumber>;
   getAllDeposits: (address: string) => Promise<Deposit[]>;
   getUser: (address: string) => Promise<User>;
@@ -56,12 +61,14 @@ export interface PoolInstance {
 }
 
 export interface Deposit {
-  depositId: number;
-  tokenAmount: BigNumber;
-  weight: BigNumber;
-  lockedFrom: BigNumber;
-  lockedUntil: BigNumber;
-  isYield: boolean;
+  id: string;
+  by: string;
+  depositId: string;
+  amount: string;
+  lockedFrom: string;
+  lockedUntil: string;
+  pool: string
+  timestamp: string;
 }
 
 export enum NetworkChainId {

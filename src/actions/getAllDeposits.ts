@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
 import { getCorePool } from "../helpers";
-import { SubConfig, Deposit } from "../types";
+import { PoolConfig, Deposit } from "../types";
 
 export const getAllDeposits = async (
   address: string,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<Deposit[]> => {
   if (!ethers.utils.isAddress(address))
     throw Error("Must provide a valid user address");
@@ -28,7 +28,7 @@ export const getAllDeposits = async (
     return { depositId: i, ...d } as Deposit;
   });
   deposits = deposits.filter(
-    (deposit) => !deposit.tokenAmount.eq(ethers.BigNumber.from("0"))
+    (deposit) => deposit.amount === "0"
   );
   return deposits;
 };

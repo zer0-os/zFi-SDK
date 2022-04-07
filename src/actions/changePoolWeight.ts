@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import { getPoolFactory } from "../helpers";
-import { SubConfig } from "../types";
+import { PoolConfig } from "../types";
 
 export const changePoolWeight = async (
   poolAddress: string,
   weight: ethers.BigNumber,
   signer: ethers.Signer,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<ethers.ContractTransaction> => {
   if (!ethers.utils.isAddress(poolAddress))
     throw Error("Must provide a valid pool address");

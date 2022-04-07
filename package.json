@@ -17,10 +17,11 @@
     "compile": "tsc ./tsconfig.build.json --resolveJsonModule",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --config test/.mocharc.json --timeout 120000",
+    "test": "mocha -r ts-node/register 'test/**/e2e.test.ts' --exit --config test/.mocharc.json --timeout 300000",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
   },
   "devDependencies": {
+    "@apollo/client": "^3.5.10",
     "@typechain/ethers-v5": "7.0.1",
     "@types/chai": "4.2.22",
     "@types/chai-as-promised": "7.1.4",

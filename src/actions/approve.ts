@@ -1,12 +1,12 @@
 import * as ethers from "ethers";
 import { getCorePool, getPoolFactory } from "../helpers";
-import { SubConfig } from "../types";
+import { PoolConfig } from "../types";
 
 // Add ERC20 `approve`, signature is enough
 const erc20Abi = ["function approve(address spender, uint256 amount) public"];
 
 // e.g. token.connect(staker).approve(poolAddress, amount)
-export const approve = async (signer: ethers.Signer, config: SubConfig): Promise<ethers.ContractTransaction> => {
+export const approve = async (signer: ethers.Signer, config: PoolConfig): Promise<ethers.ContractTransaction> => {
   const pool = await getCorePool(config);
   const poolToken = await pool.poolToken();
 
