@@ -1,6 +1,8 @@
 import { ApolloClient } from "@apollo/client/core";
 import { Deposit } from "../../types";
 import * as queries from "../queries";
+import { DepositsDto } from "../types";
+
 
 export const listDepositsByAccount = async <T>(
   apolloClient: ApolloClient<T>,
@@ -9,11 +11,11 @@ export const listDepositsByAccount = async <T>(
 ): Promise<Deposit[]> => {
   const collection: Deposit[] = [];
 
-  const queryResult = await apolloClient.query<Deposit[]>({
+  const queryResult = await apolloClient.query<DepositsDto>({
     query: queries.getAccountDeposits,
     variables: {
-      poolAddress: poolAddress,
-      accountAddress: accountAddress
+      poolAddress: poolAddress.toLowerCase(),
+      accountAddress: accountAddress.toLowerCase()
     }
   });
 
@@ -21,15 +23,16 @@ export const listDepositsByAccount = async <T>(
     throw queryResult.error;
   }
 
-  queryResult.data.map((e) => {
+  const dto: DepositsDto = queryResult.data;
+  dto.deposits.map((d: Deposit) => {
     collection.push({
-      by: e.by,
-      depositId: e.depositId,
-      amount: e.amount,
-      lockedFrom: e.lockedFrom,
-      lockedUntil: e.lockedUntil,
-      pool: e.pool,
-      timestamp: e.timestamp,
+      by: d.by,
+      depositId: d.depositId,
+      amount: d.amount,
+      lockedFrom: d.lockedFrom,
+      lockedUntil: d.lockedUntil,
+      pool: d.pool,
+      timestamp: d.timestamp,
     } as Deposit);
   });
 

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client/core";
 
-// Get every deposit for a specific pool
+// Get every deposit for a pool
 export const getPoolDeposits = gql`
   query DepositsByPool($poolAddress: String!) {
     deposits(where: { pool: $poolAddress }) {
@@ -20,6 +20,7 @@ export const getPoolDeposits = gql`
   }
 `;
 
+// Get every deposit for an account
 export const getAccountDeposits = gql`
   query DepositsByAccount($poolAddress: String, $accountAddress: String!) {
     deposits(where: { pool: $poolAddress, by: $accountAddress }) {
@@ -39,6 +40,7 @@ export const getAccountDeposits = gql`
   }
 `;
 
+// Get all rewards given by a pool
 export const getPoolRewards = gql`
   query RewardsByPool($poolAddress: String!) {
     rewards(where: { pool: $poolAddress }) {
@@ -55,8 +57,9 @@ export const getPoolRewards = gql`
   }
 `;
 
+// Get all rewards for an account
 export const getAccountRewards = gql`
-  query ReawrdsByAccount($poolAddress: String!, $accountAddress: String!) {
+  query RewardsByAccount($poolAddress: String!, $accountAddress: String!) {
     rewards(where: { pool: $poolAddress, for: $accountAddress }) {
       id
       for {

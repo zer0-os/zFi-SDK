@@ -8,6 +8,7 @@ import * as dotenv from "dotenv";
 import { Config } from "../src/types";
 import * as helpers from "../src/helpers";
 import { createInstance } from "../src";
+import { createClient } from "../src/subgraph";
 
 chai.use(chaiAsPromised.default);
 const expect = chai.expect;
@@ -18,6 +19,24 @@ describe("Test Custom SDK Logic", () => {
     process.env.INFURA_URL,
     4
   );
+  const config: Config = {
+    wildPoolAddress: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",
+    lpTokenPoolAddress: "0xe7BEeedAf11eE695C4aE64A01b24F3F7eA294aB6",
+    factoryAddress: "0xb1d051095B6b2f6C93198Cbaa9bb7cB2d607215C",
+    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zfi-rinkeby",
+    provider: provider,
+  };
+  it("Tests basic subgraph functionality", async () => {
+    const subgraphClient = createClient(config.subgraphUri);
+
+    const depositsInWildPool = await subgraphClient.listDeposits(config.wildPoolAddress);
+    console.log(depositsInWildPool);
+    expect(depositsInWildPool.length).to.be.gt(0)
+    const depositsInLpTokenPool = await subgraphClient.listDeposits(config.lpTokenPoolAddress);
+    console.log(depositsInLpTokenPool);
+    expect(depositsInLpTokenPool.length).to.be.gt(0)
+
+  });
   it("Runs a full scenario through the SDK", async () => {
     const config: Config = {
       wildPoolAddress: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",
@@ -66,18 +85,18 @@ describe("Test Custom SDK Logic", () => {
     if (!pk) throw Error("no key");
     const wallet = new ethers.Wallet(pk, provider);
 
-    try {
-      const tx = await sdk.wildPool.stake(
-        ethers.utils.parseEther("12.4").toString(),
-        ethers.BigNumber.from("10441982"),
-        wallet
-      );
+    // try {
+    //   const tx = await sdk.wildPool.stake(
+    //     ethers.utils.parseEther("12.4").toString(),
+    //     ethers.BigNumber.from("10441982"),
+    //     wallet
+    //   );
 
-      console.log(tx.hash);
-      const receipt = await tx.wait(1);
-      console.log(receipt);
-    } catch (e) {
-      console.log(e);
-    }
+    //   console.log(tx.hash);
+    //   const receipt = await tx.wait(1);
+    //   console.log(receipt);
+    // } catch (e) {
+    //   console.log(e);
+    // }
   });
 });

@@ -1,6 +1,7 @@
 import { ApolloClient } from "@apollo/client/core";
 import { Reward } from "../../types";
 import * as queries from "../queries";
+import { RewardsDto } from "../types";
 
 export const listRewardsByAccount = async <T>(
   apolloClient: ApolloClient<T>,
@@ -9,11 +10,11 @@ export const listRewardsByAccount = async <T>(
 ): Promise<Reward[]> => {
   const collection: Reward[] = [];
 
-  const queryResult = await apolloClient.query<Reward[]>({
+  const queryResult = await apolloClient.query<RewardsDto>({
     query: queries.getAccountRewards,
     variables: {
-      poolAddress: poolAddress,
-      accountAddress: accountAddress
+      poolAddress: poolAddress.toLowerCase(),
+      accountAddress: accountAddress.toLowerCase()
     },
   });
 
@@ -21,12 +22,13 @@ export const listRewardsByAccount = async <T>(
     throw queryResult.error;
   }
 
-  queryResult.data.map((e) => {
+  const dto: RewardsDto = queryResult.data;
+  dto.rewards.map((r: Reward) => {
     collection.push({
-      for: e.for,
-      amount: e.amount,
-      pool: e.pool,
-      timestamp: e.timestamp,
+      for: r.for,
+      amount: r.amount,
+      pool: r.pool,
+      timestamp: r.timestamp,
     } as Reward);
   });
 
