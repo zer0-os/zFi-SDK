@@ -18,9 +18,6 @@ describe("Test Custom SDK Logic", () => {
     process.env.INFURA_URL,
     4
   );
-  it("stuff", async () => {
-
-  })
   it("Runs a full scenario through the SDK", async () => {
     const config: Config = {
       wildPoolAddress: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",
