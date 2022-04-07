@@ -17,15 +17,15 @@
     "compile": "tsc ./tsconfig.build.json --resolveJsonModule",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/e2e.test.ts' --exit --config test/.mocharc.json --timeout 300000",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --config test/.mocharc.json --timeout 000",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
   },
   "devDependencies": {
-    "@apollo/client": "^3.5.10",
     "@typechain/ethers-v5": "7.0.1",
     "@types/chai": "4.2.22",
     "@types/chai-as-promised": "7.1.4",
     "@types/coingecko-api": "1.0.6",
+    "@types/graphql": "^14.5.0",
     "@types/mocha": "9.0.0",
     "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "4.31.0",
@@ -46,6 +46,17 @@
     "ts-node": "10.2.1",
     "typechain": "5.1.2",
     "typescript": "4.4.2"
+  },
+  "dependencies": {
+    "@apollo/client": "3.4.10",
+    "@ethersproject/abi": "5.4.1",
+    "@ethersproject/bytes": "5.4.0",
+    "@ethersproject/providers": "5.4.5",
+    "cross-fetch": "3.1.4",
+    "graphql": "15.5.3"
+  },
+  "peerDependencies": {
+    "ethers": "^5.4.6"
   },
   "bugs": {
     "url": "https://github.com/zer0-os/zFi-SDK/issues"
