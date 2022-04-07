@@ -17,7 +17,7 @@
     "compile": "tsc ./tsconfig.build.json --resolveJsonModule",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --config test/.mocharc.json --timeout 000",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --config test/.mocharc.json --timeout",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\""
   },
   "devDependencies": {

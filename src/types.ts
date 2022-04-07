@@ -53,7 +53,7 @@ export interface PoolInstance {
     depositId: string,
     lockUntil: ethers.BigNumber,
     signer: ethers.Signer
-  ) => Promise<ethers.ContractTransaction | null>;
+  ) => Promise<ethers.ContractTransaction>;
   pendingYieldRewards: (address: string) => Promise<ethers.BigNumber>;
   getAllDeposits: (address: string) => Promise<Deposit[]>;
   getUser: (address: string) => Promise<User>;

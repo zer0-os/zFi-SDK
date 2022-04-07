@@ -60,16 +60,16 @@ const getPoolInstance = (
     address: config.address,
     // Lists all deposits within the given pool
     listDeposits: async (): Promise<Deposit[]> => {
-      return subgraphClient.listDeposits(config.address);
+      return await subgraphClient.listDeposits(config.address);
     },
     listDepositsByAccount: async (accountAddress): Promise<Deposit[]> => {
-      return subgraphClient.listDepositsByAccount(config.address, accountAddress);
+      return await subgraphClient.listDepositsByAccount(config.address, accountAddress);
     },
     listRewards: async (): Promise<Reward[]> => {
-      return subgraphClient.listRewards(config.address);
+      return await subgraphClient.listRewards(config.address);
     },
     listRewardsByAccount: async (accountAddress): Promise<Reward[]> => {
-      return subgraphClient.listRewardsByAccount(config.address, accountAddress)
+      return await subgraphClient.listRewardsByAccount(config.address, accountAddress)
     },
     approve: async (
       signer: ethers.Signer
@@ -109,7 +109,7 @@ const getPoolInstance = (
       depositId: string,
       lockUntil: ethers.BigNumber,
       signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction | null> => {
+    ): Promise<ethers.ContractTransaction> => {
       const tx = await actions.updateStakeLock(
         depositId,
         lockUntil,
