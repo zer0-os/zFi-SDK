@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { getAllDeposits } from ".";
+import { getAllDepositsLegacy } from ".";
 import { PoolConfig, UserValue } from "../types";
 import { lpTokenPriceUsd, wildPriceUsd } from "./helpers";
 
@@ -11,7 +11,7 @@ export const calculateUserValueStaked = async (
   if (!ethers.utils.isAddress(userAddress))
     throw Error("Must provide a valid user address");
 
-  const allUserDeposits = await getAllDeposits(userAddress, config);
+  const allUserDeposits = await getAllDepositsLegacy(userAddress, config);
 
   // Date.now() returns in milliseconds, convert to seconds for comparison
   const timeNow = ethers.BigNumber.from(Math.round(Date.now() / 1000));
@@ -20,9 +20,9 @@ export const calculateUserValueStaked = async (
   let userValueUnlocked = ethers.BigNumber.from("0");
   for (const deposit of allUserDeposits) {
     if (timeNow.lt(deposit.lockedUntil)) {
-      userValueLocked = userValueLocked.add(deposit.amount);
+      userValueLocked = userValueLocked.add(deposit.tokenAmount);
     } else {
-      userValueUnlocked = userValueUnlocked.add(deposit.amount);
+      userValueUnlocked = userValueUnlocked.add(deposit.tokenAmount);
     }
   }
 

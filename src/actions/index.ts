@@ -4,7 +4,7 @@ export * from "./calculatePoolAnnualPercentageRate";
 export * from "./calculatePoolTotalValueLocked";
 export * from "./calculateUserValueStaked";
 export * from "./changePoolWeight";
-export * from "./getAllDeposits";
+export * from "./getAllDepositsLegacy";
 export * from "./pendingYieldRewards";
 export * from "./processRewards";
 export * from "./stake";

@@ -1,11 +1,18 @@
+export interface Account {
+  id: string;
+}
+
+export interface Pool {
+  id: string;
+}
 export interface DepositDto {
   id: string;
-  by: string;
+  by: Account;
   depositId: string;
-  amount: string;
+  tokenAmount: string;
   lockedFrom: string;
   lockedUntil: string;
-  pool: string;
+  pool: Pool;
   timestamp: string;
 }
 
@@ -15,9 +22,9 @@ export interface DepositsDto {
 
 export interface RewardDto {
   id: string;
-  for: string;
-  amount: string;
-  pool: string;
+  for: Account;
+  tokenAmount: string;
+  pool: Pool;
   timestamp: string;
 }
 

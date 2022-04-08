@@ -9,7 +9,7 @@ export const getPoolDeposits = gql`
         id
       }
       depositId
-      amount
+      tokenAmount
       lockedFrom
       lockedUntil
       pool {
@@ -29,7 +29,7 @@ export const getAccountDeposits = gql`
         id
       }
       depositId
-      amount
+      tokenAmount
       pool {
         id
       }
@@ -48,7 +48,7 @@ export const getPoolRewards = gql`
       for {
         id
       }
-      amount
+      tokenAmount
       pool {
         id
       }
@@ -65,7 +65,7 @@ export const getAccountRewards = gql`
       for {
         id
       }
-      amount
+      tokenAmount
       pool {
         id
       }

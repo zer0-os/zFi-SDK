@@ -1,7 +1,7 @@
 import { ApolloClient } from "@apollo/client/core";
 import { Reward } from "../../types";
 import * as queries from "../queries";
-import { RewardsDto } from "../types";
+import { RewardDto, RewardsDto } from "../types";
 
 export const listRewards = async <T>(
   apolloClient: ApolloClient<T>,
@@ -21,11 +21,11 @@ export const listRewards = async <T>(
   }
 
   const dto: RewardsDto = queryResult.data;
-  dto.rewards.map((r: Reward) => {
+  dto.rewards.map((r: RewardDto) => {
     collection.push({
-      for: r.for,
-      amount: r.amount,
-      pool: r.pool,
+      for: r.for.id,
+      tokenAmount: r.tokenAmount,
+      pool: r.pool.id,
       timestamp: r.timestamp,
     } as Reward);
   });

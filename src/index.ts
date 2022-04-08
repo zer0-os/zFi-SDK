@@ -8,6 +8,7 @@ import {
   FactoryConfig,
   FactoryInstance,
   Instance,
+  LegacyDeposit,
   PoolConfig,
   PoolData,
   PoolInstance,
@@ -57,18 +58,22 @@ const getPoolInstance = (
     config.subgraphUri,
   );
   const instance: PoolInstance = {
+    // Address of this pool
     address: config.address,
-    // Lists all deposits within the given pool
+    // Lists all deposits within the pool
     listDeposits: async (): Promise<Deposit[]> => {
       return await subgraphClient.listDeposits(config.address);
     },
-    listDepositsByAccount: async (accountAddress): Promise<Deposit[]> => {
+    // Get deposits into the pool for the given account
+    getAllDeposits: async (accountAddress): Promise<Deposit[]> => {
       return await subgraphClient.listDepositsByAccount(config.address, accountAddress);
     },
+    // Lists all rewards earned by stakers in the pool
     listRewards: async (): Promise<Reward[]> => {
       return await subgraphClient.listRewards(config.address);
     },
-    listRewardsByAccount: async (accountAddress): Promise<Reward[]> => {
+    // Get rewards earned for the given account
+    getAllRewards: async (accountAddress): Promise<Reward[]> => {
       return await subgraphClient.listRewardsByAccount(config.address, accountAddress)
     },
     approve: async (
@@ -123,15 +128,6 @@ const getPoolInstance = (
       const pendingRewards = await actions.pendingYieldRewards(address, config);
       return pendingRewards;
     },
-    getAllDeposits: async (address: string): Promise<Deposit[]> => {
-      const deposits = await actions.getAllDeposits(address, config);
-      return deposits;
-    },
-    getUser: async (address: string): Promise<User> => {
-      const corePool = await getCorePool(config);
-      const user: User = await corePool.users(address);
-      return user;
-    },
     getPoolToken: async (): Promise<string> => {
       const corePool = await getCorePool(config);
       const poolToken = await corePool.poolToken();
@@ -156,6 +152,17 @@ const getPoolInstance = (
     },
     poolTvl: async (): Promise<TotalValueLocked> => {
       return await actions.calculatePoolTotalValueLocked(isLpTokenPool, config);
+    },
+    // Get an entire user profile
+    getUser: async (address: string): Promise<User> => {
+      const corePool = await getCorePool(config);
+      const user: User = await corePool.users(address);
+      return user;
+    },
+    // Get all deposits belonging to a specific user
+    getAllDepositsLegacy: async (address: string): Promise<LegacyDeposit[]> => {
+      const deposits = await actions.getAllDepositsLegacy(address, config);
+      return deposits;
     },
   };
 

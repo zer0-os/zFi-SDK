@@ -21,6 +21,7 @@ describe("Test Custom SDK Logic", () => {
     factoryAddress: "0xb1d051095B6b2f6C93198Cbaa9bb7cB2d607215C",
     lpTokenPoolAddress: "0xe7BEeedAf11eE695C4aE64A01b24F3F7eA294aB6",
     wildPoolAddress: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",
+    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zfi-rinkeby",
   };
 
   // Dummy address pulled from Ethers VoidSigner docs
@@ -29,10 +30,12 @@ describe("Test Custom SDK Logic", () => {
   const wildPoolConfig: PoolConfig = {
     address: config.wildPoolAddress,
     provider: config.provider,
+    subgraphUri: config.subgraphUri
   };
   const lpPoolConfig: PoolConfig = {
     address: config.lpTokenPoolAddress,
     provider: config.provider,
+    subgraphUri: config.subgraphUri
   }
 
   describe("calculatePoolApr", () => {
@@ -311,7 +314,7 @@ describe("Test Custom SDK Logic", () => {
         "getCorePool",
         mockCorePool
       );
-      const deposits = await actions.getAllDeposits(
+      const deposits = await actions.getAllDepositsLegacy(
         config.wildPoolAddress,
         wildPoolConfig
       );
@@ -332,7 +335,7 @@ describe("Test Custom SDK Logic", () => {
         "getCorePool",
         mockCorePool
       );
-      const deposits = await actions.getAllDeposits(
+      const deposits = await actions.getAllDepositsLegacy(
         config.wildPoolAddress,
         wildPoolConfig
       );

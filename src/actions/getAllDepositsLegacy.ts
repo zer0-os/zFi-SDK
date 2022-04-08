@@ -1,14 +1,14 @@
 import { ethers } from "ethers";
 import { getCorePool } from "../helpers";
-import { PoolConfig, Deposit } from "../types";
+import { PoolConfig, LegacyDeposit } from "../types";
 
-export const getAllDeposits = async (
+export const getAllDepositsLegacy = async (
   address: string,
   config: PoolConfig
-): Promise<Deposit[]> => {
-  if (!ethers.utils.isAddress(address))
+): Promise<LegacyDeposit[]> => {
+  if (!ethers.utils.isAddress(address)) {
     throw Error("Must provide a valid user address");
-
+  }
   const corePool = await getCorePool(config);
   const depositLength = await corePool.getDepositsLength(address);
 
@@ -24,11 +24,12 @@ export const getAllDeposits = async (
     promiseArray.push(depositPromise);
   }
 
-  let deposits = (await Promise.all(promiseArray)).map<Deposit>((d, i) => {
-    return { depositId: i, ...d } as Deposit;
+  let deposits = (await Promise.all(promiseArray)).map<LegacyDeposit>((d, i) => {
+    return { depositId: i, ...d } as LegacyDeposit;
   });
+  // Filter to only include deposits that have a non-zero value
   deposits = deposits.filter(
-    (deposit) => deposit.amount === "0"
+    (deposit) => !deposit.tokenAmount.eq("0")
   );
-  return deposits;
+  return deposits as LegacyDeposit[];
 };
