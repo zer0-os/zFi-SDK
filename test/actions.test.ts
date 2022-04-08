@@ -17,7 +17,7 @@ dotenv.config();
 
 describe("Test Custom SDK Logic", () => {
   const config: Config = {
-    provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"], 42),
+    provider: new ethers.providers.JsonRpcProvider(process.env["INFURA_URL"], 4),
     factoryAddress: "0xb1d051095B6b2f6C93198Cbaa9bb7cB2d607215C",
     lpTokenPoolAddress: "0xe7BEeedAf11eE695C4aE64A01b24F3F7eA294aB6",
     wildPoolAddress: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",

@@ -3,8 +3,6 @@ import fetch from "cross-fetch";
 import { Deposit, Reward } from "../types";
 
 import * as actions from "./actions"
-// import { TokenBuy, TokenSale, TokenSaleCollection } from "../types";
-// import * as actions from "./actions";
 
 export interface SubgraphClient {
   listDeposits: (poolAddress: string) => Promise<Deposit[]>;

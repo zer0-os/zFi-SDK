@@ -22,12 +22,13 @@ export const listRewards = async <T>(
 
   const dto: RewardsDto = queryResult.data;
   dto.rewards.map((r: RewardDto) => {
-    collection.push({
+    const reward: Reward = {
       for: r.for.id,
       tokenAmount: r.tokenAmount,
       pool: r.pool.id,
       timestamp: r.timestamp,
-    } as Reward);
+    }
+    collection.push(reward);
   });
 
   return collection;

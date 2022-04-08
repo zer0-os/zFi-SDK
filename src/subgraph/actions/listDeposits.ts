@@ -23,7 +23,7 @@ export const listDeposits = async <T>(
 
   const dto: DepositsDto = queryResult.data;
   dto.deposits.map((d: DepositDto) => {
-    collection.push({
+    const deposit: Deposit = {
       by: d.by.id,
       depositId: d.depositId,
       tokenAmount: d.tokenAmount,
@@ -31,7 +31,8 @@ export const listDeposits = async <T>(
       lockedUntil: d.lockedUntil,
       pool: d.pool.id,
       timestamp: d.timestamp,
-    } as Deposit);
+    }
+    collection.push(deposit);
   });
 
   return collection;
