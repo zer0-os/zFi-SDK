@@ -1,14 +1,18 @@
 import * as ethers from "ethers";
 import * as actions from "./actions";
+import * as subgraph from "./subgraph";
 import { getCorePool, getPoolFactory } from "./helpers";
 import {
   Config,
   Deposit,
+  FactoryConfig,
   FactoryInstance,
   Instance,
+  LegacyDeposit,
+  PoolConfig,
   PoolData,
   PoolInstance,
-  SubConfig,
+  Reward,
   TotalValueLocked,
   User,
   UserValue,
@@ -18,17 +22,19 @@ export * from "./types";
 
 export const createInstance = (config: Config): Instance => {
   // Consumer will do `sdkInstance.wildPool.stake()`
-  const factoryConfig: SubConfig = {
+  const factoryConfig: FactoryConfig = {
     address: config.factoryAddress,
     provider: config.provider,
   };
-  const wildConfig: SubConfig = {
+  const wildConfig: PoolConfig = {
     address: config.wildPoolAddress,
     provider: config.provider,
+    subgraphUri: config.subgraphUri,
   };
-  const liquidityConfig: SubConfig = {
+  const liquidityConfig: PoolConfig = {
     address: config.lpTokenPoolAddress,
     provider: config.provider,
+    subgraphUri: config.subgraphUri,
   };
 
   const factory = getFactoryInstance(factoryConfig);
@@ -45,11 +51,31 @@ export const createInstance = (config: Config): Instance => {
 // The zFI SDK requires that you create an instance once for every staking pool.
 // As we have one WILD/ETH LP staking pool, and one WILD staking pool, there must be two instances
 const getPoolInstance = (
-  config: SubConfig,
+  config: PoolConfig,
   isLpTokenPool: boolean // flag for if we are using the liquidity pool token
 ): PoolInstance => {
+  const subgraphClient: subgraph.SubgraphClient = subgraph.createClient(
+    config.subgraphUri,
+  );
   const instance: PoolInstance = {
+    // Address of this pool
     address: config.address,
+    // Lists all deposits within the pool
+    listDeposits: async (): Promise<Deposit[]> => {
+      return await subgraphClient.listDeposits(config.address);
+    },
+    // Get deposits into the pool for the given account
+    getAllDeposits: async (accountAddress): Promise<Deposit[]> => {
+      return await subgraphClient.listDepositsByAccount(config.address, accountAddress);
+    },
+    // Lists all rewards earned by stakers in the pool
+    listRewards: async (): Promise<Reward[]> => {
+      return await subgraphClient.listRewards(config.address);
+    },
+    // Get rewards earned for the given account
+    getAllRewards: async (accountAddress): Promise<Reward[]> => {
+      return await subgraphClient.listRewardsByAccount(config.address, accountAddress)
+    },
     approve: async (
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
@@ -102,15 +128,6 @@ const getPoolInstance = (
       const pendingRewards = await actions.pendingYieldRewards(address, config);
       return pendingRewards;
     },
-    getAllDeposits: async (address: string): Promise<Deposit[]> => {
-      const deposits = await actions.getAllDeposits(address, config);
-      return deposits;
-    },
-    getUser: async (address: string): Promise<User> => {
-      const corePool = await getCorePool(config);
-      const user: User = await corePool.users(address);
-      return user;
-    },
     getPoolToken: async (): Promise<string> => {
       const corePool = await getCorePool(config);
       const poolToken = await corePool.poolToken();
@@ -121,23 +138,38 @@ const getPoolInstance = (
       // as well as each of those values in USD for formatting
       // e.g. { valueLocked: _, valueUnlocked: _ }
 
-      return await actions.calculateUserValueStaked(userAddress, isLpTokenPool, config);
-    },
-    poolApr: async (): Promise<number> => {
-      return await actions.calculatePoolAnnualPercentageRate(isLpTokenPool, config);
-    },
-    poolTvl: async (): Promise<TotalValueLocked> => {
-      return await actions.calculatePoolTotalValueLocked(
+      return await actions.calculateUserValueStaked(
+        userAddress,
         isLpTokenPool,
         config
       );
+    },
+    poolApr: async (): Promise<number> => {
+      return await actions.calculatePoolAnnualPercentageRate(
+        isLpTokenPool,
+        config
+      );
+    },
+    poolTvl: async (): Promise<TotalValueLocked> => {
+      return await actions.calculatePoolTotalValueLocked(isLpTokenPool, config);
+    },
+    // Get an entire user profile
+    getUser: async (address: string): Promise<User> => {
+      const corePool = await getCorePool(config);
+      const user: User = await corePool.users(address);
+      return user;
+    },
+    // Get all deposits belonging to a specific user
+    getAllDepositsLegacy: async (address: string): Promise<LegacyDeposit[]> => {
+      const deposits = await actions.getAllDepositsLegacy(address, config);
+      return deposits;
     },
   };
 
   return instance;
 };
 
-const getFactoryInstance = (config: SubConfig) => {
+const getFactoryInstance = (config: FactoryConfig) => {
   const instance: FactoryInstance = {
     getPoolAddress: async (poolToken: string): Promise<string> => {
       const factory = await getPoolFactory(config);

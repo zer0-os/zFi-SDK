@@ -1,5 +1,5 @@
 import * as ethers from "ethers";
-import { NetworkChainId, SubConfig, TotalValueLocked } from "../types";
+import { NetworkChainId, PoolConfig, TotalValueLocked } from "../types";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool } from "../helpers";
 import {
@@ -11,7 +11,7 @@ import {
 
 export const calculatePoolTotalValueLocked = async (
   isLpTokenPool: boolean,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<TotalValueLocked> => {
   let addresses;
   const network = await config.provider.getNetwork();

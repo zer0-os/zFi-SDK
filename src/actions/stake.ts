@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import { getCorePool } from "../helpers";
-import { SubConfig } from "../types";
+import { PoolConfig } from "../types";
 
 export const stake = async (
   amount: string,
   lockUntil: ethers.BigNumberish,
   signer: ethers.Signer,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<ethers.ContractTransaction> => {
   if (ethers.BigNumber.from(amount).lte(ethers.BigNumber.from(0)))
     throw Error("Cannot call to stake with no value given");

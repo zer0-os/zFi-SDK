@@ -1,7 +1,7 @@
 import * as ethers from "ethers";
 import { ZStakeCorePool } from "../contracts";
 import { getCorePool, getPoolFactory } from "../helpers";
-import { NetworkChainId, SubConfig } from "../types";
+import { NetworkChainId, PoolConfig } from "../types";
 import {
   ethPriceUsd,
   getLpToken,
@@ -13,7 +13,7 @@ import {
 
 export const calculatePoolAnnualPercentageRate = async (
   isLpTokenPool: boolean,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<number> => {
   let addresses;
   const network = await config.provider.getNetwork();

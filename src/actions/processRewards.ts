@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
 import { pendingYieldRewards } from ".";
 import { getCorePool } from "../helpers";
-import { SubConfig } from "../types";
+import { PoolConfig } from "../types";
 
 export const processRewards = async (
   signer: ethers.Signer,
-  config: SubConfig
+  config: PoolConfig
 ): Promise<ethers.ContractTransaction> => {
   // Check pending rewards first to avoid unnecessary gas spending
   const address = await signer.getAddress();

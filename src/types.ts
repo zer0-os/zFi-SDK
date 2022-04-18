@@ -1,14 +1,18 @@
 import { BigNumber, ethers } from "ethers";
 
-export interface SubConfig {
+export interface FactoryConfig {
   address: string;
   provider: ethers.providers.Provider;
+}
+export interface PoolConfig extends FactoryConfig {
+  subgraphUri: string;
 }
 
 export interface Config {
   wildPoolAddress: string;
   lpTokenPoolAddress: string;
   factoryAddress: string;
+  subgraphUri: string;
   provider: ethers.providers.Provider;
 }
 
@@ -26,6 +30,10 @@ export interface FactoryInstance {
 
 export interface PoolInstance {
   address: string;
+  listDeposits: () => Promise<Deposit[]>;
+  getAllDeposits: (accountAddress: string) => Promise<Deposit[]>;
+  listRewards: () => Promise<Reward[]>;
+  getAllRewards: (accountAddress: string) => Promise<Reward[]>;
   approve: (signer: ethers.Signer) => Promise<ethers.ContractTransaction>;
   allowance: (signer: ethers.Signer) => Promise<ethers.BigNumber>;
   stake: (
@@ -47,21 +55,38 @@ export interface PoolInstance {
     signer: ethers.Signer
   ) => Promise<ethers.ContractTransaction>;
   pendingYieldRewards: (address: string) => Promise<ethers.BigNumber>;
-  getAllDeposits: (address: string) => Promise<Deposit[]>;
-  getUser: (address: string) => Promise<User>;
   getPoolToken: () => Promise<string>;
   userValueStaked: (address: string) => Promise<UserValue>;
   poolApr: () => Promise<number>;
   poolTvl: () => Promise<TotalValueLocked>;
+  getUser: (address: string) => Promise<User>;
+  getAllDepositsLegacy: (address: string) => Promise<LegacyDeposit[]>;
 }
 
 export interface Deposit {
+  by: string;
+  depositId: string;
+  tokenAmount: string;
+  lockedFrom: string;
+  lockedUntil: string;
+  pool: string;
+  timestamp: string;
+}
+
+export interface LegacyDeposit {
   depositId: number;
   tokenAmount: BigNumber;
   weight: BigNumber;
   lockedFrom: BigNumber;
   lockedUntil: BigNumber;
   isYield: boolean;
+}
+
+export interface Reward {
+  for: string;
+  tokenAmount: string;
+  pool: string;
+  timestamp: string;
 }
 
 export enum NetworkChainId {
