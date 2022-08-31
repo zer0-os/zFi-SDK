@@ -30,10 +30,11 @@ export interface FactoryInstance {
 
 export interface PoolInstance {
   address: string;
-  listDeposits: () => Promise<Deposit[]>;
   getAllDeposits: (accountAddress: string) => Promise<Deposit[]>;
-  listRewards: () => Promise<Reward[]>;
+  getDepositsLength: (accountAddress: string) => Promise<string>;
   getAllRewards: (accountAddress: string) => Promise<Reward[]>;
+  listDeposits: () => Promise<Deposit[]>;
+  listRewards: () => Promise<Reward[]>;
   approve: (signer: ethers.Signer) => Promise<ethers.ContractTransaction>;
   allowance: (signer: ethers.Signer) => Promise<ethers.BigNumber>;
   stake: (

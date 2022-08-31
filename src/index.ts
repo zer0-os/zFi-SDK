@@ -68,12 +68,18 @@ const getPoolInstance = (
     getAllDeposits: async (accountAddress): Promise<Deposit[]> => {
       return await subgraphClient.listDepositsByAccount(config.address, accountAddress);
     },
+    // Get the number of deposits in the pool by a given account
+    getDepositsLength: async (accountAddress: string): Promise<string> => {
+      const corePool = await getCorePool(config);
+      const depositsLength = await corePool.getDepositsLength(accountAddress);
+      return depositsLength.toString();
+    },
     // Lists all rewards earned by stakers in the pool
     listRewards: async (): Promise<Reward[]> => {
       return await subgraphClient.listRewards(config.address);
     },
     // Get rewards earned for the given account
-    getAllRewards: async (accountAddress): Promise<Reward[]> => {
+    getAllRewards: async (accountAddress: string): Promise<Reward[]> => {
       return await subgraphClient.listRewardsByAccount(config.address, accountAddress)
     },
     approve: async (
