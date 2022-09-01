@@ -22,7 +22,7 @@ export const unstake = async (
   }
 
   // Given depositId cannot be greater than the zero-based number of deposits
-  if (ethers.BigNumber.from(depositId).gte(depositsLength)) {
+  if (ethers.BigNumber.from(depositId).gt(depositsLength)) {
     throw Error(
       "Given depositId must be less than the total number of deposits."
     );
