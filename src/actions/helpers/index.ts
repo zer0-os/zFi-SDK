@@ -31,6 +31,14 @@ export const networkAddresses = {
     lpTokenStakingPool: "0xe7BEeedAf11eE695C4aE64A01b24F3F7eA294aB6",
     factory: "0xb1d051095B6b2f6C93198Cbaa9bb7cB2d607215C",
     UniswapPoolToken: "0x0A0f5AD73077108cFD806a0de77333AdA928cC99",
+  },
+  5: { // goerli
+    WILD: "0x0e46c45f8aca3f89Ad06F4a20E2BED1A12e4658C",
+    wETH: "0x196bc789E03761904E3d7266fa57f2001592D25A", // Actually mLOOT
+    wildStakingPool: "0x376030f58c76ECC288a4fce8F88273905544bC07",
+    lpTokenStakingPool: "0xCa0F071fcf5b36436F75E422b5Bd23666015b9f9",
+    factory: "0xAeEaC5F790dD98FD7166bBD50d9938Bf542AFeEf",
+    UniswapPoolToken: "0x196bc789E03761904E3d7266fa57f2001592D25A",
   }
 };
 
