@@ -19,12 +19,12 @@ describe("Test Custom SDK Logic", () => {
   const config: Config = {
     provider: new ethers.providers.JsonRpcProvider(
       process.env["INFURA_URL"],
-      4
+      5
     ),
-    factoryAddress: "0xb1d051095B6b2f6C93198Cbaa9bb7cB2d607215C",
-    lpTokenPoolAddress: "0xe7BEeedAf11eE695C4aE64A01b24F3F7eA294aB6",
-    wildPoolAddress: "0xE0Bb298Afc5dC12918d02732c824DA44e7D61E2a",
-    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zfi-rinkeby",
+    factoryAddress: "0xAeEaC5F790dD98FD7166bBD50d9938Bf542AFeEf",
+    lpTokenPoolAddress: "0xCa0F071fcf5b36436F75E422b5Bd23666015b9f9",
+    wildPoolAddress: "0x376030f58c76ECC288a4fce8F88273905544bC07",
+    subgraphUri: "https://api.thegraph.com/subgraphs/name/zer0-os/zfi-goerli",
   };
 
   // Dummy address pulled from Ethers VoidSigner docs
