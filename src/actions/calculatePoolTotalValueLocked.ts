@@ -4,15 +4,13 @@ import { ZStakeCorePool } from "../contracts";
 import { getCorePool } from "../helpers";
 import {
   getLpToken,
-  lpTokenPriceUsd,
   networkAddresses,
-  wildPriceUsd,
 } from "./helpers";
 
 export const calculatePoolTotalValueLocked = async (
   isLpTokenPool: boolean,
   config: PoolConfig
-): Promise<TotalValueLocked> => {
+): Promise<number> => {
   let addresses;
   const network = await config.provider.getNetwork();
   const chainId: NetworkChainId = network.chainId;
@@ -25,40 +23,28 @@ export const calculatePoolTotalValueLocked = async (
 
   const pool: ZStakeCorePool = await getCorePool(config);
 
-  const promises = [pool.poolTokenReserve(), wildPriceUsd()] as const;
+  const promises = [pool.poolTokenReserve()] as const;
 
-  const [balance, wildPrice] = await Promise.all(
-    promises
-  );
+  const [balance] = await Promise.all(promises);
 
   // If wild pool, we have what we need to show APR
   if (!isLpTokenPool) {
     // `wildPriceUsd()` returns a number already, but `wildPrice` is
     // type `ethers.BigNumber | number`, so must be explicit for compiler
-    const tvl = wildPrice * Number(ethers.utils.formatEther(balance));
 
-    return {
-      numberOfTokens: Number(ethers.utils.formatEther(balance)),
-      valueOfTokensUSD: tvl,
-    } as TotalValueLocked;
+    // 2024/01/12 - Do not return the USD price of the tokens, Brett will convert on the front end.
+    // Only return the number of tokens in the pool
+
+    return Number(ethers.utils.formatEther(balance));
   }
 
   const lpToken = await getLpToken(config.provider);
 
   let lpTokenPoolPromises = [
     lpToken.balanceOf(addresses.lpTokenStakingPool),
-    lpTokenPriceUsd(config.provider),
   ];
 
-  const [lpTokenPoolBalance, lpTokenPrice] = await Promise.all(
-    lpTokenPoolPromises
-  );
+  const [lpTokenPoolBalance] = await Promise.all(lpTokenPoolPromises);
 
-  const lpTokenPoolTvl =
-    Number(lpTokenPrice) * Number(ethers.utils.formatEther(lpTokenPoolBalance));
-
-  return {
-    numberOfTokens: Number(ethers.utils.formatEther(lpTokenPoolBalance)),
-    valueOfTokensUSD: lpTokenPoolTvl,
-  } as TotalValueLocked;
+  return Number(ethers.utils.formatEther(lpTokenPoolBalance))
 };
