@@ -11,6 +11,9 @@ export const calculateUserValueStaked = async (
   if (!ethers.utils.isAddress(userAddress))
     throw Error("Must provide a valid user address");
 
+  // 2024/01/12 - Do not return the USD price of the tokens, Brett will convert on the front end.
+  // Only return the number of tokens in the pool
+
   const allUserDeposits = await getAllDepositsLegacy(userAddress, config);
 
   // Date.now() returns in milliseconds, convert to seconds for comparison
@@ -18,6 +21,7 @@ export const calculateUserValueStaked = async (
 
   let userValueLocked = ethers.BigNumber.from("0");
   let userValueUnlocked = ethers.BigNumber.from("0");
+
   for (const deposit of allUserDeposits) {
     if (timeNow.lt(deposit.lockedUntil)) {
       userValueLocked = userValueLocked.add(deposit.tokenAmount);
@@ -26,24 +30,8 @@ export const calculateUserValueStaked = async (
     }
   }
 
-  let tokenPrice;
-
-  if (isLpTokenPool) {
-    tokenPrice = await lpTokenPriceUsd(config.provider)
-  } else {
-    tokenPrice = await wildPriceUsd();
-  }
-
-  const formattedValueLocked = ethers.utils.formatEther(userValueLocked);
-  const formattedValueUnlocked = ethers.utils.formatEther(userValueUnlocked);
-
-  const userValueLockedUsd = Number(formattedValueLocked) * tokenPrice;
-  const userValueUnlockedUsd = Number(formattedValueUnlocked) * tokenPrice;
-
   return {
     userValueLocked: userValueLocked,
-    userValueLockedUsd: userValueLockedUsd,
     userValueUnlocked: userValueUnlocked,
-    userValueUnlockedUsd: userValueUnlockedUsd
   };
 };

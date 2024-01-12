@@ -156,7 +156,7 @@ const getPoolInstance = (
         config
       );
     },
-    poolTvl: async (): Promise<TotalValueLocked> => {
+    poolTvl: async (): Promise<number> => {
       return await actions.calculatePoolTotalValueLocked(isLpTokenPool, config);
     },
     // Get an entire user profile

@@ -59,7 +59,7 @@ export interface PoolInstance {
   getPoolToken: () => Promise<string>;
   userValueStaked: (address: string) => Promise<UserValue>;
   poolApr: () => Promise<number>;
-  poolTvl: () => Promise<TotalValueLocked>;
+  poolTvl: () => Promise<number>;
   getUser: (address: string) => Promise<User>;
   getAllDepositsLegacy: (address: string) => Promise<LegacyDeposit[]>;
 }
@@ -106,9 +106,7 @@ export interface User {
 
 export interface UserValue {
   userValueLocked: ethers.BigNumber;
-  userValueLockedUsd: number;
   userValueUnlocked: ethers.BigNumber;
-  userValueUnlockedUsd: number;
 }
 
 export interface PoolData {
@@ -120,5 +118,4 @@ export interface PoolData {
 
 export interface TotalValueLocked {
   numberOfTokens: number;
-  valueOfTokensUSD: number;
 }
